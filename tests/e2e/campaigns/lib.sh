@@ -18,8 +18,7 @@ wait_all_terminal() { # <timeout_s> <ids...>
 
 # number of TransferWithReference events emitted by <from> on TCE since <fromBlock>
 events_from() { # <from> <fromBlock>
-  cast_ro logs --from-block "$2" --address "$TCE_ADDRESS" "TransferWithReference(bytes32 indexed,address indexed,address indexed,uint256)" "" "$1" --json \
-    | grep -o '"transactionHash"' | wc -l | tr -d ' '
+  logs_count "$2" "$TCE_ADDRESS" "TransferWithReference(bytes32 indexed,address indexed,address indexed,uint256)" "" "$1"
 }
 
 fund() { # <account> <amount> : treasury mints (MINTER_ROLE)

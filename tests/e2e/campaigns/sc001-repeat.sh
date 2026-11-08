@@ -6,7 +6,7 @@ evidence_init "002/campaign-sc001"
 fail=0
 for i in $(seq 1 "$N"); do
   for s in nominal restart-after-broadcast ponder-lag failure-vs-unknown; do
-    out=$(RUN_ID_PREFIX="sc001-$i-" bash "$ROOT/tests/e2e/scenarios/$s.sh" 2>&1); rc=$?
+    rc=0; RUN_ID_PREFIX="sc001-$i-" bash "$ROOT/tests/e2e/scenarios/$s.sh" >/dev/null 2>&1 || rc=$?   # a FAIL must be recorded, not abort the campaign
     run=$(cat "$ROOT/evidence/002/$s/LATEST")
     v=$([[ $rc == 0 ]] && echo PASS || echo FAIL); [[ $rc == 0 ]] || fail=1
     step "iteration $i $s: $v (run $run)"

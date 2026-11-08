@@ -1,0 +1,3 @@
+{"iteration":1,"scenario":"nominal","verdict":"PASS","run":"evidence/002/nominal/runs/sc001-1-20261108T163225Z-7802"}
+{"iteration":1,"scenario":"restart-after-broadcast","verdict":"PASS","run":"evidence/002/restart-after-broadcast/runs/sc001-1-20261108T163257Z-8216"}
+{"iteration":1,"scenario":"ponder-lag","verdict":"PASS","run":"evidence/002/ponder-lag/runs/sc001-1-20261108T163358Z-8645"}
