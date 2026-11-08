@@ -45,3 +45,4 @@ infra/generated/
 contracts/deployments/
 deployments/local.json
 contracts/broadcast/
+.claude/worktrees/

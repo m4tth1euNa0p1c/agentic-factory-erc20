@@ -41,8 +41,10 @@ logs_count() { # <fromBlock> <address> <event sig> [topic args...] -> number of 
   local head n total=0 hi; head=$(cast_ro block-number)
   while (( lo <= head )); do
     hi=$(( lo + 3999 < head ? lo + 3999 : head ))
-    n=$(cast_ro logs --from-block "$lo" --to-block "$hi" --address "$addr" "$sig" "$@" --json | grep -o '"transactionHash"' | wc -l | tr -d ' ') \
-      || { echo "logs query failed for [$lo,$hi]" >&2; return 1; }
+    local out
+    out=$(cast_ro logs --from-block "$lo" --to-block "$hi" --address "$addr" "$sig" "$@" --json) \
+      || { echo "logs query failed for [$lo,$hi]" >&2; return 1; }   # a failed query is an error, never "0 events"
+    n=$(printf '%s' "$out" | { grep -o '"transactionHash"' || true; } | wc -l | tr -d ' ')
     total=$(( total + n )); lo=$(( hi + 1 ))
   done
   printf '%s' "$total"
