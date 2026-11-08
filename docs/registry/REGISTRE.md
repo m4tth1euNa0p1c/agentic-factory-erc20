@@ -42,10 +42,15 @@
 | D-07 | Réservation libérée à `SETTLED` (Ponder a indexé le bloc) ou à `FAILED`/`REJECTED` ; jamais à `UNKNOWN` | Disponible cohérent (F-06) | 2026-11-08 |
 | D-08 | Outbox transactionnelle côté Java pour publier vers Kafka | Pas de perte entre DB et Kafka | 2026-11-08 |
 | D-09 | Monorepo, un dossier par composant, sandbox Docker Compose | Reproductibilité (F-07) | 2026-11-08 |
+| D-11 | EVM `cancun` (genèse `cancunTime: 0`) : OZ 5.6 utilise `mcopy` | Constat de compilation | 2026-11-08 |
 | D-10 | Client Kafka JS : `@confluentinc/kafka-javascript` | `kafkajs` non maintenu | 2026-11-08 |
 
 ## PREUVES d'exécution
 
 | ID | Preuve | Fichier | Commit |
 |---|---|---|---|
-| _vide_ | Les preuves sont ajoutées par l'agent vérificateur | `evidence/` | |
+| P-01 | Sandbox vierge : QBFT produit des blocs, 5 clés Web3Signer, rôles PG, 3 topics, admin API refusée, Web3Signer non publié (12/12 OK) | `evidence/001/sandbox-check.txt` | 001 |
+| P-02 | Contrats : 15 tests (unit, fuzz 512, invariants 64×32) verts ; couverture lignes 100 % | `evidence/001/forge-test.txt`, `evidence/001/coverage.txt` | 001 |
+| P-03 | Slither 0.11.6 : 0 finding (Low→High) sur TelaToken et TalanFixedRateSwap | `evidence/001/slither/` | 001 |
+| P-04 | On-chain : `transferWithReference` débite une fois, rejeu refusé (`ReferenceAlreadyUsed`) avant diffusion, 1 seul événement | `evidence/001/contracts/evidence.json` | 001 |
+| P-05 | Déploiement signé exclusivement par Web3Signer (`forge script --unlocked`, aucune clé exportée) | `scripts/deploy-contracts.sh` | 001 |

@@ -1,0 +1,12 @@
+title = "TELA factory gitleaks config"
+
+[extend]
+useDefault = true
+
+# Evidence files carry PUBLIC on-chain identifiers (operation reference = keccak256(operationId), tx hashes).
+# Only those named keys are allowed; any other 32-byte hex (e.g. a private key) is still reported.
+[[allowlists]]
+description = "public on-chain identifiers in evidence"
+paths = ['''^evidence/.*\.json$''']
+regexTarget = "line"
+regexes = ['''"(reference|txHash|blockHash)"\s*:\s*"0x[0-9a-f]{64}"''']

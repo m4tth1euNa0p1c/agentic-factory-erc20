@@ -10,19 +10,19 @@
 - [x] T003 [US1] [network-devops] `compose.yaml` Besu/Web3Signer/Postgres/Kafka + réseaux isolés
 - [x] T004 [US1] [network-devops] Rôles PostgreSQL moindre privilège (`infra/postgres/init/01-roles.sh`)
 - [x] T005 [US1] [network-devops] `scripts/sandbox.sh up|down|reset|check`
-- [ ] T006 [US1] [verifier] Preuve `evidence/001/sandbox-check.txt` sur sandbox vierge (reset → up → check)
+- [x] T006 [US1] [verifier] Preuve `evidence/001/sandbox-check.txt` sur sandbox vierge (reset → up → check)
 
 ## Phase 3: User Story 2 — Jetons (P1)
-- [ ] T007 [US2] [smart-contracts] Tests d'abord : `contracts/test/TelaToken.t.sol` (scénarios 1–5, fuzz, invariant référence)
-- [ ] T008 [US2] [smart-contracts] `contracts/src/TelaToken.sol` (ERC20, AccessControl, Pausable, transferWithReference)
-- [ ] T009 [P] [US2] [smart-contracts] Squelette `contracts/src/TalanFixedRateSwap.sol` (constructeur, rôles, taux ; logique en 003)
-- [ ] T010 [US2] [smart-contracts] `contracts/script/Deploy.s.sol` + `scripts/deploy-contracts.sh` (Web3Signer, `deployments/local.json`, adresses dans `.env`)
-- [ ] T011 [US2] [smart-contracts] Export ABI `contracts/abi/*.json`
-- [ ] T012 [US2] [verifier] Preuve déploiement + `transferWithReference` rejoué on-chain (`evidence/001/contracts/`)
+- [x] T007 [US2] [smart-contracts] Tests d'abord : `contracts/test/TelaToken.t.sol` (scénarios 1–5, fuzz, invariant référence)
+- [x] T008 [US2] [smart-contracts] `contracts/src/TelaToken.sol` (ERC20, AccessControl, Pausable, transferWithReference)
+- [x] T009 [P] [US2] [smart-contracts] Squelette `contracts/src/TalanFixedRateSwap.sol` (constructeur, rôles, taux ; logique en 003)
+- [x] T010 [US2] [smart-contracts] `contracts/script/Deploy.s.sol` + `scripts/deploy-contracts.sh` (Web3Signer, `deployments/local.json`, adresses dans `.env`)
+- [x] T011 [US2] [smart-contracts] Export ABI `contracts/abi/*.json`
+- [x] T012 [US2] [verifier] Preuve déploiement + `transferWithReference` rejoué on-chain (`evidence/001/contracts/`)
 
 ## Phase 4: User Story 3 — CI sécurité (P2)
-- [ ] T013 [US3] [network-devops] `.github/workflows/ci.yml` : forge test, Slither, Gitleaks, Trivy config, tests hooks (actions épinglées par SHA)
-- [ ] T014 [P] [US3] [network-devops] `.github/dependabot.yml` (actions, npm, maven, docker)
+- [x] T013 [US3] [network-devops] `.github/workflows/ci.yml` : forge test, Slither, Gitleaks, Trivy config, tests hooks (actions épinglées par SHA)
+- [x] T014 [P] [US3] [network-devops] `.github/dependabot.yml` (actions, npm, maven, docker)
 - [ ] T015 [US3] [security-auditor] Revue guidance-mode de 001 (skill security-audit + smart-contract-security) → commentaire PR
 
 ## Dependencies
