@@ -1,7 +1,22 @@
 {
-  "spec": "005", "test": "frontend/e2e/transfer.spec.ts", "verdict": "PASS", "passed": 2, "failed": 0,
-  "runner": "mcr.microsoft.com/playwright:v1.65.0-noble", "frontendImage": "tela/frontend:dev@sha256:86a108b03a2c9b9e0241fc15baa2ab5b08df1f0786409c8fffc5b27df3990216",
-  "frontendCommit": "ec984f97108e0b4ec7a4ddb8a4c7c52d3a94a4b3", "backendStackCommit": "7d4a02d (branch 002-validation)",
+  "spec": "005",
+  "test": "frontend/e2e/transfer.spec.ts",
+  "verdict": "PASS",
+  "passed": 2,
+  "failed": 0,
+  "runner": "mcr.microsoft.com/playwright:v1.65.0-noble",
+  "frontendImage": "tela/frontend:dev@sha256:86a108b03a2c9b9e0241fc15baa2ab5b08df1f0786409c8fffc5b27df3990216",
+  "frontendCommit": "ec984f97108e0b4ec7a4ddb8a4c7c52d3a94a4b3",
+  "backendStackCommit": "7d4a02d (branch 002-validation)",
   "journey": "balances -> transfer -> polling until SETTLED (observed transitions only); more than 6 decimals rejected client-side",
-  "executedAt": "2026-11-08T18:35:50Z"
+  "executedAt": "2026-11-08T18:35:50Z",
+  "reruns": [
+    {
+      "executedAt": "2026-11-08T18:50:21Z",
+      "verdict": "PASS",
+      "passed": 2,
+      "frontendImage": "tela/frontend:dev@sha256:1202236bb0f138e8c2d081084459f9c509c64a82f506d678067d8f6194ffc0cb",
+      "context": "after review #28 fixes: Host allowlist (foreign Host -> 421), dedicated ui network (postgres unreachable), USER 101, cap_drop ALL"
+    }
+  ]
 }

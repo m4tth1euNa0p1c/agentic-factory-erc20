@@ -4,3 +4,7 @@ dist
 e2e
 test-results
 playwright-report
+.env*
+.git
+*.pem
+*.key

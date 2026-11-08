@@ -109,6 +109,7 @@ jobs:
   frontend:
     name: frontend (unit tests + build)
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { persist-credentials: false }
@@ -126,7 +127,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { submodules: recursive, persist-credentials: false }
       - run: scripts/bootstrap-env.sh && scripts/sandbox.sh up && scripts/deploy-contracts.sh
-      - run: docker compose --profile app build && docker compose --profile app up -d --wait
+      # explicit services: --wait reports the one-shot kafka-init (exit 0) as a failure otherwise
+      - run: docker compose --profile app build && docker compose --profile app up -d --wait indexer backend adapter frontend
       - run: tests/e2e/run.sh nominal
       - run: tests/e2e/run.sh restart-after-broadcast
       - run: tests/e2e/run.sh ponder-lag
