@@ -1,0 +1,9 @@
+restart-after-broadcast run 1: PASS
+restart-after-broadcast run 2: PASS
+restart-after-broadcast run 3: PASS
+ponder-lag run 1: PASS
+ponder-lag run 2: PASS
+ponder-lag run 3: PASS
+failure-vs-unknown run 1: PASS
+failure-vs-unknown run 2: PASS
+failure-vs-unknown run 3: INVALID (harness edited mid-run: compose default switched to NODE_ENV=production, adapter refused fault injection as designed)

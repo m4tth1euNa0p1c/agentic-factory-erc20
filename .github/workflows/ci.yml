@@ -38,7 +38,8 @@ jobs:
         with: { persist-credentials: false }
       - run: |
           docker run --rm -v "$PWD:/repo" aquasec/trivy:0.76.2 fs --scanners vuln,misconfig,secret \
-            --severity HIGH,CRITICAL --exit-code 1 --skip-dirs /repo/contracts/lib /repo
+            --severity HIGH,CRITICAL --exit-code 1 --offline-scan --ignorefile /repo/.trivyignore \
+            --skip-dirs /repo/contracts/lib /repo
 
   contracts:
     name: contracts (forge + slither)
@@ -71,3 +72,56 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with: { name: evidence-001, path: evidence/001 }
+
+  adapter:
+    name: adapter (typecheck + vitest)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: "24" }
+      - run: npm ci --no-audit --no-fund && npm run typecheck && npm test
+        working-directory: adapter
+
+  indexer:
+    name: indexer (typecheck)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: "24" }
+      - run: npm ci --no-audit --no-fund && npx tsc
+        working-directory: indexer
+
+  backend:
+    name: backend (Testcontainers)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with: { distribution: temurin, java-version: "25", cache: maven }
+      - run: ./mvnw -B -ntp verify
+        working-directory: backend
+
+  e2e-002:
+    name: e2e 002 (full stack, 4 scenarios)
+    needs: [contracts, adapter, backend, indexer]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { submodules: recursive, persist-credentials: false }
+      - run: scripts/bootstrap-env.sh && scripts/sandbox.sh up && scripts/deploy-contracts.sh
+      - run: docker compose --profile app build && docker compose --profile app up -d --wait
+      - run: tests/e2e/run.sh nominal
+      - run: tests/e2e/run.sh restart-after-broadcast
+      - run: tests/e2e/run.sh ponder-lag
+      - run: tests/e2e/run.sh failure-vs-unknown
+      - if: failure()
+        run: docker compose --profile app logs --tail=300
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with: { name: evidence-002, path: evidence/002 }

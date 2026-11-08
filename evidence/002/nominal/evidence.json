@@ -1,0 +1,14 @@
+{
+  "spec": "002",
+  "scenario": "nominal",
+  "verdict": "PASS",
+  "operationId": "01a1bba6-83da-7491-89bf-57915767fe81",
+  "txHash": "0x80c4e822c329a3a690cda2c60e937f716a9b32d8f9792a836a1d63d8cc62ad8c",
+  "blockNumber": "1969",
+  "transitions": "RECEIVED>PUBLISHED>BROADCAST>CONFIRMED>SETTLED",
+  "aliceOnChainBefore": "1000594000000",
+  "aliceOnChainAfter": "1000584000000",
+  "aliceIndexedAfter": "1000584000000",
+  "alicePendingAfter": "0",
+  "commit": ""
+}

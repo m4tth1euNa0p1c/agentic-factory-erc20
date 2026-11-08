@@ -1,0 +1,14 @@
+{
+  "spec": "002",
+  "scenario": "ponder-lag",
+  "verdict": "PASS",
+  "requests": 20,
+  "accepted": 10,
+  "refused": 10,
+  "amount": "12300000",
+  "availableBefore": "123000000",
+  "availableDuringLag": "0",
+  "onChainAfter": "0",
+  "operations": "01a1bba8-33e8-7db7-a498-862999e0b222 01a1bba8-3779-7e6c-b332-6ef0adda9b4e 01a1bba8-3407-73b8-a887-c79441b2a242 01a1bba8-3513-732e-9b52-3f2f9d807118 01a1bba8-3522-79fc-ab4f-ede14a3aa447 01a1bba8-3575-7c34-9d90-44c65c584d56 01a1bba8-361a-7f55-9e1f-43cbd7ba294c 01a1bba8-36d2-7a4b-8a24-ef3c3e8e12d5 01a1bba8-3708-7977-a87f-754fd7f568c6 01a1bba8-3755-7170-814c-fe8ec8f4ace8 ",
+  "commit": ""
+}

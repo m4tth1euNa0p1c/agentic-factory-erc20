@@ -1,0 +1,5 @@
+tela:
+  relay-interval: 1h
+  settlement-interval: 1h
+  reconcile-interval: 1h
+  reconcile-after: 0s
