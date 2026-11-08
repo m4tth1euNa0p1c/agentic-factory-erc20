@@ -40,17 +40,19 @@ public class IndexedBalances {
      * This removes the transient double count between Ponder indexing a debit and the settlement job releasing it.
      * Assumes Ponder writes a block's balance and execution rows in the same transaction (H-10).
      */
-    public record Availability(BigInteger indexed, BigInteger pending, BigInteger heldTotal, Long lastBlock) {
+    public record Availability(BigInteger indexed, BigInteger pending, BigInteger heldTotal, Long lastBlock, Long headBlock) {
         public BigInteger raw() {
             return indexed.subtract(pending);
         }
     }
 
     public Availability availability(String account, String token) {
-        assertNotRegressed();
+        final Availability a;
         try {
-            return jdbc.sql("""
+            a = jdbc.sql("""
                     SELECT coalesce((SELECT balance FROM tela_read.account_balance WHERE id = :id), 0) AS indexed,
+                           (SELECT block_number::bigint FROM tela_read.chain_head WHERE id = 'head') AS head_block,
+                           (SELECT block FROM backend.indexer_watermark WHERE id = 'head') AS watermark,
                            (SELECT last_block FROM tela_read.account_balance WHERE id = :id) AS last_block,
                            coalesce((SELECT sum(r.amount) FROM backend.reservation r JOIN backend.operation o USING (operation_id)
                                      WHERE r.account = :account AND r.token = :token AND r.state = 'HELD'
@@ -61,14 +63,21 @@ public class IndexedBalances {
                     """)
                     .param("id", token + ":" + account).param("account", account).param("token", token)
                     .query((rs, i) -> {
-                        long lb = rs.getLong("last_block");
+                        Long head = rs.getObject("head_block", Long.class);
+                        Long mark = rs.getObject("watermark", Long.class);
+                        // D-23 checked on the very snapshot used for the amounts (#27): no gap between check and read
+                        if (head == null || (mark != null && head < mark)) {
+                            throw new IndexerUnavailableException(new IllegalStateException("indexed head " + head + " below watermark " + mark));
+                        }
+                        Long lastBlock = rs.getBigDecimal("last_block") == null ? null : rs.getBigDecimal("last_block").longValueExact();
                         return new Availability(rs.getBigDecimal("indexed").toBigIntegerExact(), rs.getBigDecimal("pending").toBigIntegerExact(),
-                                rs.getBigDecimal("held_total").toBigIntegerExact(), rs.wasNull() ? null : lb);
+                                rs.getBigDecimal("held_total").toBigIntegerExact(), lastBlock, head);
                     })
                     .single();
         } catch (DataAccessException e) {
             throw new IndexerUnavailableException(e);
         }
+        return a;
     }
 
     /**

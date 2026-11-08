@@ -54,13 +54,22 @@ class TelaBackendApplicationTests {
     /** D-23: a regressed read model (indexer rolled back) must not be used to grant new reservations. */
     @Test
     void readModelRegressionBlocksNewReservationsAndSettlement() {
+        var held = service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-regress-00").operation();
         settlement.settle(); // watermark := 100
         jdbc.sql("UPDATE tela_read.chain_head SET block_number = 40").update(); // rollback / crash recovery
         assertThatThrownBy(() -> service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-regress-01"))
                 .isInstanceOf(com.talan.tela.operation.IndexedBalances.IndexerUnavailableException.class);
+        // settle() itself must not act on a regressed read model (#27): an indexed execution stays unsettled
+        jdbc.sql("INSERT INTO tela_read.operation_execution VALUES (?, ?, 'TCE', ?, ?, ?, ?, 7, 0)")
+                .param("TCE:" + ALICE + ":" + held.reference()).param(held.reference()).param(ALICE).param(BOB)
+                .param(new BigDecimal(TEN)).param("0x" + "ef".repeat(32)).update();
+        settlement.settle();
+        assertThat(repo.find(held.operationId()).orElseThrow().status()).isEqualTo(Status.RECEIVED);
         jdbc.sql("UPDATE tela_read.chain_head SET block_number = 101").update(); // caught up again
         assertThat(service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-regress-02").operation().status())
                 .isEqualTo(Status.RECEIVED);
+        settlement.settle();
+        assertThat(repo.find(held.operationId()).orElseThrow().status()).isEqualTo(Status.SETTLED);
     }
 
     void indexBalance(String account, BigInteger v) {
@@ -232,6 +241,29 @@ class TelaBackendApplicationTests {
         assertThat(s.indexedBlock()).isEqualTo(100L);
         assertThat(s.watermark()).isEqualTo(100L);
         assertThat(s.regressed()).isFalse();
+    }
+
+    /** #27: a BROADCAST/UNKNOWN operation has a txHash but no block: the block must be null, not 0. */
+    @Test
+    void unknownBlockIsNullNotZero() {
+        var op = service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-nullblk-01").operation();
+        service.applyResult(new Result(op.operationId(), Status.BROADCAST, "0x" + "bb".repeat(32), null, null));
+        var b = repo.find(op.operationId()).orElseThrow();
+        assertThat(b.txHash()).isNotNull();
+        assertThat(b.blockNumber()).isNull();
+        service.applyResult(new Result(op.operationId(), Status.UNKNOWN, "0x" + "bb".repeat(32), null, "RPC_UNAVAILABLE"));
+        assertThat(repo.find(op.operationId()).orElseThrow().blockNumber()).isNull();
+    }
+
+    /** #27: the head reported with balances comes from the same snapshot as the amounts. */
+    @Test
+    void availabilityCarriesItsOwnHeadAndLastBlockNullable() {
+        var a = indexed.availability(ALICE, "TCE");
+        assertThat(a.headBlock()).isEqualTo(100L);
+        assertThat(a.lastBlock()).isEqualTo(1L);
+        var none = indexed.availability(BOB, "TCE"); // no balance row
+        assertThat(none.lastBlock()).isNull();
+        assertThat(none.indexed()).isZero();
     }
 
     @Test

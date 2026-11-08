@@ -120,7 +120,7 @@ public class TransferController {
             // `available` is what the user may still reserve (display, clamped at 0);
             // `availableRaw` is the unclamped invariant value, exposed so verifiers can check it is never negative.
             return new BalanceDto(t, a.indexed().toString(), a.pending().toString(), a.raw().max(BigInteger.ZERO).toString(),
-                    a.raw().toString(), a.heldTotal().toString(), indexed.head().map(String::valueOf).orElse(null));
+                    a.raw().toString(), a.heldTotal().toString(), a.headBlock() == null ? null : a.headBlock().toString()); // same snapshot as amounts (#27)
         }).toList();
     }
 }
