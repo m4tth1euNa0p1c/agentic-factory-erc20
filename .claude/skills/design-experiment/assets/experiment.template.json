@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "EXP-TO-DEFINE",
+  "spec": "specs/NNN-experiment/spec.md",
+  "scope": "experiment",
+  "status": "DRAFT",
+  "problem": { "who": null, "difficulty": null, "sourceRefs": [] },
+  "hypothesis": { "change": null, "expectedImprovement": null, "falsifiedBy": null },
+  "reference": { "currentMethod": null, "sourceRefs": [] },
+  "criteria": [
+    {
+      "id": "criterion-to-define",
+      "requirementRefs": [],
+      "required": true,
+      "kind": "success",
+      "metric": null,
+      "unit": null,
+      "operator": "gte",
+      "target": null,
+      "minimumSamples": null,
+      "comparison": "absolute",
+      "measurement": null,
+      "command": null
+    }
+  ],
+  "budget": {
+    "limits": { "wallMinutes": null, "moneyAmount": null, "currency": "EUR", "humanMinutes": null, "iterations": null },
+    "authorityRef": null
+  },
+  "decision": {
+    "go": "Tous les critères obligatoires passent, preuves intègres, budgets connus dans leurs plafonds.",
+    "modify": "Objectif non atteint avec budget disponible ; nouvelle hypothèse enregistrée avant un nouvel essai.",
+    "stop": "Garde-fou violé, budget dépassé, ou objectif non atteint sans budget disponible.",
+    "inconclusive": "Données, preuves, échantillons, provenance ou coûts insuffisants ; ne pas conclure à un succès."
+  }
+}

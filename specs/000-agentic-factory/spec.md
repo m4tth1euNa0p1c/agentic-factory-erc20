@@ -2,7 +2,7 @@
 
 **Feature Branch**: `main` (fondation)
 **Created**: 2026-11-08
-**Status**: Implemented (v0)
+**Status**: Implemented (v0); gouvernance des expériences étendue par la spec 007
 **Input**: « Une équipe d'agents qui analyse, développe, teste et documente TELA, avec un orchestrateur qui organise leur travail et exige des preuves de fonctionnement. »
 
 ## User Scenarios & Testing *(mandatory)*
@@ -24,11 +24,18 @@ Un humain (ou un déclencheur CI) lance `/factory-run 002` ; l'orchestrateur sé
 Toute affirmation sur TELA est classée F/H/D/P dans `docs/registry/REGISTRE.md` et référencée par les specs.
 
 ## Requirements *(mandatory)*
-- **FR-001**: Agents définis dans `.claude/agents/` : orchestrator, network-devops, smart-contracts, backend-java, blockchain-adapter, indexer, frontend, verifier, security-auditor.
-- **FR-002**: Skills : Spec Kit (`speckit-*`), `security-audit` (Cloudflare, vendorisé, commit figé), `smart-contract-security`, `factory-run`.
+- **FR-001**: Agents définis dans `.claude/agents/` : orchestrator, experiment-designer, network-devops, smart-contracts, backend-java, blockchain-adapter, indexer, frontend, verifier, security-auditor.
+- **FR-002**: Skills : Spec Kit (`speckit-*`), `security-audit` (Cloudflare, vendorisé, commit figé), `smart-contract-security`, `factory-run`, `design-experiment`, `evaluate-experiment`.
 - **FR-003**: Hooks PreToolUse testés (`node .claude/hooks/guard.test.mjs`) en CI.
 - **FR-004**: Workflow GitHub `factory.yml` permettant de déclencher la factory par commentaire `/factory` (requiert le secret `ANTHROPIC_API_KEY`).
 
 ## Success Criteria *(mandatory)*
 - **SC-001**: 100 % des tests de hooks verts.
 - **SC-002**: Chaque PR fusionnée contient un lien vers une preuve `evidence/`.
+
+## Extension 007
+
+La spec `007-experiment-governance` ajoute les fiches Problème/Hypothèse/Référence/Critère/Budget/Décision,
+le suivi cumulé des ressources, les preuves par run et des décisions GO/MODIFY/STOP/INCONCLUSIVE.
+Un GO d'expérience ciblée ne vaut pas acceptation d'une spec; un DRAFT peut garder des inconnues.
+La présente extension ne déclare pas achevés les critères encore ouverts de 002.

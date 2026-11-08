@@ -1,0 +1,9 @@
+{
+  "fixture": true,
+  "classification": "SYNTHETIC_NOT_REAL_EVIDENCE",
+  "effectiveAuthorization": false,
+  "productExecuted": false,
+  "productCommitSha": "0000000000000000000000000000000000000001",
+  "productCommitDescription": "IDENTITÉ FICTIVE: aucun commit produit correspondant n’a été exécuté ou vérifié.",
+  "actualObservation": "Seuls le comportement et les sorties du CLI local sur ces fixtures seront réellement observés."
+}

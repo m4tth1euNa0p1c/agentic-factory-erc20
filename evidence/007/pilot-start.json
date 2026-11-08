@@ -1,0 +1,9 @@
+{
+  "outcome": "INCONCLUSIVE",
+  "reasons": [
+    "PLAN_NOT_READY: DRAFT may contain unknowns; it cannot pass the start checkpoint"
+  ],
+  "authorizationGranted": false,
+  "assurance": "Checks document completeness, declared limits, SC coverage and artifact integrity only; does not prove measurement truth, pre-registration chronology, reviewer independence or enforce provider billing.",
+  "planSha256": "dcf383a611443bed3430ad2051e385097abd12c504d673dcb3bdae9fa802b41b"
+}

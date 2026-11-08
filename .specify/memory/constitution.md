@@ -1,6 +1,6 @@
 # TELA Agentic Factory Constitution
 
-Version: 1.0.0 · Ratified: 2026-11-08 · Last amended: 2026-11-08
+Version: 1.1.0 · Ratified: 2026-11-08 · Last amended: 2026-11-08
 
 ## Core Principles
 
@@ -40,6 +40,17 @@ accounts, pinned versions).
 ### VII. Simplicity
 Smallest design that satisfies the spec. No speculative abstraction; deviations are justified in the
 plan's *Complexity Tracking* table.
+
+### VIII. Measured, Bounded Experiments
+Frame every new experiment with a concrete problem and affected actor, a falsifiable hypothesis,
+the current reference method, measurable criteria, a budget for time/money/human attention, and
+predefined GO/MODIFY/STOP/INCONCLUSIVE rules. Reuse an existing protocol for tasks within its scope.
+Freeze thresholds before observing results; retain invalid attempts and unknown costs explicitly.
+An independent verifier compares observations to the protocol and reference. No missing evidence,
+unmeasured required resource or checkbox-only success becomes GO. Track cumulative resource use
+across retries and stop at the agreed boundary; existing authorization remains valid within scope.
+A local gate checks submitted data, not provider billing or the truth of a measurement. GO for an
+experiment does not authorize a release, new expenditure or acceptance of an entire spec.
 
 ## Delivery Workflow
 - One spec = one feature branch `NNN-short-name` = one GitHub milestone; each user story = one issue.

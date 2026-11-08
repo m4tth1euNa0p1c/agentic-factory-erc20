@@ -1,0 +1,263 @@
+{
+  "fixture": true,
+  "results": [
+    {
+      "case": "A",
+      "exitCode": 0,
+      "result": {
+        "outcome": "GO",
+        "scope": "experiment",
+        "experimentId": "EXP-SYNTHETIC-SANDBOX-A",
+        "runId": "SYNTHETIC-A-r1",
+        "specAccepted": false,
+        "specAcceptanceGatePassed": false,
+        "criteria": [
+          {
+            "id": "synthetic-preparation-duration",
+            "required": true,
+            "kind": "success",
+            "status": "PASS",
+            "reasons": [],
+            "measured": 7,
+            "target": 5,
+            "operator": "gte",
+            "samples": 10
+          },
+          {
+            "id": "synthetic-no-user-file-loss",
+            "required": true,
+            "kind": "guardrail",
+            "status": "PASS",
+            "reasons": [],
+            "measured": 0,
+            "target": 0,
+            "operator": "eq",
+            "samples": 10
+          }
+        ],
+        "evidence": [
+          {
+            "id": "synthetic-notice",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-config",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-pairs",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-usage",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-cost",
+            "status": "VERIFIED"
+          }
+        ],
+        "budget": {
+          "wallMinutes": {
+            "limit": 30,
+            "declared": 12,
+            "evaluated": 12
+          },
+          "moneyAmount": {
+            "limit": 5,
+            "declared": 0.8,
+            "evaluated": 0.8
+          },
+          "humanMinutes": {
+            "limit": 10,
+            "declared": 3,
+            "evaluated": 3
+          },
+          "iterations": {
+            "limit": 2,
+            "declared": 1,
+            "evaluated": 1
+          }
+        },
+        "reasons": [
+          "All required experiment criteria passed; this does not accept the whole spec"
+        ],
+        "authorizationGranted": false,
+        "assurance": "Checks document completeness, declared limits, SC coverage and artifact integrity only; does not prove measurement truth, pre-registration chronology, reviewer independence or enforce provider billing."
+      }
+    },
+    {
+      "case": "B",
+      "exitCode": 1,
+      "result": {
+        "outcome": "INCONCLUSIVE",
+        "scope": "experiment",
+        "experimentId": "EXP-SYNTHETIC-SANDBOX-B",
+        "runId": "SYNTHETIC-B-r1",
+        "specAccepted": false,
+        "specAcceptanceGatePassed": false,
+        "criteria": [
+          {
+            "id": "synthetic-preparation-duration",
+            "required": true,
+            "kind": "success",
+            "status": "INCONCLUSIVE",
+            "reasons": [
+              "INSUFFICIENT_SAMPLES: 3/10"
+            ],
+            "measured": 7,
+            "target": 5,
+            "operator": "gte",
+            "samples": 3
+          },
+          {
+            "id": "synthetic-no-user-file-loss",
+            "required": true,
+            "kind": "guardrail",
+            "status": "INCONCLUSIVE",
+            "reasons": [
+              "INSUFFICIENT_SAMPLES: 3/10"
+            ],
+            "measured": 0,
+            "target": 0,
+            "operator": "eq",
+            "samples": 3
+          }
+        ],
+        "evidence": [
+          {
+            "id": "synthetic-notice",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-config",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-pairs",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-usage",
+            "status": "VERIFIED"
+          }
+        ],
+        "budget": {
+          "wallMinutes": {
+            "limit": 30,
+            "declared": 12,
+            "evaluated": 12
+          },
+          "moneyAmount": {
+            "limit": 5,
+            "declared": null,
+            "evaluated": null
+          },
+          "humanMinutes": {
+            "limit": 10,
+            "declared": 3,
+            "evaluated": 3
+          },
+          "iterations": {
+            "limit": 2,
+            "declared": 1,
+            "evaluated": 1
+          }
+        },
+        "reasons": [
+          "CRITERION_INCONCLUSIVE: synthetic-preparation-duration",
+          "CRITERION_INCONCLUSIVE: synthetic-no-user-file-loss",
+          "BUDGET_UNKNOWN: moneyAmount",
+          "COST_NOT_ESTABLISHED"
+        ],
+        "authorizationGranted": false,
+        "assurance": "Checks document completeness, declared limits, SC coverage and artifact integrity only; does not prove measurement truth, pre-registration chronology, reviewer independence or enforce provider billing."
+      }
+    },
+    {
+      "case": "C",
+      "exitCode": 1,
+      "result": {
+        "outcome": "STOP",
+        "scope": "experiment",
+        "experimentId": "EXP-SYNTHETIC-SANDBOX-C",
+        "runId": "SYNTHETIC-C-r1",
+        "specAccepted": false,
+        "specAcceptanceGatePassed": false,
+        "criteria": [
+          {
+            "id": "synthetic-preparation-duration",
+            "required": true,
+            "kind": "success",
+            "status": "PASS",
+            "reasons": [],
+            "measured": 7,
+            "target": 5,
+            "operator": "gte",
+            "samples": 10
+          },
+          {
+            "id": "synthetic-no-user-file-loss",
+            "required": true,
+            "kind": "guardrail",
+            "status": "PASS",
+            "reasons": [],
+            "measured": 0,
+            "target": 0,
+            "operator": "eq",
+            "samples": 10
+          }
+        ],
+        "evidence": [
+          {
+            "id": "synthetic-notice",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-config",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-pairs",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-usage",
+            "status": "VERIFIED"
+          },
+          {
+            "id": "synthetic-cost",
+            "status": "VERIFIED"
+          }
+        ],
+        "budget": {
+          "wallMinutes": {
+            "limit": 30,
+            "declared": 12,
+            "evaluated": 12
+          },
+          "moneyAmount": {
+            "limit": 5,
+            "declared": 7,
+            "evaluated": 7
+          },
+          "humanMinutes": {
+            "limit": 10,
+            "declared": 3,
+            "evaluated": 3
+          },
+          "iterations": {
+            "limit": 2,
+            "declared": 1,
+            "evaluated": 1
+          }
+        },
+        "reasons": [
+          "BUDGET_EXCEEDED: moneyAmount"
+        ],
+        "authorizationGranted": false,
+        "assurance": "Checks document completeness, declared limits, SC coverage and artifact integrity only; does not prove measurement truth, pre-registration chronology, reviewer independence or enforce provider billing."
+      }
+    }
+  ]
+}

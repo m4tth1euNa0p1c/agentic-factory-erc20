@@ -1,0 +1,50 @@
+{
+  "fixture": true,
+  "classification": "SYNTHETIC_NOT_MEASURED",
+  "pairing": "same illustrative scenario and configuration",
+  "illustrativeValuesNotMeasured": true,
+  "pairs": [
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-B-01",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-B-02",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-B-03",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    }
+  ]
+}

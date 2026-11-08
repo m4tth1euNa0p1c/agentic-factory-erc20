@@ -1,0 +1,14 @@
+{
+  "fixture": true,
+  "classification": "SYNTHETIC_NOT_MEASURED",
+  "cumulativeWithinThisAlternativeOnly": true,
+  "wallMinutes": 12,
+  "humanMinutes": 3,
+  "iterations": 1,
+  "moneyAmount": 7,
+  "moneyStatus": "MEASURED",
+  "meaningOfMeasured": "étiquette contractuelle dans une fixture; aucun coût réel mesuré",
+  "currency": "EUR",
+  "seed": 424242,
+  "ciRunId": null
+}

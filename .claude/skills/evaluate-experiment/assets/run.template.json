@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "experimentId": "EXP-TO-DEFINE",
+  "runId": "run-to-define",
+  "planSha256": null,
+  "commitSha": null,
+  "configSha256": null,
+  "startedAt": null,
+  "endedAt": null,
+  "status": "INVALID",
+  "invalidReason": "MODÈLE NON EXÉCUTÉ : renseigner les mesures et preuves réelles avant toute évaluation.",
+  "observations": [],
+  "evidence": [],
+  "budgetUsage": {
+    "wallMinutes": null,
+    "moneyAmount": null,
+    "moneyStatus": "UNMEASURED",
+    "moneySource": null,
+    "humanMinutes": null,
+    "iterations": null
+  }
+}

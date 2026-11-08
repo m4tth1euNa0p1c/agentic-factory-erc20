@@ -49,6 +49,7 @@
 | D-15 | Injection de panne `pause-before-broadcast` (fenêtre signature→diffusion) pour tests FAILED/UNKNOWN déterministes | Reproductibilité US4 | 2026-11-08 |
 | D-16 | L'adaptateur ne signe que pour une liste blanche de comptes clients (`ADAPTER_SIGNABLE_ACCOUNTS`) ; jamais deployer/treasury/operator | Revue #18 : un producteur Kafka ne doit pas obtenir de signatures admin | 2026-11-08 |
 | D-17 | `FAILED` n'est publié que si la référence est prouvée non exécutée ; `nonce too low` sans reçu ni événement + nonce consommé ⇒ `FAILED NONCE_CONSUMED` | Revue #18 F1/F4 | 2026-11-08 |
+| D-18 | Constitution 1.1.0, principe VIII : cadrer chaque essai par problème/hypothèse/référence/critères/budget/décision; ajouter un designer et deux skills; préserver les coûts inconnus et la portée des preuves | Demande utilisateur; spec 007. Contrôle local des dossiers, sans promesse de facturation mesurée ni de certification | 2026-11-08 |
 | D-10 | Client Kafka JS : `@confluentinc/kafka-javascript` | `kafkajs` non maintenu | 2026-11-08 |
 
 ## PREUVES d'exécution
@@ -69,3 +70,4 @@
 | P-12 | E2E échec vs inconnu : revert miné → FAILED (receipt 0) ; pause → REJECTED sans diffusion ; Besu coupé → UNKNOWN (réservation conservée) → RECONCILE → SETTLED | `evidence/002/failure-vs-unknown/evidence.json` | 002 |
 | P-13 | Après correctifs revue #18 : adapter 42 tests, backend 13 tests, 5 scénarios e2e PASS ; déterminisme nominal 10/10 | `evidence/002/determinism/` | 002 |
 | P-14 | Trivy : 7 HIGH transitifs Ponder → 2 corrigés par overrides, 3 acceptés avec justification/expiration (`.trivyignore`), endpoint GraphQL supprimé | `.trivyignore`, `indexer/package.json` | 002 |
+| P-15 | Gouvernance : 21 tests de décision et 21 cas du hook verts ; essai indépendant des skills sur trois fixtures synthétiques ; défaut de couverture SC reproduit puis corrigé et relu | `evidence/007/README.md`, `evidence/007/validation-manifest.json` | 007 ; fichiers testés identifiés par SHA-256 dans le manifeste |

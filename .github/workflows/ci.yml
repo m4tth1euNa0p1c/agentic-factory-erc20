@@ -18,6 +18,10 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with: { node-version: "24" }
       - run: node .claude/hooks/guard.test.mjs
+      - name: experiment decision gates
+        run: |
+          node --test scripts/experiment-gate.test.mjs
+          node scripts/experiment-gate.mjs validate experiments/EXP-002-validation.json
       - name: security-audit skill validators
         run: |
           node --test .claude/skills/security-audit/validate-findings.test.cjs .claude/skills/security-audit/validate-coverage-ledger.test.cjs

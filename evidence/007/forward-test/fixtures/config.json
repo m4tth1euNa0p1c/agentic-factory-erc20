@@ -1,0 +1,13 @@
+{
+  "fixture": true,
+  "classification": "SYNTHETIC_NOT_REAL_CONFIG",
+  "population": "copies jetables du même scénario synthétique",
+  "parallelPairs": 10,
+  "pairOrder": "baseline puis candidat",
+  "baselineMinutesIllustrative": 8,
+  "candidateMinutesIllustrative": 1,
+  "seed": 424242,
+  "ciRunId": null,
+  "oracle": "diff d’inventaire complet simulé de fichiers avant/après",
+  "actualExecution": false
+}

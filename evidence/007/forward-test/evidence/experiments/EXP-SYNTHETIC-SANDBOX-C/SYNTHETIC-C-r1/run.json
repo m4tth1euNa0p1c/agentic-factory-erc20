@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "experimentId": "EXP-SYNTHETIC-SANDBOX-C",
+  "runId": "SYNTHETIC-C-r1",
+  "planSha256": "06353a329fdb3ccb7b91235298a277c10ff0e6797560502085cb3e5be5786907",
+  "commitSha": "0000000000000000000000000000000000000001",
+  "configSha256": "92da224889bfac13d86d0627d10651a6d95f488e27e21bd365de34eb84f2bf1e",
+  "startedAt": "2026-11-08T10:00:00Z",
+  "endedAt": "2026-11-08T10:12:00Z",
+  "status": "VALID",
+  "invalidReason": null,
+  "observations": [
+    {
+      "criterionId": "synthetic-preparation-duration",
+      "value": 1,
+      "samples": 10,
+      "evidenceIds": [
+        "synthetic-pairs"
+      ],
+      "baseline": {
+        "value": 8,
+        "evidenceIds": [
+          "synthetic-pairs"
+        ]
+      }
+    },
+    {
+      "criterionId": "synthetic-no-user-file-loss",
+      "value": 0,
+      "samples": 10,
+      "evidenceIds": [
+        "synthetic-pairs"
+      ],
+      "baseline": null
+    }
+  ],
+  "evidence": [
+    {
+      "id": "synthetic-notice",
+      "path": "fixtures/NOTICE.json",
+      "sha256": "472bd073be17d26da4b1f499040cdddf63f4fb956311b214ccc8318f3a8232ab"
+    },
+    {
+      "id": "synthetic-config",
+      "path": "fixtures/config.json",
+      "sha256": "92da224889bfac13d86d0627d10651a6d95f488e27e21bd365de34eb84f2bf1e"
+    },
+    {
+      "id": "synthetic-pairs",
+      "path": "evidence/experiments/EXP-SYNTHETIC-SANDBOX-C/SYNTHETIC-C-r1/synthetic-raw-pairs.json",
+      "sha256": "a34a00d0cb2592c3c1722a52a3a94103e77aab1a5d9b07589458e8b741f40094"
+    },
+    {
+      "id": "synthetic-usage",
+      "path": "evidence/experiments/EXP-SYNTHETIC-SANDBOX-C/SYNTHETIC-C-r1/synthetic-usage.json",
+      "sha256": "bd142feb67d0fc00484d192007cf246ebabe12b4dcb8dd2705f6eada52f32bbb"
+    },
+    {
+      "id": "synthetic-cost",
+      "path": "evidence/experiments/EXP-SYNTHETIC-SANDBOX-C/SYNTHETIC-C-r1/synthetic-cost-receipt.json",
+      "sha256": "06940c50fa8a32cb3c2533de1cf40749715db620d05e2f7e470ee993a94feb73"
+    }
+  ],
+  "budgetUsage": {
+    "wallMinutes": 12,
+    "moneyAmount": 7,
+    "moneyStatus": "MEASURED",
+    "moneySource": "evidence/experiments/EXP-SYNTHETIC-SANDBOX-C/SYNTHETIC-C-r1/synthetic-cost-receipt.json",
+    "humanMinutes": 3,
+    "iterations": 1
+  }
+}
