@@ -222,6 +222,19 @@ class TelaBackendApplicationTests {
     }
 
     @Test
+    void transitionsAndIndexerStatusAreExposed() {
+        var op = service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-trans-0001").operation();
+        service.applyResult(new Result(op.operationId(), Status.CONFIRMED, "0x" + "aa".repeat(32), 5L, null));
+        assertThat(repo.transitions(op.operationId())).extracting(OperationRepository.Transition::to)
+                .containsExactly("RECEIVED", "CONFIRMED"); // observed only: BROADCAST never happened here
+        settlement.settle();
+        var s = indexed.status();
+        assertThat(s.indexedBlock()).isEqualTo(100L);
+        assertThat(s.watermark()).isEqualTo(100L);
+        assertThat(s.regressed()).isFalse();
+    }
+
+    @Test
     void settlementRequiresMatchingParameters() {
         var op = service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-mismatch1").operation();
         jdbc.sql("INSERT INTO tela_read.operation_execution VALUES (?, ?, 'TCE', ?, ?, ?, ?, 7, 0)")

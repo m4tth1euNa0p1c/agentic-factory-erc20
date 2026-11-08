@@ -122,6 +122,16 @@ public class OperationRepository {
                 .query(OperationRepository::map).list();
     }
 
+    public record Transition(String from, String to, String source, java.time.OffsetDateTime at) {}
+
+    /** Observed transitions only (intermediate statuses are optional, D-14). */
+    public List<Transition> transitions(UUID id) {
+        return jdbc.sql("SELECT from_status, to_status, source, at FROM operation_transition WHERE operation_id = ? ORDER BY id")
+                .param(id)
+                .query((rs, i) -> new Transition(rs.getString(1), rs.getString(2), rs.getString(3), rs.getObject(4, java.time.OffsetDateTime.class)))
+                .list();
+    }
+
     public void touchReconcile(UUID id) {
         // exponential backoff + cap (review #18 F2): no RECONCILE storm on the single adapter consumer
         jdbc.sql("UPDATE operation SET last_reconcile_at = now(), reconcile_attempts = reconcile_attempts + 1 WHERE operation_id = ?").param(id).update();

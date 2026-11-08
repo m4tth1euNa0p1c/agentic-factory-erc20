@@ -78,6 +78,32 @@ public class TransferController {
         return repo.find(operationId).map(o -> ResponseEntity.ok(OperationDto.of(o))).orElse(ResponseEntity.notFound().build());
     }
 
+    public record TransitionDto(String from, String to, String source, String at) {}
+
+    @GetMapping("/operations/{operationId}/transitions")
+    public ResponseEntity<List<TransitionDto>> transitions(@PathVariable UUID operationId) {
+        if (repo.find(operationId).isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(repo.transitions(operationId).stream()
+                .map(t -> new TransitionDto(t.from(), t.to(), t.source(), String.valueOf(t.at()))).toList());
+    }
+
+    public record IndexerStatusDto(String indexedBlock, String indexedBlockTimestamp, String watermark, boolean regressed) {}
+
+    /** Indexing freshness for the UI (spec 005 US1, A-03). */
+    @GetMapping("/system/indexer-status")
+    public IndexerStatusDto indexerStatus() {
+        try {
+            var s = indexed.status();
+            return new IndexerStatusDto(str(s.indexedBlock()), str(s.indexedBlockTimestamp()), str(s.watermark()), s.regressed());
+        } catch (org.springframework.dao.DataAccessException e) {
+            throw new IndexedBalances.IndexerUnavailableException(e);
+        }
+    }
+
+    private static String str(Long v) {
+        return v == null ? null : v.toString();
+    }
+
     @GetMapping("/operations")
     public List<OperationDto> listOperations(
             @RequestParam(required = false) @Pattern(regexp = ADDRESS) String account,

@@ -91,6 +91,18 @@ public class IndexedBalances {
                 ON CONFLICT (id) DO UPDATE SET block = greatest(backend.indexer_watermark.block, EXCLUDED.block)""").param(h).update());
     }
 
+    public record IndexerStatus(Long indexedBlock, Long indexedBlockTimestamp, Long watermark, boolean regressed) {}
+
+    public IndexerStatus status() {
+        var row = jdbc.sql("SELECT (SELECT block_number::bigint FROM tela_read.chain_head WHERE id = 'head'), "
+                        + "(SELECT timestamp::bigint FROM tela_read.chain_head WHERE id = 'head'), "
+                        + "(SELECT block FROM backend.indexer_watermark WHERE id = 'head')")
+                .query((rs, i) -> new Long[] {(Long) rs.getObject(1, Long.class), (Long) rs.getObject(2, Long.class), (Long) rs.getObject(3, Long.class)})
+                .single();
+        boolean regressed = row[0] == null || (row[2] != null && row[0] < row[2]);
+        return new IndexerStatus(row[0], row[1], row[2], regressed);
+    }
+
     public Optional<Long> head() {
         try {
             return jdbc.sql("SELECT block_number FROM tela_read.chain_head WHERE id = 'head'").query(Long.class).optional();
