@@ -1,0 +1,541 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://factory.local/schemas/experiment.v1.json",
+  "title": "Factory experiment plan v1",
+  "description": "Six-rubric experiment contract. DRAFT accepts explicit null unknowns; READY requires concrete declarations. Runtime validates identities and SC coverage, but no declaration grants spending authority.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "spec": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Repository-relative POSIX path. Runtime additionally rejects traversal, secret/git paths and escaping symlinks."
+    },
+    "scope": {
+      "enum": [
+        "experiment",
+        "spec_acceptance"
+      ]
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "READY"
+      ]
+    },
+    "problem": {
+      "type": "object",
+      "properties": {
+        "who": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "difficulty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "who",
+        "difficulty",
+        "sourceRefs"
+      ],
+      "additionalProperties": false
+    },
+    "hypothesis": {
+      "type": "object",
+      "properties": {
+        "change": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "expectedImprovement": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "falsifiedBy": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "change",
+        "expectedImprovement",
+        "falsifiedBy"
+      ],
+      "additionalProperties": false
+    },
+    "reference": {
+      "type": "object",
+      "properties": {
+        "currentMethod": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "currentMethod",
+        "sourceRefs"
+      ],
+      "additionalProperties": false
+    },
+    "criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+          },
+          "requirementRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "uniqueItems": true
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "success",
+              "guardrail"
+            ]
+          },
+          "metric": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "operator": {
+            "enum": [
+              "gte",
+              "lte",
+              "eq",
+              "lt",
+              "gt"
+            ]
+          },
+          "target": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "minimumSamples": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "comparison": {
+            "enum": [
+              "absolute",
+              "decrease",
+              "increase"
+            ]
+          },
+          "measurement": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "id",
+          "requirementRefs",
+          "required",
+          "kind",
+          "metric",
+          "unit",
+          "operator",
+          "target",
+          "minimumSamples",
+          "comparison",
+          "measurement",
+          "command"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "guardrail"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "required": {
+                  "const": true
+                }
+              }
+            }
+          }
+        ]
+      },
+      "contains": {
+        "type": "object",
+        "properties": {
+          "required": {
+            "const": true
+          }
+        },
+        "required": [
+          "required"
+        ]
+      }
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "limits": {
+          "type": "object",
+          "properties": {
+            "wallMinutes": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "moneyAmount": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "humanMinutes": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "iterations": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "wallMinutes",
+            "moneyAmount",
+            "currency",
+            "humanMinutes",
+            "iterations"
+          ],
+          "additionalProperties": false
+        },
+        "authorityRef": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "limits",
+        "authorityRef"
+      ],
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "properties": {
+        "go": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "modify": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "stop": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "inconclusive": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "go",
+        "modify",
+        "stop",
+        "inconclusive"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "spec",
+    "scope",
+    "status",
+    "problem",
+    "hypothesis",
+    "reference",
+    "criteria",
+    "budget",
+    "decision"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "READY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "problem": {
+            "properties": {
+              "who": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "difficulty": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "sourceRefs": {
+                "minItems": 1
+              }
+            }
+          },
+          "hypothesis": {
+            "properties": {
+              "change": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "expectedImprovement": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "falsifiedBy": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            }
+          },
+          "reference": {
+            "properties": {
+              "currentMethod": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "sourceRefs": {
+                "minItems": 1
+              }
+            }
+          },
+          "criteria": {
+            "items": {
+              "properties": {
+                "metric": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "unit": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "measurement": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "command": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "target": {
+                  "type": "number"
+                },
+                "minimumSamples": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          },
+          "budget": {
+            "properties": {
+              "authorityRef": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "limits": {
+                "properties": {
+                  "wallMinutes": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "moneyAmount": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "humanMinutes": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "iterations": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            }
+          },
+          "decision": {
+            "properties": {
+              "go": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "modify": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "stop": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "inconclusive": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

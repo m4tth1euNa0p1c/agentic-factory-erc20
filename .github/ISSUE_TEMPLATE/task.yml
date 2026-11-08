@@ -14,11 +14,15 @@ body:
     id: agent
     attributes:
       label: Agent
-      options: [orchestrator, network-devops, smart-contracts, backend-java, blockchain-adapter, indexer, frontend, verifier, security-auditor]
+      options: [orchestrator, experiment-designer, network-devops, smart-contracts, backend-java, blockchain-adapter, indexer, frontend, verifier, security-auditor]
     validations: { required: true }
   - type: textarea
     id: acceptance
     attributes: { label: Critères d'acceptation (Given/When/Then) }
+    validations: { required: true }
+  - type: input
+    id: experiment
+    attributes: { label: Fiche d'expérience et périmètre, placeholder: "experiments/EXP-002-validation.json — critère SC-002" }
     validations: { required: true }
   - type: textarea
     id: evidence

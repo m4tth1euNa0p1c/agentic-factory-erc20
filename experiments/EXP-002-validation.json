@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "id": "EXP-002-validation",
+  "spec": "specs/002-tce-transfer-e2e/spec.md",
+  "scope": "spec_acceptance",
+  "status": "DRAFT",
+  "problem": {
+    "who": "Responsable de validation TELA et orchestrateur de la factory",
+    "difficulty": "Exemple historique : ce brouillon de la PR #24 précédait les campagnes désormais validées par la PR #25 sur 7d4a02d. Il illustre le cadrage des preuves ; il ne constate aucune nouvelle exécution, ne rouvre pas la spec 002 et ne doit pas déclencher son rejeu. Voir specs/002-tce-transfer-e2e/validation-matrix.md.",
+    "sourceRefs": [
+      "specs/002-tce-transfer-e2e/spec.md#success-criteria",
+      "https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/issues/8",
+      "specs/002-tce-transfer-e2e/validation-matrix.md"
+    ]
+  },
+  "hypothesis": {
+    "change": "Relier chaque critère contractuel à une campagne, un oracle indépendant et des preuves propres à chaque exécution, puis appliquer le contrôle d'évaluation.",
+    "expectedImprovement": "Rendre visible toute validation encore manquante et empêcher un GO mécanique lorsque les critères, leurs preuves ou le budget ne sont pas renseignés.",
+    "falsifiedBy": "Un dossier incomplet obtient GO, ou une mesure de substitution permet de déclarer un critère satisfait alors que l'invariant réel est violé. Aucun gain de coût ou de vitesse n'est revendiqué par cette fiche."
+  },
+  "reference": {
+    "currentMethod": "Référence acquise dans main : les quatre critères SC-001 à SC-004 sont documentés PASS sur 7d4a02d, dans les conditions de sandbox de la matrice de validation. Le brouillon initial exact est conservé dans experiments/archive/EXP-002-validation.initial-draft.json. Les seuils proposés, champs incomplets et budgets de ce brouillon restent historiques ; ils ne sont ni un protocole rétroactif appliqué aux campagnes, ni une exigence supplémentaire. Aucune mesure de coût historique n’est inventée.",
+    "sourceRefs": [
+      "specs/002-tce-transfer-e2e/validation-matrix.md",
+      "docs/registry/REGISTRE.md#preuves-dexécution",
+      "https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/pull/25",
+      "experiments/archive/EXP-002-validation.initial-draft.json"
+    ]
+  },
+  "criteria": [
+    {
+      "id": "nominal-consecutive",
+      "requirementRefs": [
+        "SC-001"
+      ],
+      "required": true,
+      "kind": "success",
+      "metric": "Réussites consécutives du transfert nominal",
+      "unit": "exécutions",
+      "operator": "gte",
+      "target": 10,
+      "minimumSamples": 10,
+      "comparison": "absolute",
+      "measurement": "Dix exécutions consécutives sur le même commit et la même configuration. Conserver les traces de chaque exécution, les observations de débit on-chain, de solde indexé et de réservation ; un échec interrompt la série et reste visible.",
+      "command": "tests/e2e/run.sh nominal"
+    },
+    {
+      "id": "restart-consecutive",
+      "requirementRefs": [
+        "SC-001"
+      ],
+      "required": true,
+      "kind": "success",
+      "metric": "Réussites consécutives du crash après émission",
+      "unit": "exécutions",
+      "operator": "gte",
+      "target": 10,
+      "minimumSamples": 10,
+      "comparison": "absolute",
+      "measurement": "Dix vrais crashs puis redémarrages avec preuve de la fenêtre de panne. Pour chaque exécution : signature, identité de transaction, événement on-chain et débit uniques. Conserver les échecs et les journaux sans les écraser.",
+      "command": "tests/e2e/run.sh restart-after-broadcast"
+    },
+    {
+      "id": "ponder-lag-consecutive",
+      "requirementRefs": [
+        "SC-001"
+      ],
+      "required": true,
+      "kind": "success",
+      "metric": "Réussites consécutives du retard d'indexation",
+      "unit": "exécutions",
+      "operator": "gte",
+      "target": 10,
+      "minimumSamples": 10,
+      "comparison": "absolute",
+      "measurement": "Dix arrêts réels de Ponder avec demandes concurrentes puis reprise. Observer les réservations et soldes bruts sur des instantanés cohérents, les refus attendus et le passage final à SETTLED. Une valeur API ramenée à zéro ne prouve pas l'absence de sur-réservation.",
+      "command": "tests/e2e/run.sh ponder-lag"
+    },
+    {
+      "id": "failure-unknown-consecutive",
+      "requirementRefs": [
+        "SC-001"
+      ],
+      "required": true,
+      "kind": "success",
+      "metric": "Réussites consécutives de la distinction échec certain / résultat inconnu",
+      "unit": "exécutions",
+      "operator": "gte",
+      "target": 10,
+      "minimumSamples": 10,
+      "comparison": "absolute",
+      "measurement": "Dix séries vérifiant le revert miné, le rejet en simulation et UNKNOWN. Pour UNKNOWN, prouver l'acceptation par le réseau suivie d'une réponse perdue, le maintien de la réservation puis la réconciliation. Vérifier et compléter le scénario existant avant READY : une coupure avant émission ne démontre pas cette fenêtre.",
+      "command": "tests/e2e/run.sh failure-vs-unknown"
+    },
+    {
+      "id": "random-crashes-no-double-debit",
+      "requirementRefs": [
+        "SC-002"
+      ],
+      "required": true,
+      "kind": "guardrail",
+      "metric": "Opérations ayant subi un double débit",
+      "unit": "opérations",
+      "operator": "eq",
+      "target": 0,
+      "minimumSamples": 100,
+      "comparison": "absolute",
+      "measurement": "Injecter 100 crashs aléatoires entre signature et commit ; conserver seed, points d'injection et traces. Compter les débits réels par référence d'opération à partir de preuves indépendantes de l'état applicatif. Le harness et sa commande restent à fournir.",
+      "command": null
+    },
+    {
+      "id": "confirmation-p95",
+      "requirementRefs": [
+        "SC-003"
+      ],
+      "required": true,
+      "kind": "success",
+      "metric": "p95 de la latence demande vers CONFIRMED",
+      "unit": "millisecondes",
+      "operator": "lt",
+      "target": 10000,
+      "minimumSamples": 100,
+      "comparison": "absolute",
+      "measurement": "Mesurer de la réception de chaque demande à sa confirmation, blocs sandbox de 2 secondes ; conserver les observations et définir le calcul du percentile avant le run. Le minimum de 100 est une proposition de protocole à justifier, pas une exigence déjà présente dans la spec. Le collecteur et sa commande restent à fournir.",
+      "command": null
+    },
+    {
+      "id": "concurrent-raw-availability",
+      "requirementRefs": [
+        "SC-004"
+      ],
+      "required": true,
+      "kind": "guardrail",
+      "metric": "Violations de l'invariant de disponibilité brute",
+      "unit": "violations",
+      "operator": "eq",
+      "target": 0,
+      "minimumSamples": 1000,
+      "comparison": "absolute",
+      "measurement": "Lancer 1 000 demandes concurrentes et observer l'invariant solde de référence moins réservations sur des états cohérents pendant toute la campagne. Ne pas utiliser uniquement un solde API plafonné à zéro ni une lecture finale. Définir l'observateur et sa couverture temporelle avant READY ; la commande reste à fournir.",
+      "command": null
+    }
+  ],
+  "budget": {
+    "limits": {
+      "wallMinutes": 120,
+      "moneyAmount": null,
+      "currency": "EUR",
+      "humanMinutes": 15,
+      "iterations": 2
+    },
+    "authorityRef": null
+  },
+  "decision": {
+    "go": "Tous les critères requis passent avec la couverture SC complète, des traces valides et des budgets connus dans les plafonds. Le GO mécanique est soumis à la revue sémantique indépendante avant acceptation de la spec.",
+    "modify": "Un objectif échoue sans violation de garde-fou et le budget cumulé permet une correction précise ; enregistrer la nouvelle hypothèse avant la tentative suivante sans effacer les résultats précédents.",
+    "stop": "Double débit ou disponibilité brute négative observés, budget dépassé, ou objectif non atteint sans budget restant : arrêter cette piste et conserver les preuves.",
+    "inconclusive": "Campagne, commande, preuve, provenance, nombre d'échantillons, coût ou attention insuffisamment établis : garder la validation ouverte et préciser l'élément manquant."
+  }
+}

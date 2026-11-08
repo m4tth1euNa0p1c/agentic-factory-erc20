@@ -1,0 +1,21 @@
+PASS exit=2 want=2 {"file_path":"C:/x/.env"}
+PASS exit=2 want=2 {"file_path":"C:/x/.env.local"}
+PASS exit=0 want=0 {"file_path":"C:/x/.env.example"}
+PASS exit=2 want=2 {"file_path":"infra/.secrets/besu/key"}
+PASS exit=2 want=2 {"command":"cat .env"}
+PASS exit=2 want=2 {"command":"git push --force origin main"}
+PASS exit=2 want=2 {"command":"git commit --no-verify -m x"}
+PASS exit=0 want=0 {"command":"git push -u origin main"}
+PASS exit=0 want=0 {"command":"bash scripts/sandbox.sh up"}
+PASS exit=2 want=2 {"command":"gh secret list"}
+PASS exit=2 want=2 {"command":"docker compose config"}
+PASS exit=2 want=2 {"command":"docker compose exec -T besu cat /secrets/key"}
+PASS exit=2 want=2 {"command":"docker exec tela-web3signer-1 ls"}
+PASS exit=2 want=2 {"command":"docker inspect tela-postgres-1"}
+PASS exit=2 want=2 {"command":"cat /proc/1/environ"}
+PASS exit=2 want=2 {"command":"source .env && echo $X"}
+PASS exit=2 want=2 {"command":". ./.env"}
+PASS exit=2 want=2 {"command":"docker run --rm -v \"$PWD:/x\" alpine ls /x"}
+PASS exit=0 want=0 {"command":"docker compose logs --tail=50 besu"}
+PASS exit=0 want=0 {"command":"docker compose ps"}
+PASS exit=0 want=0 {"command":"tests/e2e/run.sh 001-contracts"}

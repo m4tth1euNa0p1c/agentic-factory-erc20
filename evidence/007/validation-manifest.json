@@ -1,0 +1,101 @@
+{
+  "testedAtUtc": "2026-11-08T16:10:50.529580+00:00",
+  "remoteBaseCommit": "d9a6a6ef1dd00ccb0f2a66dcc47437659ef80bde",
+  "testedRevision": "working tree; exact file hashes below; final Git commit assigned after evidence creation",
+  "nodeVersion": "v24.22.1",
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--test",
+        "scripts/experiment-gate.test.mjs"
+      ],
+      "expectedExit": 0,
+      "actualExit": 0,
+      "output": "evidence/007/decision-tests.log"
+    },
+    {
+      "command": [
+        "node",
+        ".claude/hooks/guard.test.mjs"
+      ],
+      "expectedExit": 0,
+      "actualExit": 0,
+      "output": "evidence/007/existing-hook-tests.log"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/experiment-gate.mjs",
+        "validate",
+        "experiments/EXP-002-validation.json"
+      ],
+      "expectedExit": 0,
+      "actualExit": 0,
+      "output": "evidence/007/pilot-validate.json"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/experiment-gate.mjs",
+        "start",
+        "experiments/EXP-002-validation.json"
+      ],
+      "expectedExit": 1,
+      "actualExit": 1,
+      "output": "evidence/007/pilot-start.json"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "expectedExit": 0,
+      "actualExit": 0,
+      "output": "evidence/007/diff-check.log"
+    }
+  ],
+  "yamlAndJsonSchemaValidation": "PASS",
+  "files": [
+    {
+      "path": "scripts/experiment-gate.mjs",
+      "sha256": "420acb15fc8af69fe1ae05fd7023efd1cd33dec1453234380e8336d6fef28a57"
+    },
+    {
+      "path": "scripts/experiment-gate.test.mjs",
+      "sha256": "864cc52c0aace17c6b71304aed52e608bec427d098b58245d1f7aa4b41ec4457"
+    },
+    {
+      "path": "schemas/factory/experiment.v1.json",
+      "sha256": "b5f06dc441e4d78e0dde0d3ec8512cf781a29d4ce2f99089e9ce04153ad0c4ac"
+    },
+    {
+      "path": "schemas/factory/experiment-run.v1.json",
+      "sha256": "e7f97080f2ca7a77084f1d1f4c32d8d9e7eaa80bb882fa36f7414a62b0269fd8"
+    },
+    {
+      "path": "experiments/EXP-002-validation.json",
+      "sha256": "dcf383a611443bed3430ad2051e385097abd12c504d673dcb3bdae9fa802b41b"
+    },
+    {
+      "path": ".claude/skills/design-experiment/SKILL.md",
+      "sha256": "817a0fd7a0eee924e9b0559b508248baf67a9fdfb3a5873946d26a45711d12da"
+    },
+    {
+      "path": ".claude/skills/evaluate-experiment/SKILL.md",
+      "sha256": "9dbe568dd0141c204ac5b79972bdd9e5dff161e87aa8b65dce0c69ef8d56d3d8"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "9327a4e3c743f1693dd6079d379cd677cd7b4531ed175df81f1fa2319cf94e6d"
+    }
+  ],
+  "modelAndEnvironmentCost": {
+    "status": "UNMEASURED",
+    "amount": null
+  },
+  "scope": "Factory code and synthetic skill fixtures only. No TELA runtime campaign or measured productivity claim.",
+  "publishedCodeCommit": "9753f2ba29b73dc877687973ab80c0b566b0e93b",
+  "pullRequest": "https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/pull/24"
+}

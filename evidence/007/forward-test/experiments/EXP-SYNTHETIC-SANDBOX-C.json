@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "id": "EXP-SYNTHETIC-SANDBOX-C",
+  "spec": "specs/SYNTHETIC-sandbox/spec.md",
+  "scope": "experiment",
+  "status": "READY",
+  "problem": {
+    "who": "FIXTURE SYNTHÉTIQUE: responsable simulé",
+    "difficulty": "FIXTURE SYNTHÉTIQUE: temps nécessaire pour préparer une sandbox; ampleur réelle inconnue.",
+    "sourceRefs": [
+      "fixtures/request.md"
+    ]
+  },
+  "hypothesis": {
+    "change": "FIXTURE SYNTHÉTIQUE: remplacer la procédure actuelle par un script de préparation.",
+    "expectedImprovement": "FIXTURE SYNTHÉTIQUE: diminution moyenne >=5 minutes sur 10 essais appariés sans perte de fichier.",
+    "falsifiedBy": "Une moyenne de gain <5 min avec échantillon complet réfute le gain ciblé; toute perte de fichier viole le garde-fou. Échantillon incomplet ou coût inconnu laisse INCONCLUSIVE."
+  },
+  "reference": {
+    "currentMethod": "FIXTURE SYNTHÉTIQUE: procédure manuelle; performance réelle non mesurée. La baseline 8 min n’est qu’une valeur de fixture.",
+    "sourceRefs": [
+      "fixtures/current-method.md"
+    ]
+  },
+  "criteria": [
+    {
+      "id": "synthetic-preparation-duration",
+      "requirementRefs": [
+        "SC-001"
+      ],
+      "required": true,
+      "kind": "success",
+      "metric": "FIXTURE SYNTHÉTIQUE: durée moyenne de préparation",
+      "unit": "minutes",
+      "operator": "gte",
+      "target": 5,
+      "minimumSamples": 10,
+      "comparison": "decrease",
+      "measurement": "FIXTURE SYNTHÉTIQUE: 10 paires répétées du même scénario sur copies jetables identiques, même configuration et seed. Moyenne baseline moins moyenne candidat; dix paires parallèles, baseline puis candidat dans chaque paire. Aucune mesure réelle.",
+      "command": "python tools/collect-synthetic-fixtures.py <synthetic-raw-pairs.json>"
+    },
+    {
+      "id": "synthetic-no-user-file-loss",
+      "requirementRefs": [
+        "SC-002"
+      ],
+      "required": true,
+      "kind": "guardrail",
+      "metric": "FIXTURE SYNTHÉTIQUE: nombre total de fichiers utilisateur disparus",
+      "unit": "files",
+      "operator": "eq",
+      "target": 0,
+      "minimumSamples": 10,
+      "comparison": "absolute",
+      "measurement": "FIXTURE SYNTHÉTIQUE: différence des inventaires complets before/after de chaque paire, sur les mêmes dix scénarios; toute absence est comptée. Aucun fichier réel manipulé.",
+      "command": "python tools/collect-synthetic-fixtures.py <synthetic-raw-pairs.json>"
+    }
+  ],
+  "budget": {
+    "limits": {
+      "wallMinutes": 30,
+      "moneyAmount": 5,
+      "currency": "EUR",
+      "humanMinutes": 10,
+      "iterations": 2
+    },
+    "authorityRef": "fixtures/authority-SIMULATION-ONLY.md"
+  },
+  "decision": {
+    "go": "Sortie mécanique seulement: critères requis étayés par des fixtures intègres et budgets fictifs respectés. Ne vaut pas décision humaine de projet.",
+    "modify": "Objectif technique non atteint, garde-fous respectés et budget fictif restant: proposer une modification causale sans changer les critères.",
+    "stop": "Garde-fou violé ou budget fictif dépassé/épuisé selon les résultats: arrêter cette branche de simulation.",
+    "inconclusive": "Données, échantillon, baseline, provenance ou coût insuffisants: ne pas conclure à un succès réel ou fictif."
+  }
+}

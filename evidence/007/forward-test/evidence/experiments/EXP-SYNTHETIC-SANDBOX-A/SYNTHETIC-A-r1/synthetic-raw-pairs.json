@@ -1,0 +1,148 @@
+{
+  "fixture": true,
+  "classification": "SYNTHETIC_NOT_MEASURED",
+  "pairing": "same illustrative scenario and configuration",
+  "illustrativeValuesNotMeasured": true,
+  "pairs": [
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-01",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-02",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-03",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-04",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-05",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-06",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-07",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-08",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-09",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    },
+    {
+      "fixture": true,
+      "trialId": "SYNTHETIC-A-10",
+      "baselineMinutes": 8,
+      "candidateMinutes": 1,
+      "filesBefore": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ],
+      "filesAfter": [
+        "SYNTHETIC-user-a.txt",
+        "SYNTHETIC-user-b.txt"
+      ]
+    }
+  ]
+}

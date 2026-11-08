@@ -1,0 +1,16 @@
+{
+  "context": "ACTUAL CLI output over SYNTHETIC fixtures; NO product measurement or effective authorization",
+  "command": [
+    "node",
+    "/workspace/scratch/e8fa4f7effcd/agentic-factory-erc20/scripts/experiment-gate.mjs",
+    "evaluate",
+    "experiments/EXP-SYNTHETIC-SANDBOX-A.json",
+    "evidence/experiments/EXP-SYNTHETIC-SANDBOX-A/SYNTHETIC-A-r1/run.json",
+    "--root",
+    "/workspace/scratch/e8fa4f7effcd/forward-experiment-skill-test"
+  ],
+  "exitCode": 0,
+  "stdout": "{\n  \"outcome\": \"GO\",\n  \"scope\": \"experiment\",\n  \"experimentId\": \"EXP-SYNTHETIC-SANDBOX-A\",\n  \"runId\": \"SYNTHETIC-A-r1\",\n  \"specAccepted\": false,\n  \"specAcceptanceGatePassed\": false,\n  \"criteria\": [\n    {\n      \"id\": \"synthetic-preparation-duration\",\n      \"required\": true,\n      \"kind\": \"success\",\n      \"status\": \"PASS\",\n      \"reasons\": [],\n      \"measured\": 7,\n      \"target\": 5,\n      \"operator\": \"gte\",\n      \"samples\": 10\n    },\n    {\n      \"id\": \"synthetic-no-user-file-loss\",\n      \"required\": true,\n      \"kind\": \"guardrail\",\n      \"status\": \"PASS\",\n      \"reasons\": [],\n      \"measured\": 0,\n      \"target\": 0,\n      \"operator\": \"eq\",\n      \"samples\": 10\n    }\n  ],\n  \"evidence\": [\n    {\n      \"id\": \"synthetic-notice\",\n      \"status\": \"VERIFIED\"\n    },\n    {\n      \"id\": \"synthetic-config\",\n      \"status\": \"VERIFIED\"\n    },\n    {\n      \"id\": \"synthetic-pairs\",\n      \"status\": \"VERIFIED\"\n    },\n    {\n      \"id\": \"synthetic-usage\",\n      \"status\": \"VERIFIED\"\n    },\n    {\n      \"id\": \"synthetic-cost\",\n      \"status\": \"VERIFIED\"\n    }\n  ],\n  \"budget\": {\n    \"wallMinutes\": {\n      \"limit\": 30,\n      \"declared\": 12,\n      \"evaluated\": 12\n    },\n    \"moneyAmount\": {\n      \"limit\": 5,\n      \"declared\": 0.8,\n      \"evaluated\": 0.8\n    },\n    \"humanMinutes\": {\n      \"limit\": 10,\n      \"declared\": 3,\n      \"evaluated\": 3\n    },\n    \"iterations\": {\n      \"limit\": 2,\n      \"declared\": 1,\n      \"evaluated\": 1\n    }\n  },\n  \"reasons\": [\n    \"All required experiment criteria passed; this does not accept the whole spec\"\n  ],\n  \"authorizationGranted\": false,\n  \"assurance\": \"Checks document completeness, declared limits, SC coverage and artifact integrity only; does not prove measurement truth, pre-registration chronology, reviewer independence or enforce provider billing.\"\n}\n",
+  "stderr": "",
+  "cliSha256": "81e5ae3c6ff799a2c9cf3bff4dd4e6573a2f07854271b3e26a4196f677fd0304"
+}

@@ -1,0 +1,58 @@
+✔ complete evidence yields scoped GO with explicit assurance limitations (6.561674ms)
+✔ missing evidence and altered artifacts cannot yield GO (2.614984ms)
+✔ an invalid run cannot yield GO (1.148341ms)
+✔ insufficient samples and missing observations block GO (1.355458ms)
+✔ unknown costs or attention are never treated as zero (1.448993ms)
+✔ a documented conservative cost bound is accepted (0.98357ms)
+✔ post-registration threshold changes cannot yield GO (0.867243ms)
+✔ spec acceptance covers each defined SC, experiment scope does not (2.499917ms)
+✖ spec acceptance cannot omit SC definitions expressed as Markdown headings (3.936408ms)
+✔ SC extraction deduplicates definitions and ignores prose references (0.354886ms)
+✔ traversal, secret paths and outgoing symlinks cannot be read as evidence (1.672324ms)
+✔ budget overrun and observed guardrail violations stop the trial (0.802265ms)
+✔ objective failure modifies only with budget remaining (0.691544ms)
+✔ timestamp duration cannot conceal wall-time budget overrun (0.762472ms)
+✔ a second cumulative checkpoint keeps the campaign start and total usage (1.13267ms)
+✔ baseline comparisons need their own linked evidence (0.705573ms)
+✔ strict inequality preserves preregistered less-than thresholds (0.670998ms)
+✔ DRAFT validates with unknown budgets but cannot start (0.759063ms)
+✔ READY is a declared checkpoint, not spending permission (0.4611ms)
+✔ unknown properties and nonfinite numbers are rejected (0.795994ms)
+✔ commands in plan JSON are inert text and CLI returns documented exits (239.092089ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 20
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 381.630653
+
+✖ failing tests:
+
+test at scripts/experiment-gate.test.mjs:95:1
+✖ spec acceptance cannot omit SC definitions expressed as Markdown headings (3.936408ms)
+  AssertionError [ERR_ASSERTION]: ### SC-002
+  + actual - expected
+  
+    {
+  +   missingCoverage: false,
+  +   outcome: 'GO'
+  -   missingCoverage: true,
+  -   outcome: 'INVALID_DOCUMENT'
+    }
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/e8fa4f7effcd/agentic-factory-erc20/scripts/experiment-gate.test.mjs:113:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: { missingCoverage: false, outcome: 'GO' },
+    expected: { missingCoverage: true, outcome: 'INVALID_DOCUMENT' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

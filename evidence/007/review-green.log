@@ -1,0 +1,29 @@
+✔ complete evidence yields scoped GO with explicit assurance limitations (6.289834ms)
+✔ missing evidence and altered artifacts cannot yield GO (2.418175ms)
+✔ an invalid run cannot yield GO (0.998227ms)
+✔ insufficient samples and missing observations block GO (1.295154ms)
+✔ unknown costs or attention are never treated as zero (1.470897ms)
+✔ a documented conservative cost bound is accepted (0.967623ms)
+✔ post-registration threshold changes cannot yield GO (0.903047ms)
+✔ spec acceptance covers each defined SC, experiment scope does not (3.828806ms)
+✔ spec acceptance cannot omit SC definitions expressed as Markdown headings (8.991409ms)
+✔ SC extraction deduplicates definitions and ignores prose references (0.363547ms)
+✔ traversal, secret paths and outgoing symlinks cannot be read as evidence (2.316437ms)
+✔ budget overrun and observed guardrail violations stop the trial (1.075918ms)
+✔ objective failure modifies only with budget remaining (0.66785ms)
+✔ timestamp duration cannot conceal wall-time budget overrun (1.308028ms)
+✔ a second cumulative checkpoint keeps the campaign start and total usage (0.999535ms)
+✔ baseline comparisons need their own linked evidence (0.864393ms)
+✔ strict inequality preserves preregistered less-than thresholds (1.057169ms)
+✔ DRAFT validates with unknown budgets but cannot start (0.747813ms)
+✔ READY is a declared checkpoint, not spending permission (0.687858ms)
+✔ unknown properties and nonfinite numbers are rejected (0.70824ms)
+✔ commands in plan JSON are inert text and CLI returns documented exits (217.537997ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 368.999898

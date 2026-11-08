@@ -1,0 +1,8 @@
+{
+  "fixture": true,
+  "classification": "FICTIONAL_COST_SOURCE_NOT_A_REAL_RECEIPT",
+  "amount": 7,
+  "currency": "EUR",
+  "source": "source de coût entièrement fictive créée pour le scénario de test",
+  "paid": false
+}

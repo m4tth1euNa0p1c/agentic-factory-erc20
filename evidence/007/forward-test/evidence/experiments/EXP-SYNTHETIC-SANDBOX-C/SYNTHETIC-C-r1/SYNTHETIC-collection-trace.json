@@ -1,0 +1,11 @@
+{
+  "context": "ACTUAL local collection of SYNTHETIC rows only",
+  "command": [
+    "python",
+    "tools/collect-synthetic-fixtures.py",
+    "evidence/experiments/EXP-SYNTHETIC-SANDBOX-C/SYNTHETIC-C-r1/synthetic-raw-pairs.json"
+  ],
+  "exitCode": 0,
+  "stdout": "{\n  \"fixture\": true,\n  \"samples\": 10,\n  \"baselineMeanMinutes\": 8.0,\n  \"candidateMeanMinutes\": 1.0,\n  \"gainMinutes\": 7.0,\n  \"lostUserFiles\": 0\n}\n",
+  "stderr": ""
+}
