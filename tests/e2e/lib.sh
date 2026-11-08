@@ -34,9 +34,23 @@ transfer_cmd() { # <operationId> <from> <to> <amount> [type]
   printf '{"schemaVersion":1,"type":"%s","operationId":"%s","reference":"%s","token":"TCE","from":"%s","to":"%s","amount":"%s","issuedAt":"%s"}' \
     "${5:-TRANSFER}" "$1" "$(ref_of "$1")" "$2" "$3" "$4" "$(date -u +%FT%TZ)"
 }
+# Besu rejects eth_getLogs ranges > 5000 blocks: paginate from the deployment block (same rule as the adapter, F5).
+deploy_block() { grep -oE '"deployedAtBlock": *[0-9]+' "$ROOT/deployments/local.json" 2>/dev/null | grep -oE '[0-9]+$' || echo 0; }
+logs_count() { # <fromBlock> <address> <event sig> [topic args...] -> number of matching logs (paginated, fails loudly)
+  local lo="$1" addr="$2" sig="$3"; shift 3
+  local head n total=0 hi; head=$(cast_ro block-number)
+  while (( lo <= head )); do
+    hi=$(( lo + 3999 < head ? lo + 3999 : head ))
+    local out
+    out=$(cast_ro logs --from-block "$lo" --to-block "$hi" --address "$addr" "$sig" "$@" --json) \
+      || { echo "logs query failed for [$lo,$hi]" >&2; return 1; }   # a failed query is an error, never "0 events"
+    n=$(printf '%s' "$out" | { grep -o '"transactionHash"' || true; } | wc -l | tr -d ' ')
+    total=$(( total + n )); lo=$(( hi + 1 ))
+  done
+  printf '%s' "$total"
+}
 ref_events() { # <token> <from> <ref> -> number of TransferWithReference events
-  cast_ro logs --from-block 0 --address "$1" "TransferWithReference(bytes32 indexed,address indexed,address indexed,uint256)" "$3" "$2" --json \
-    | grep -o '"transactionHash"' | wc -l | tr -d ' '
+  logs_count "$(deploy_block)" "$1" "TransferWithReference(bytes32 indexed,address indexed,address indexed,uint256)" "$3" "$2"
 }
 
 # ---------- Java API (spec 002 OpenAPI) ----------
@@ -106,7 +120,7 @@ evidence_init() { # <spec>/<scenario>
   EVIDENCE_BASE="$ROOT/evidence/$1"; EVIDENCE_DIR="$EVIDENCE_BASE/runs/$RUN_ID"
   mkdir -p "$EVIDENCE_DIR"; : > "$EVIDENCE_DIR/steps.log"
   GIT_SHA="$(git -C "$(hostpath "$ROOT")" rev-parse HEAD 2>/dev/null || echo unknown)"
-  local dirty=false; [[ -n "$(git -C "$(hostpath "$ROOT")" status --porcelain --untracked-files=no 2>/dev/null)" ]] && dirty=true
+  local dirty=false; [[ -n "$(git -C "$(hostpath "$ROOT")" status --porcelain --untracked-files=no -- . ':!evidence' 2>/dev/null)" ]] && dirty=true   # evidence/ excluded: it is written by the runs themselves
   local ci=null; [[ -n "${GITHUB_RUN_ID:-}" ]] && ci="\"${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\""
   local images="" svc cid img
   for svc in besu web3signer postgres kafka adapter backend indexer; do

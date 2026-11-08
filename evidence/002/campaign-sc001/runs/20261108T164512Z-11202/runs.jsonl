@@ -1,0 +1,7 @@
+{"iteration":1,"scenario":"nominal","verdict":"FAIL","run":"evidence/002/nominal/runs/sc001-1-20261108T164519Z-11347"}
+{"iteration":1,"scenario":"restart-after-broadcast","verdict":"FAIL","run":"evidence/002/restart-after-broadcast/runs/sc001-1-20261108T164551Z-11771"}
+{"iteration":1,"scenario":"ponder-lag","verdict":"PASS","run":"evidence/002/ponder-lag/runs/sc001-1-20261108T164652Z-12191"}
+{"iteration":1,"scenario":"failure-vs-unknown","verdict":"FAIL","run":"evidence/002/failure-vs-unknown/runs/sc001-1-20261108T164801Z-13287"}
+{"iteration":2,"scenario":"nominal","verdict":"FAIL","run":"evidence/002/nominal/runs/sc001-2-20261108T165205Z-14677"}
+{"iteration":2,"scenario":"restart-after-broadcast","verdict":"FAIL","run":"evidence/002/restart-after-broadcast/runs/sc001-2-20261108T165236Z-15088"}
+{"iteration":2,"scenario":"ponder-lag","verdict":"PASS","run":"evidence/002/ponder-lag/runs/sc001-2-20261108T165338Z-15514"}

@@ -1,0 +1,8 @@
+{
+  "spec": "002", "scenario": "nominal", "verdict": "PASS",
+  "operationId": "01a1bc01-54c2-7a01-8009-4921957ed480",
+  "txHash": "0x2e4525f8ac66e2d750a2218db7dfc1770ee909a8fa568c509477297f775c1a60",
+  "blockNumber": "4945", "transitions": "RECEIVED>PUBLISHED>BROADCAST>CONFIRMED>SETTLED",
+  "aliceOnChainBefore": "1000940000000", "aliceOnChainAfter": "1000930000000", "aliceIndexedAfter": "1000930000000",
+  "alicePendingAfter": "0", "commit": "7d49e7a7f2603232e68126ebfb65e7a7c947eeed", "runId": "sc001-1-20261108T163225Z-7802"
+}

@@ -1,0 +1,8 @@
+{
+  "runId": "20261108T161910Z-3917", "scenario": "002/campaign-sc002", "startedAt": "2026-11-08T16:19:17Z",
+  "git": { "sha": "7d49e7a7f2603232e68126ebfb65e7a7c947eeed", "branch": "002-validation", "dirty": true },
+  "ci": null,
+  "config": { "chainId": 48151, "adapterFault": "none", "reconcileAfter": "10s",
+              "composeSha256": "966ed4eb628ba590f6bfc08f806c47eda64b83f1f3d0b634817c9b34719dbfc9", "genesisSha256": "4ff0c627ec31ea5ab4d59d0485929e3d7bd947f004b78ee4b8e57c4a954eb916" },
+  "images": { "besu": "hyperledger/besu:26.11.0@sha256:3d6ac0368d449c13c4ba075acac90d6b96afa5b3113295385d88c4d5122c8808", "web3signer": "consensys/web3signer:26.10.2@sha256:b905b14cc5b0ae4f82cce08a811e88abcd282a8e84833aaaa35bf2f1851a3bcc", "postgres": "postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15", "kafka": "apache/kafka:4.4.0@sha256:833b867a9585a141da455dc2b57431c65cbccb27f11c91f694444cca9f777e0f", "adapter": "tela/adapter:dev@sha256:5e35cb3ce995cc86990c5b5fcf26265a7402ee5138c5e454e8a90f21b0663901", "backend": "tela/backend:dev@sha256:bc5e8337700bcdb5886946d7acda6f632ecdf9be93b6fd3f48378b57cca6b84c", "indexer": "tela/indexer:dev@sha256:92e13c17e8101badfec8f2e01fd51fad5c0e0f75c5c1d01b08d28a5872063faa" }
+}

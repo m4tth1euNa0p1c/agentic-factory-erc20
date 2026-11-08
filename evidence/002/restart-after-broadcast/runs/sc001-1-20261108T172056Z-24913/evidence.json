@@ -1,0 +1,9 @@
+{
+  "spec": "002", "scenario": "restart-after-broadcast", "verdict": "PASS",
+  "operationId": "01a1bc2d-d799-7660-bd49-5446979d385f",
+  "reference": "0x405f513199c11a6069f13f9451af1bb83c46da81562534a59bc51f29ad357639",
+  "txHash": "0x1bd6ddc73f903a54f8652ade39eabd9a4a8958c61da01ec3f023acb498a96a3b",
+  "adapterRestarts": 1, "crashes": 1, "signatures": 1,
+  "aliceDelta": "7000000", "eventsForReference": 1,
+  "transitions": "RECEIVED>PUBLISHED>SETTLED", "commit": "7d4a02d860a4ed99afff311a9463965a7438b1aa", "runId": "sc001-1-20261108T172056Z-24913"
+}
