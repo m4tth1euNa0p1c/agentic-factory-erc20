@@ -1,0 +1,47 @@
+# --- Secrets (NEVER commit) ---
+.env
+.env.*
+!.env.example
+infra/.secrets/
+**/*.key
+**/keystore*.json
+**/*.password
+deployments/*.local.json
+
+# --- Runtime / evidence ---
+evidence/runs/
+.factory/runs/
+*.log
+
+# --- Node / TS ---
+node_modules/
+dist/
+.ponder/
+generated/
+coverage/
+.angular/
+
+# --- Java ---
+target/
+.mvn/wrapper/maven-wrapper.jar
+*.class
+
+# --- Foundry ---
+contracts/out/
+contracts/cache/
+contracts/broadcast/*/31337/
+contracts/broadcast/**/dry-run/
+
+# --- IDE / OS ---
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# --- Claude local ---
+.claude/settings.local.json
+infra/generated/
+contracts/deployments/
+deployments/local.json
+contracts/broadcast/

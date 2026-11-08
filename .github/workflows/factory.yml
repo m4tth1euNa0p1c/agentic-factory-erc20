@@ -1,0 +1,32 @@
+# Runs the TELA agentic factory in CI when the repository OWNER comments `/factory <spec>` on an issue or PR.
+# Requires the repository secret ANTHROPIC_API_KEY (see docs/HUMAN-ACTIONS.md #2).
+name: factory
+on:
+  issue_comment: { types: [created] }
+  workflow_dispatch:
+    inputs:
+      spec: { description: "Spec number (e.g. 002)", required: true }
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  run:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (startsWith(github.event.comment.body, '/factory') && github.event.comment.author_association == 'OWNER')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { submodules: recursive, fetch-depth: 0 }
+      - uses: anthropics/claude-code-action@61a9c274fa7110a66dfafc1bbbced03833eb25fe # v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Run the skill `factory-run` for spec ${{ github.event.inputs.spec || github.event.comment.body }}.
+            Follow CLAUDE.md and .specify/memory/constitution.md strictly. Never read .env or infra/.secrets.
+          claude_args: "--max-turns 80"

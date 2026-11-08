@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tela.local/schemas/kafka/operation-result.v1.json",
+  "title": "OperationResult v1 (topic tela.operations.results.v1, key = operationId)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "operationId", "status", "observedAt"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "operationId": { "type": "string", "format": "uuid" },
+    "status": { "enum": ["BROADCAST", "CONFIRMED", "FAILED", "REJECTED", "UNKNOWN"] },
+    "txHash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "blockNumber": { "type": "string", "pattern": "^[0-9]+$" },
+    "reason": { "type": "string", "maxLength": 512, "description": "machine code: REVERTED, SIMULATION_REVERT:<error>, RECEIPT_TIMEOUT, RPC_UNAVAILABLE, INVALID_MESSAGE" },
+    "observedAt": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    { "if": { "properties": { "status": { "enum": ["BROADCAST", "CONFIRMED", "FAILED"] } } }, "then": { "required": ["txHash"] } },
+    { "if": { "properties": { "status": { "const": "CONFIRMED" } } }, "then": { "required": ["blockNumber"] } }
+  ]
+}

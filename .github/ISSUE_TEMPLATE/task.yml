@@ -1,0 +1,26 @@
+name: Factory task
+description: Tâche issue d'un tasks.md (Spec Kit)
+labels: [task]
+body:
+  - type: input
+    id: spec
+    attributes: { label: Spec, placeholder: "002-tce-transfer-e2e" }
+    validations: { required: true }
+  - type: input
+    id: tasks
+    attributes: { label: Tâches, placeholder: "T011, T012" }
+    validations: { required: true }
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options: [orchestrator, network-devops, smart-contracts, backend-java, blockchain-adapter, indexer, frontend, verifier, security-auditor]
+    validations: { required: true }
+  - type: textarea
+    id: acceptance
+    attributes: { label: Critères d'acceptation (Given/When/Then) }
+    validations: { required: true }
+  - type: textarea
+    id: evidence
+    attributes: { label: Preuve attendue, placeholder: "evidence/002/nominal/evidence.json" }
+    validations: { required: true }

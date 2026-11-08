@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tela.local/schemas/kafka/operation-command.v1.json",
+  "title": "OperationCommand v1 (topic tela.operations.commands.v1, key = from address lowercase)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "type", "operationId", "reference", "token", "from", "to", "amount", "issuedAt"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "type": { "enum": ["TRANSFER", "RECONCILE"] },
+    "operationId": { "type": "string", "format": "uuid" },
+    "reference": { "type": "string", "pattern": "^0x[0-9a-f]{64}$", "description": "keccak256(utf8(operationId))" },
+    "token": { "enum": ["TCE", "TCD", "TIF"] },
+    "from": { "type": "string", "pattern": "^0x[0-9a-fA-F]{40}$" },
+    "to": { "type": "string", "pattern": "^0x[0-9a-fA-F]{40}$" },
+    "amount": { "type": "string", "pattern": "^[1-9][0-9]{0,77}$", "description": "integer, token minimal units" },
+    "issuedAt": { "type": "string", "format": "date-time" }
+  }
+}
