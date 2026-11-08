@@ -2,7 +2,7 @@
 
 **Feature Branch**: `007-experiment-governance`
 **Created**: 2026-11-08
-**Status**: In progress
+**Status**: Implémentée et vérifiée localement; proposée dans la [PR #24](https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/pull/24), non fusionnée.
 **Input**: Renforcer la factory avec six questions : Problème, Hypothèse, Référence, Critère, Budget, Décision.
 **Suivi**: US1 #21, US2 #22, US3 #23; milestone `000-agentic-factory` (extension de la factory).
 

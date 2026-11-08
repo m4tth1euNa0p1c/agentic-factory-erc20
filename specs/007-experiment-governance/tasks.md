@@ -6,7 +6,7 @@
 - [x] T004 Ajouter la fiche pilote 002, les templates et la documentation (FR-010).
 - [x] T005 Intégrer la CI, la constitution et le registre (FR-009, SC-004).
 - [x] T006 Exécuter les tests et un essai indépendant des skills; examiner la sécurité (SC-001 à SC-004).
-- [ ] T007 Versionner les modifications et ouvrir une PR avec résultats et limites.
+- [x] T007 Versionner les modifications et ouvrir une PR avec résultats et limites : [PR #24](https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/pull/24).
 
 Les tâches de 002 et les issues #8/#12/#17/#20 ne sont pas clôturées par cette évolution.
 

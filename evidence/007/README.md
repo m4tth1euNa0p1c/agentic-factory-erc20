@@ -3,6 +3,8 @@
 Date : 2026-11-08. Base distante : `d9a6a6ef1dd00ccb0f2a66dcc47437659ef80bde`.
 Les empreintes exactes des fichiers testés figurent dans `validation-manifest.json` ; les
 preuves ont été créées avant l'attribution du commit de livraison, sans inventer son SHA.
+Livraison : [PR #24](https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/pull/24).
+Premier commit du code et des preuves : `9753f2ba29b73dc877687973ab80c0b566b0e93b`.
 
 ## Résultats locaux
 

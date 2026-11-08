@@ -95,5 +95,7 @@
     "status": "UNMEASURED",
     "amount": null
   },
-  "scope": "Factory code and synthetic skill fixtures only. No TELA runtime campaign or measured productivity claim."
+  "scope": "Factory code and synthetic skill fixtures only. No TELA runtime campaign or measured productivity claim.",
+  "publishedCodeCommit": "9753f2ba29b73dc877687973ab80c0b566b0e93b",
+  "pullRequest": "https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/pull/24"
 }
