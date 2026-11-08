@@ -205,3 +205,15 @@ services:
     depends_on:
       postgres: { condition: service_healthy }
       kafka: { condition: service_healthy }
+
+  frontend:
+    <<: *hardening
+    profiles: [app]
+    build: { context: ./frontend }
+    image: tela/frontend:dev
+    read_only: true
+    tmpfs: [/tmp]
+    ports: ["127.0.0.1:4200:8080"]
+    networks: [data]   # reaches backend:8080 only (never Besu/Web3Signer/Kafka, spec 005 FR-002)
+    depends_on:
+      backend: { condition: service_healthy }
