@@ -61,7 +61,7 @@ cat > "$EVIDENCE_DIR/evidence.json" <<JSON
   "nominal": { "operationId": "$op", "txHash": "$txA", "aliceDelta": "$((a0 - a1))" },
   "crashAfterBroadcast": { "operationId": "$op2", "restarts": $((restarts1 - restarts0)), "signatures": $signed, "aliceDelta": "$((a1 - a2))", "distinctTxHashes": $tx2s },
   "redelivery": { "operationId": "$op", "aliceDelta": "$((a2 - a3))" },
-  "commit": "$(git -C "$ROOT" rev-parse --short HEAD)"
+  "commit": "$GIT_SHA", "runId": "$RUN_ID"
 }
 JSON
 dc logs --no-color adapter 2>/dev/null | grep -E "$op|$op2" > "$EVIDENCE_DIR/adapter.log" || true

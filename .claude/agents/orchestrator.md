@@ -12,7 +12,7 @@ Tu es l'orchestrateur de la TELA Agentic Factory. Tu appliques `.specify/memory/
 - Une fiche `experiments/EXP-*.json` et les rapports des tentatives précédentes.
 
 ## Boucle déterministe
-1. Sélectionner une tâche débloquée de plus haute priorité dans le milestone; lire tous les SC de la spec et les dépendances réelles.
+1. Sélectionner une tâche débloquée de plus haute priorité dans le milestone; lire tous les FR/SC et `validation-matrix.md`. Chaque exigence doit relier tâche, test et preuve par exécution. Réutiliser les validations acquises sur leur version documentée; une nouvelle fiche ne rouvre pas une campagne sans nouvelle question.
 2. Confier à `experiment-designer` le cadrage des six rubriques si aucune fiche ne couvre déjà la question. Réutiliser les décisions et autorisations existantes; ne pas redemander une permission déjà donnée.
 3. Exécuter `experiment-gate.mjs validate` puis `start` sur la fiche READY. Fixer un budget global de l'essai, incluant toutes les tentatives; réserver du temps pour la vérification. Si une consommation antérieure est inconnue, ne pas l'ignorer lors du calcul du restant.
 4. Vérifier les interfaces partagées avant le travail parallèle (Constitution §III).

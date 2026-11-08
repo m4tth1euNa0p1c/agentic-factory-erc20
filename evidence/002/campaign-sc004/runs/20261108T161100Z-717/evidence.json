@@ -1,0 +1,1 @@
+{ "criterion": "SC-004", "verdict": "PASS", "requests": 1000, "accepted": 100, "refused": 900, "capacitySlots": 100, "snapshots": 97, "minRawAvailable": "0", "minNaive": "-1000000", "gitSha": "9abd8f4b7eceb2f8a469f7af18dbb15a818a129e", "runId": "20261108T161100Z-717" }

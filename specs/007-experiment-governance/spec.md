@@ -12,6 +12,9 @@ Le responsable de validation et l'orchestrateur peuvent accepter un récit de r�
 comparaison explicite, couverture de tous les critères de succès, ni bilan des ressources.
 La spec 002 distingue déjà quatre scénarios et quatre SC : une CI verte ne signifie pas
 que les campagnes de 100 crashs, p95 et 1 000 demandes ont été réalisées.
+Depuis la fusion de la PR #25, ces campagnes sont démontrées sur `7d4a02d` dans leurs
+conditions documentées. La PR #24 reprend cette validation comme référence acquise, conserve
+la matrice FR/SC introduite dans main et ajoute le cadrage des futures expériences.
 
 ## User stories
 
@@ -47,7 +50,7 @@ collectées en un seul retour utile ; le travail indépendant peut continuer.
 - **FR-007**: Une comparaison d'amélioration exige une référence mesurée et étayée; un test absolu peut justifier l'absence de comparaison quantitative sans prétendre à un gain.
 - **FR-008**: En mode `spec_acceptance`, chaque SC défini dans la spec doit être couvert par au moins un critère requis. Le mode `experiment` ne vaut pas clôture de la spec entière.
 - **FR-009**: Intégrer les tests du contrôle au job existant `factory hooks tests`; ne pas créer de boucle payante ni modifier les services TELA.
-- **FR-010**: Fournir une fiche DRAFT pour la validation 002. Ne pas inventer de mesures ou déclarer les problèmes 002 corrigés par cette évolution de la factory.
+- **FR-010**: Conserver la fiche DRAFT initiale de validation 002 comme exemple historique, avec un renvoi à la validation désormais acquise. Ne pas inventer de mesures ni attribuer à la spec 007 les correctifs réalisés par la PR #25.
 
 ## Success criteria
 

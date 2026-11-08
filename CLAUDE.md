@@ -5,7 +5,7 @@ Monorepo reproduisant l'infra TELA (Angular → Java → Kafka → adaptateur TS
 ## À lire d'abord
 1. `.specify/memory/constitution.md` — règles non négociables (preuves, hypothèses visibles, contrats d'abord, effet unique, sécurité).
 2. `docs/registry/REGISTRE.md` — faits / hypothèses / décisions / preuves. Ne jamais présenter une hypothèse comme un fait.
-3. `specs/NNN-*/` — spec, plan, tasks de la feature en cours ; `specs/ANALYSIS.md` — balayage croisé.
+3. `specs/NNN-*/` — spec, plan, tasks et `validation-matrix.md` (chaque FR/SC lié à tâche, test et preuve par exécution) ; `specs/ANALYSIS.md` — balayage croisé.
 4. `docs/research/veille-2026-11.md` — versions figées. N'utilise aucune autre version sans décision.
 5. `experiments/` — fiche de l'essai actif : Problème, Hypothèse, Référence, Critère, Budget, Décision. Réutiliser une fiche existante plutôt que multiplier les essais.
 

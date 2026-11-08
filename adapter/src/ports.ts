@@ -66,7 +66,12 @@ export const errMsg = (e: unknown): string => {
   return [x?.name, x?.shortMessage ?? x?.details ?? (x?.message ?? "").split("\n")[0]].filter(Boolean).join(": ").slice(0, 300);
 };
 
-export type Fault = "none" | "crash-after-broadcast" | "crash-before-broadcast" | "pause-before-broadcast";
+export type Fault =
+  | "none" | "crash-after-broadcast" | "crash-before-broadcast" | "pause-before-broadcast"
+  | "pause-after-broadcast" // Besu accepted the tx, then the adapter loses it (review: UNKNOWN after acceptance)
+  | "crash-random"; // SC-002: crash with probability p at every checkpoint between signature and offset commit
+
+export type CrashPoint = "after-sign" | "after-journal" | "after-broadcast" | "after-broadcast-published" | "after-result";
 
 export type Logger = {
   info(msg: string, f?: Record<string, unknown>): void;

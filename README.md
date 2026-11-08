@@ -50,5 +50,6 @@ node scripts/experiment-gate.mjs validate experiments/EXP-002-validation.json
 node --test scripts/experiment-gate.test.mjs
 ```
 
-La fiche 002 est un protocole DRAFT, sans résultats inventés; elle ne clôture pas les validations
-encore ouvertes. Voir [la gouvernance des expériences](specs/007-experiment-governance/spec.md).
+La fiche 002 est le brouillon historique de la PR #24. La [matrice 002](specs/002-tce-transfer-e2e/validation-matrix.md)
+consigne désormais les campagnes validées par la PR #25 ; ce brouillon n'impose pas leur rejeu.
+Voir [la gouvernance des expériences](specs/007-experiment-governance/spec.md).

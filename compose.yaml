@@ -12,6 +12,7 @@ networks:
   signing:  { internal: true }   # web3signer <-> besu, adapter, one-shot deployer
   data:     {}   # postgres <-> backend/indexer/adapter
   bus:      {}   # kafka <-> backend/adapter
+  ui:       {}   # frontend <-> backend only (not internal: Docker publishes no ports on internal-only networks)
 
 volumes:
   besu-data: {}
@@ -149,6 +150,8 @@ services:
       NODE_ENV: ${ADAPTER_NODE_ENV:-production}   # fault injection refused unless explicitly development (review F6)
       ADAPTER_FAULT: ${ADAPTER_FAULT:-none}
       ADAPTER_FAULT_PAUSE_MS: ${ADAPTER_FAULT_PAUSE_MS:-10000}
+      ADAPTER_FAULT_PROBABILITY: ${ADAPTER_FAULT_PROBABILITY:-0.2}
+      ADAPTER_SUPERVISE: ${ADAPTER_SUPERVISE:-0}
       TELA_CHAIN_ID: ${TELA_CHAIN_ID}
       BESU_RPC_URL: http://besu:8545
       WEB3SIGNER_URL: http://web3signer:9000
@@ -199,7 +202,20 @@ services:
       KAFKA_BROKERS: kafka:9092
       TELA_RECONCILE_AFTER: ${TELA_RECONCILE_AFTER:-10s}
     ports: ["127.0.0.1:8080:8080"]
-    networks: [data, bus]
+    networks: [data, bus, ui]
     depends_on:
       postgres: { condition: service_healthy }
       kafka: { condition: service_healthy }
+
+  frontend:
+    <<: *hardening
+    profiles: [app]
+    build: { context: ./frontend }
+    image: tela/frontend:dev
+    read_only: true
+    tmpfs: [/tmp]
+    ports: ["127.0.0.1:4200:8080"]
+    cap_drop: [ALL]
+    networks: [ui]     # internal network shared ONLY with backend (review #28 finding 2); never Besu/Web3Signer/Kafka/Postgres
+    depends_on:
+      backend: { condition: service_healthy }

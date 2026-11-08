@@ -13,7 +13,11 @@ const cases = [
   [{ tool_name: "Bash", tool_input: { command: `cat ${dot}` } }, 2],
   [{ tool_name: "Bash", tool_input: { command: "git push --force origin main" } }, 2],
   [{ tool_name: "Bash", tool_input: { command: "git commit --no-verify -m x" } }, 2],
-  [{ tool_name: "Bash", tool_input: { command: "git push -u origin main" } }, 0],
+  [{ tool_name: "Bash", tool_input: { command: "git push -u origin main" } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: "git push origin HEAD:main" } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: "git push -u origin 002-validation" } }, 0],
+  [{ tool_name: "Bash", tool_input: { command: "gh pr merge 21 --admin --merge" } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: "gh api -X DELETE repos/x/y/branches/main/protection" } }, 2],
   [{ tool_name: "Bash", tool_input: { command: "bash scripts/sandbox.sh up" } }, 0],
   [{ tool_name: "Bash", tool_input: { command: "gh secret list" } }, 2],
   // security review M-1 regressions

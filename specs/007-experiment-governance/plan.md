@@ -12,11 +12,20 @@
 ## Constitution Check
 
 - Preuves : sorties de tests et essai indépendant, sans prétendre à une campagne TELA réelle.
-- Hypothèses : pilote 002 DRAFT, budgets proposés non assimilés à une autorisation de dépense.
+- Hypothèses : pilote 002 DRAFT historique, budgets proposés non assimilés à une autorisation de dépense ; validation 002 acquise séparément dans la PR #25.
 - Contrats : schémas fixés avant intégration des skills.
 - Sécurité : aucune lecture des secrets, aucun code produit lancé; revue des nouveaux lecteurs de fichiers et du changement CI.
 - Simplicité : un rôle ajouté et deux skills; pas de nouveau framework d'orchestration, dépendance, service ni MCP.
-- Amendement : principe VIII ajouté, version de constitution 1.1.0 et décision D-18.
+- Amendement : principe VIII ajouté, version de constitution 1.2.0 et décision D-25. Le principe I renforcé par main 1.1.0 (matrice FR/SC et preuves par run) est conservé.
+
+## Intégration de main
+
+Référence : `98ef63b9fdc72b608d3f9f764bb01c32ae4d5f45` (PR #25 et #28 fusionnées).
+La mise à jour de #24 est une fusion sur la branche de spec, sans réécriture d'historique.
+Conserver les campagnes 002, l'interface 005, le hook à 25 cas, le workflow factory et le job
+frontend. Les anciennes preuves 007 restent historiques ; les vérifications de cette
+intégration ont leur propre dossier de run. Les métadonnées des campagnes et le rapport
+`experiment-run.v1.json` restent deux documents distincts reliés par leurs preuves.
 
 ## Écart de suivi
 

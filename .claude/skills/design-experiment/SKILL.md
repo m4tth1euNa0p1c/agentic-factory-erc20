@@ -7,6 +7,9 @@ description: Transformer une demande d'amélioration de la factory ou de TELA en
 
 1. Lire la spec, le registre et les preuves disponibles. Réutiliser une fiche existante si elle
    pose la même question; garder une seule expérience active pour le même périmètre.
+   Lire aussi `validation-matrix.md` : chaque FR/SC doit relier tâche, test et preuve. Une
+   validation acquise devient une référence pour la suite ; ne pas inventer un problème encore
+   ouvert ni relancer une campagne pour remplir après coup une nouvelle fiche ou un budget.
 2. Copier `assets/experiment.template.json` vers `experiments/EXP-<spec>-<sujet>.json`.
    Le contrat de référence est `schemas/factory/experiment.v1.json`.
 3. Remplir les six rubriques ci-dessous avant d'implémenter l'essai.

@@ -6,8 +6,12 @@
   "status": "DRAFT",
   "problem": {
     "who": "Responsable de validation TELA et orchestrateur de la factory",
-    "difficulty": "Distinguer les scénarios déjà réussis de la couverture complète des critères SC-001 à SC-004, sans déduire l'acceptation de la spec d'une CI verte. Cette fiche prépare une campagne ; elle ne constate aucune nouvelle exécution.",
-    "sourceRefs": ["specs/002-tce-transfer-e2e/spec.md#success-criteria", "https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/issues/8"]
+    "difficulty": "Exemple historique : ce brouillon de la PR #24 précédait les campagnes désormais validées par la PR #25 sur 7d4a02d. Il illustre le cadrage des preuves ; il ne constate aucune nouvelle exécution, ne rouvre pas la spec 002 et ne doit pas déclencher son rejeu. Voir specs/002-tce-transfer-e2e/validation-matrix.md.",
+    "sourceRefs": [
+      "specs/002-tce-transfer-e2e/spec.md#success-criteria",
+      "https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/issues/8",
+      "specs/002-tce-transfer-e2e/validation-matrix.md"
+    ]
   },
   "hypothesis": {
     "change": "Relier chaque critère contractuel à une campagne, un oracle indépendant et des preuves propres à chaque exécution, puis appliquer le contrôle d'évaluation.",
@@ -15,13 +19,20 @@
     "falsifiedBy": "Un dossier incomplet obtient GO, ou une mesure de substitution permet de déclarer un critère satisfait alors que l'invariant réel est violé. Aucun gain de coût ou de vitesse n'est revendiqué par cette fiche."
   },
   "reference": {
-    "currentMethod": "Quatre scénarios e2e et des rapports CI constituent la référence de travail. La répétabilité et les campagnes de charge doivent être établies par leurs propres traces. Les plafonds ci-dessous sont une proposition de cadrage, pas une autorisation de campagne ; son coût reste à déterminer.",
-    "sourceRefs": ["tests/e2e/run.sh", "specs/002-tce-transfer-e2e/spec.md", "https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/issues/8"]
+    "currentMethod": "Référence acquise dans main : les quatre critères SC-001 à SC-004 sont documentés PASS sur 7d4a02d, dans les conditions de sandbox de la matrice de validation. Le brouillon initial exact est conservé dans experiments/archive/EXP-002-validation.initial-draft.json. Les seuils proposés, champs incomplets et budgets de ce brouillon restent historiques ; ils ne sont ni un protocole rétroactif appliqué aux campagnes, ni une exigence supplémentaire. Aucune mesure de coût historique n’est inventée.",
+    "sourceRefs": [
+      "specs/002-tce-transfer-e2e/validation-matrix.md",
+      "docs/registry/REGISTRE.md#preuves-dexécution",
+      "https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/pull/25",
+      "experiments/archive/EXP-002-validation.initial-draft.json"
+    ]
   },
   "criteria": [
     {
       "id": "nominal-consecutive",
-      "requirementRefs": ["SC-001"],
+      "requirementRefs": [
+        "SC-001"
+      ],
       "required": true,
       "kind": "success",
       "metric": "Réussites consécutives du transfert nominal",
@@ -35,7 +46,9 @@
     },
     {
       "id": "restart-consecutive",
-      "requirementRefs": ["SC-001"],
+      "requirementRefs": [
+        "SC-001"
+      ],
       "required": true,
       "kind": "success",
       "metric": "Réussites consécutives du crash après émission",
@@ -49,7 +62,9 @@
     },
     {
       "id": "ponder-lag-consecutive",
-      "requirementRefs": ["SC-001"],
+      "requirementRefs": [
+        "SC-001"
+      ],
       "required": true,
       "kind": "success",
       "metric": "Réussites consécutives du retard d'indexation",
@@ -63,7 +78,9 @@
     },
     {
       "id": "failure-unknown-consecutive",
-      "requirementRefs": ["SC-001"],
+      "requirementRefs": [
+        "SC-001"
+      ],
       "required": true,
       "kind": "success",
       "metric": "Réussites consécutives de la distinction échec certain / résultat inconnu",
@@ -77,7 +94,9 @@
     },
     {
       "id": "random-crashes-no-double-debit",
-      "requirementRefs": ["SC-002"],
+      "requirementRefs": [
+        "SC-002"
+      ],
       "required": true,
       "kind": "guardrail",
       "metric": "Opérations ayant subi un double débit",
@@ -91,7 +110,9 @@
     },
     {
       "id": "confirmation-p95",
-      "requirementRefs": ["SC-003"],
+      "requirementRefs": [
+        "SC-003"
+      ],
       "required": true,
       "kind": "success",
       "metric": "p95 de la latence demande vers CONFIRMED",
@@ -105,7 +126,9 @@
     },
     {
       "id": "concurrent-raw-availability",
-      "requirementRefs": ["SC-004"],
+      "requirementRefs": [
+        "SC-004"
+      ],
       "required": true,
       "kind": "guardrail",
       "metric": "Violations de l'invariant de disponibilité brute",
@@ -119,7 +142,13 @@
     }
   ],
   "budget": {
-    "limits": { "wallMinutes": 120, "moneyAmount": null, "currency": "EUR", "humanMinutes": 15, "iterations": 2 },
+    "limits": {
+      "wallMinutes": 120,
+      "moneyAmount": null,
+      "currency": "EUR",
+      "humanMinutes": 15,
+      "iterations": 2
+    },
     "authorityRef": null
   },
   "decision": {

@@ -24,6 +24,10 @@ export default createConfig({
       pollingInterval: 1_000,
       // QBFT has immediate finality; keep RPC cache off so a sandbox reset never serves stale data.
       cacheRpcRequests: false,
+      // QBFT finality is immediate. The default (180 s = 90 blocks at 2 s) made Ponder roll the read model back
+      // up to 90 blocks on every restart (crash recovery), briefly exposing a stale balance next to already
+      // settled operations (found by the ponder-lag invariant sampler, 2026-11-08).
+      reorgWindow: 0,
     },
   },
   contracts: {

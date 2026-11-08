@@ -27,6 +27,8 @@
 | H-06 | Arrondi du swap à l'inférieur, en faveur du pool | Contrat swap | 003 |
 | H-07 | TIF = jeton de part de fonds avec émission/rachat par un rôle opérateur | Spec TIF | 004 |
 | H-08 | Java lit les soldes dans les tables Ponder (lecture seule, schéma dédié) | Couplage Java/Ponder | 002 |
+| H-10 | ~~Ponder écrit le solde et l'exécution d'un même bloc dans la même transaction~~ **Réfutée telle quelle** (P-15) : avec la fenêtre de réorg par défaut, la reprise après crash fait régresser le modèle de lecture ; vraie avec `reorgWindow: 0` (P-16) | Disponible transitoirement faux | 002 |
+| H-11 | Écarts assumés vs présentation TELA : 1 validateur (TELA : 6) et blocs de 2 s (TELA : 15 s) ; signature séparée + persistance au lieu de `eth_sendTransaction` ; `transferWithReference` ajouté aux ERC-20 | La compatibilité avec les contrats TELA réels reste à établir (#13) | 001, 002 |
 | H-09 | L'émission (mint) est réservée à un rôle `MINTER` (trésorerie) | Contrats | 001 |
 
 ## DÉCISIONS proposées
@@ -49,7 +51,14 @@
 | D-15 | Injection de panne `pause-before-broadcast` (fenêtre signature→diffusion) pour tests FAILED/UNKNOWN déterministes | Reproductibilité US4 | 2026-11-08 |
 | D-16 | L'adaptateur ne signe que pour une liste blanche de comptes clients (`ADAPTER_SIGNABLE_ACCOUNTS`) ; jamais deployer/treasury/operator | Revue #18 : un producteur Kafka ne doit pas obtenir de signatures admin | 2026-11-08 |
 | D-17 | `FAILED` n'est publié que si la référence est prouvée non exécutée ; `nonce too low` sans reçu ni événement + nonce consommé ⇒ `FAILED NONCE_CONSUMED` | Revue #18 F1/F4 | 2026-11-08 |
-| D-18 | Constitution 1.1.0, principe VIII : cadrer chaque essai par problème/hypothèse/référence/critères/budget/décision; ajouter un designer et deux skills; préserver les coûts inconnus et la portée des preuves | Demande utilisateur; spec 007. Contrôle local des dossiers, sans promesse de facturation mesurée ni de certification | 2026-11-08 |
+| D-18 | Swap v1 : taux **immuable** 115/100 (demande et exécution au même taux) | Revue 2026-11-08 ; à confronter aux sources TELA | 2026-11-08 |
+| D-19 | Swap v1 : sens **TCE → TCD** uniquement ; TCD → TCE ensuite | Livraison bornée | 2026-11-08 |
+| D-20 | Swap v1 : parcours `approve + swap` ; `permit` seulement si confirmé côté TELA | Compatibilité avec le jeton réel | 2026-11-08 |
+| D-21 | Disponible = indexé − réservations **non encore indexées**, calculé en un seul snapshot SQL ; `availableRaw` exposé | Revue 2026-11-08 : supprime le double comptage transitoire et rend l'invariant vérifiable | 2026-11-08 |
+| D-22 | `main` protégée (PR + 9 checks) ; clé API factory = secret de l'environnement `factory` limité à `main` | Revue 2026-11-08 | 2026-11-08 |
+| D-23 | Ponder `reorgWindow: 0` (QBFT = finalité immédiate) + garde Java : un head indexé sous le plus haut jamais vu ⇒ réservations refusées (503 `INDEXER_UNAVAILABLE`) et règlement suspendu | Revue 2026-11-08 / P-15 | 2026-11-08 |
+| D-24 | UI : nginx n'accepte que les `Host` connus (sinon 421, anti DNS rebinding) ; réseau `ui` dédié frontend↔backend | Revue PR #28 | 2026-11-08 |
+| D-25 | Constitution 1.2.0 : conserver le principe I renforcé (matrice FR/SC et preuves par run) et ajouter le principe VIII : cadrer chaque essai par problème/hypothèse/référence/critères/budget/décision; ajouter un designer et deux skills; préserver les coûts inconnus et la portée des preuves | Demande utilisateur; spec 007. Contrôle local des dossiers, sans promesse de facturation mesurée ni de certification | 2026-11-08 |
 | D-10 | Client Kafka JS : `@confluentinc/kafka-javascript` | `kafkajs` non maintenu | 2026-11-08 |
 
 ## PREUVES d'exécution
@@ -70,4 +79,12 @@
 | P-12 | E2E échec vs inconnu : revert miné → FAILED (receipt 0) ; pause → REJECTED sans diffusion ; Besu coupé → UNKNOWN (réservation conservée) → RECONCILE → SETTLED | `evidence/002/failure-vs-unknown/evidence.json` | 002 |
 | P-13 | Après correctifs revue #18 : adapter 42 tests, backend 13 tests, 5 scénarios e2e PASS ; déterminisme nominal 10/10 | `evidence/002/determinism/` | 002 |
 | P-14 | Trivy : 7 HIGH transitifs Ponder → 2 corrigés par overrides, 3 acceptés avec justification/expiration (`.trivyignore`), endpoint GraphQL supprimé | `.trivyignore`, `indexer/package.json` | 002 |
-| P-15 | Gouvernance : 21 tests de décision et 21 cas du hook verts ; essai indépendant des skills sur trois fixtures synthétiques ; défaut de couverture SC reproduit puis corrigé et relu | `evidence/007/README.md`, `evidence/007/validation-manifest.json` | 007 ; fichiers testés identifiés par SHA-256 dans le manifeste |
+| P-15 | **Défaut trouvé par l'échantillonneur d'invariant** : après redémarrage de Ponder (reorgWindow 180 s par défaut ≈ 90 blocs), le modèle de lecture régresse (head 4038 → 3305, solde antérieur ré-exposé) puis se reconstruit ; disponible brut observé à −100 TCE pendant ~14 s | `evidence/002/ponder-lag/runs/`, `evidence/002/probe-readmodel/runs/` | 002-validation |
+| P-16 | Après `reorgWindow: 0` + garde de régression : bloc finalisé = bloc indexé ; 10 exécutions et solde publiés ensemble ; ponder-lag : disponible brut min = 0 (28 snapshots) alors que la formule naïve aurait donné −127 TCE | `evidence/002/ponder-lag/runs/`, `evidence/002/probe-readmodel/runs/` | 002-validation |
+| P-17 | Scénario D (UNKNOWN après acceptation par Besu) : tx exécutée on-chain à l'insu de l'app, réservation conservée, 1 signature, 1 effet, SETTLED après rétablissement | `evidence/002/failure-vs-unknown/runs/` | 002-validation |
+| P-18 | Campagnes sur 9abd8f4 : **SC-004 PASS** (1000 req., 100/900, min brut 0 sur 97 snapshots), **SC-003 PASS** (p95 2,23 s, 60 ops à 1 req/3 s), **SC-002 PASS** (103 crashs réels sur 5 points, 100 ops, 0 double débit) | `evidence/002/campaign-sc00{2,3,4}/runs/` | 002-validation |
+| P-19 | SC-001 1re tentative **interrompue** : FAIL sur `failure-vs-unknown` itération 1 dû au **harnais** (hauteur 5282 > limite eth_getLogs 5000 de Besu → comptage d'événements à 0) ; assertions de solde on-chain PASS ; bug `set -e` de la campagne qui l'a arrêtée. Corrigé (requêtes paginées depuis le bloc de déploiement) | `evidence/002/failure-vs-unknown/runs/sc001-1-*`, `evidence/002/campaign-sc001/runs/` | 002-validation |
+| P-20 | 2e tentative SC-001 interrompue par une **régression du harnais** (`logs_count` traitait « 0 événement » comme une erreur) → arrêtée, corrigée (`7d4a02d`) ; ses runs FAIL sont conservés | `evidence/002/*/runs/sc001-*` (16:45–16:55) | 002-validation |
+| P-21 | **Validation complète sur `7d4a02d`** (images reconstruites depuis ce SHA) : SC-004 PASS, SC-003 PASS, SC-002 PASS (119 crashs réels, 120 ops, 0 double débit), **SC-001 PASS 40/40** | `evidence/002/campaign-sc00{1,2,3,4}/runs/` (20261108T172015Z-24324, 20261108T170453Z-20051, 20261108T170050Z-18974, 20261108T165652Z-17196) | 002-validation |
+| P-22 | UI 005 : 31 tests unitaires (vérifiés en conteneur propre), Playwright 2/2 sur la stack réelle, avant et après les correctifs de revue ; Host étranger → 421, Postgres injoignable depuis `ui` | `evidence/005-operator-ui/playwright/` | 005-operator-ui-v1 |
+| P-23 | Preuve initiale de gouvernance PR #24 : 21 tests de décision et 21 cas du hook alors présents verts ; essai indépendant des skills sur trois fixtures synthétiques ; défaut de couverture SC reproduit puis corrigé et relu | `evidence/007/README.md`, `evidence/007/validation-manifest.json` | 007 ; état initial identifié par SHA-256 dans le manifeste, avant le hook à 25 cas |

@@ -34,9 +34,23 @@ transfer_cmd() { # <operationId> <from> <to> <amount> [type]
   printf '{"schemaVersion":1,"type":"%s","operationId":"%s","reference":"%s","token":"TCE","from":"%s","to":"%s","amount":"%s","issuedAt":"%s"}' \
     "${5:-TRANSFER}" "$1" "$(ref_of "$1")" "$2" "$3" "$4" "$(date -u +%FT%TZ)"
 }
+# Besu rejects eth_getLogs ranges > 5000 blocks: paginate from the deployment block (same rule as the adapter, F5).
+deploy_block() { grep -oE '"deployedAtBlock": *[0-9]+' "$ROOT/deployments/local.json" 2>/dev/null | grep -oE '[0-9]+$' || echo 0; }
+logs_count() { # <fromBlock> <address> <event sig> [topic args...] -> number of matching logs (paginated, fails loudly)
+  local lo="$1" addr="$2" sig="$3"; shift 3
+  local head n total=0 hi; head=$(cast_ro block-number)
+  while (( lo <= head )); do
+    hi=$(( lo + 3999 < head ? lo + 3999 : head ))
+    local out
+    out=$(cast_ro logs --from-block "$lo" --to-block "$hi" --address "$addr" "$sig" "$@" --json) \
+      || { echo "logs query failed for [$lo,$hi]" >&2; return 1; }   # a failed query is an error, never "0 events"
+    n=$(printf '%s' "$out" | { grep -o '"transactionHash"' || true; } | wc -l | tr -d ' ')
+    total=$(( total + n )); lo=$(( hi + 1 ))
+  done
+  printf '%s' "$total"
+}
 ref_events() { # <token> <from> <ref> -> number of TransferWithReference events
-  cast_ro logs --from-block 0 --address "$1" "TransferWithReference(bytes32 indexed,address indexed,address indexed,uint256)" "$3" "$2" --json \
-    | grep -o '"transactionHash"' | wc -l | tr -d ' '
+  logs_count "$(deploy_block)" "$1" "TransferWithReference(bytes32 indexed,address indexed,address indexed,uint256)" "$3" "$2"
 }
 
 # ---------- Java API (spec 002 OpenAPI) ----------
@@ -76,7 +90,56 @@ app_up() { # [ADAPTER_FAULT] — (re)start app services with the given adapter f
   if [[ -n "${1:-}" ]]; then ADAPTER_NODE_ENV=$nodeenv ADAPTER_FAULT="$1" dc --profile app up -d --force-recreate --wait adapter >/dev/null 2>&1; fi
 }
 
+# ---------- invariant sampler (review 2026-11-08): raw values, consistent single-statement snapshots ----------
+# line: epochMs|indexed|pendingNotIndexed|heldTotal   — raw = indexed - pendingNotIndexed must never be < 0
+inv_sql() { local a; a=$(lc "$1"); cat <<SQL
+SELECT (extract(epoch from clock_timestamp())*1000)::bigint,
+  coalesce((SELECT balance FROM tela_read.account_balance WHERE id='TCE:$a'),0),
+  coalesce((SELECT sum(r.amount) FROM backend.reservation r JOIN backend.operation o USING (operation_id)
+     WHERE r.account='$a' AND r.token='TCE' AND r.state='HELD'
+       AND NOT EXISTS (SELECT 1 FROM tela_read.operation_execution e WHERE e.id=o.token||':'||o.from_address||':'||o.reference)),0),
+  coalesce((SELECT sum(amount) FROM backend.reservation WHERE account='$a' AND token='TCE' AND state='HELD'),0)
+SQL
+}
+SAMPLER_PID=""
+sampler_start() { # <account> <outfile>
+  local sql; sql=$(inv_sql "$1"); : > "$2"; touch "$2.on"
+  ( while [[ -f "$2.on" ]]; do "$ROOT/scripts/db-read.sh" "$sql" 2>/dev/null | tr -d '\r' >> "$2"; sleep 0.2; done ) &
+  SAMPLER_PID=$!
+}
+sampler_stop() { rm -f "$1.on"; wait "$SAMPLER_PID" 2>/dev/null || true; }
+sampler_report() { # <file> -> "samples minRaw minNaive"
+  awk -F'|' 'NF==4{n++; r=$2-$3; v=$2-$4; if(n==1||r<mr)mr=r; if(n==1||v<mv)mv=v} END{printf "%d %s %s\n", n, (n?mr:"NA"), (n?mv:"NA")}' "$1"
+}
+
 EVIDENCE_DIR=""
-evidence_init() { EVIDENCE_DIR="$ROOT/evidence/$1"; mkdir -p "$EVIDENCE_DIR"; : > "$EVIDENCE_DIR/steps.log"; }
+# One directory per execution (review 2026-11-08): evidence/<spec>/<scenario>/runs/<RUN_ID>/{run.json,evidence.json,steps.log}
+# run.json identifies the exact version and configuration; <scenario>/LATEST points to the last run.
+evidence_init() { # <spec>/<scenario>
+  RUN_ID="${RUN_ID_PREFIX:-}$(date -u +%Y%m%dT%H%M%SZ)-$$"
+  EVIDENCE_BASE="$ROOT/evidence/$1"; EVIDENCE_DIR="$EVIDENCE_BASE/runs/$RUN_ID"
+  mkdir -p "$EVIDENCE_DIR"; : > "$EVIDENCE_DIR/steps.log"
+  GIT_SHA="$(git -C "$(hostpath "$ROOT")" rev-parse HEAD 2>/dev/null || echo unknown)"
+  local dirty=false; [[ -n "$(git -C "$(hostpath "$ROOT")" status --porcelain --untracked-files=no -- . ':!evidence' 2>/dev/null)" ]] && dirty=true   # evidence/ excluded: it is written by the runs themselves
+  local ci=null; [[ -n "${GITHUB_RUN_ID:-}" ]] && ci="\"${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\""
+  local images="" svc cid img
+  for svc in besu web3signer postgres kafka adapter backend indexer; do
+    cid=$(dc --profile app ps -q "$svc" 2>/dev/null | head -1 || true); [[ -n "$cid" ]] || continue
+    img=$(docker inspect -f '{{.Config.Image}}@{{.Image}}' "$cid" 2>/dev/null || true)
+    images="$images${images:+, }\"$svc\": \"$img\""
+  done
+  images="{ $images }"
+  cat > "$EVIDENCE_DIR/run.json" <<JSON
+{
+  "runId": "$RUN_ID", "scenario": "$1", "startedAt": "$(date -u +%FT%TZ)",
+  "git": { "sha": "$GIT_SHA", "branch": "$(git -C "$(hostpath "$ROOT")" branch --show-current 2>/dev/null)", "dirty": $dirty },
+  "ci": $ci,
+  "config": { "chainId": $TELA_CHAIN_ID, "adapterFault": "${ADAPTER_FAULT:-none}", "reconcileAfter": "${TELA_RECONCILE_AFTER:-10s}",
+              "composeSha256": "$(sha256sum "$ROOT/compose.yaml" | cut -c1-64)", "genesisSha256": "$(sha256sum "$ROOT/infra/besu/genesis.template.json" | cut -c1-64)" },
+  "images": ${images:-{\}}
+}
+JSON
+  printf '%s\n' "$RUN_ID" > "$EVIDENCE_BASE/LATEST"
+}
 step() { printf '[%s] %s\n' "$(date -u +%FT%TZ)" "$*" | tee -a "$EVIDENCE_DIR/steps.log" >&2; }
 assert_eq() { if [[ "$1" == "$2" ]]; then step "PASS $3 ($1)"; else step "FAIL $3: expected=$2 got=$1"; return 1; fi; }

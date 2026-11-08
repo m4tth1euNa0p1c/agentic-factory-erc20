@@ -17,7 +17,7 @@ Alice demande le transfert de 10 TCE à Bob via l'API. La demande est enregistr�
 
 **Acceptance Scenarios**:
 1. **Given** Alice a 100 TCE indexés et 0 en attente, **When** `POST /api/v1/transfers {from: alice, to: bob, token: TCE, amount: "10000000"}` avec `Idempotency-Key`, **Then** réponse `202` avec `operationId` et statut `RECEIVED` ; disponible d'Alice = 90 immédiatement.
-2. **Given** l'opération publiée, **When** l'adaptateur l'exécute, **Then** le statut passe par `PUBLISHED → BROADCAST (txHash) → CONFIRMED (bloc)`.
+2. **Given** l'opération publiée, **When** l'adaptateur l'exécute, **Then** le statut progresse de façon monotone vers `SETTLED` ; les états intermédiaires `PUBLISHED`, `BROADCAST`, `CONFIRMED` sont **observables mais non obligatoires** : une opération peut passer directement à `SETTLED` sur preuve indexée (D-14), p. ex. `RECEIVED → PUBLISHED → SETTLED` après un crash de l'adaptateur.
 3. **Given** l'opération `CONFIRMED`, **When** Ponder a indexé le bloc, **Then** statut `SETTLED`, pending d'Alice = 0, solde indexé = 90, disponible = 90 (aucun double comptage transitoire).
 4. **Given** la même `Idempotency-Key` renvoyée, **When** on rejoue la requête, **Then** même `operationId`, aucune seconde opération.
 5. **Given** un disponible de 5 TCE, **When** Alice demande 10 TCE, **Then** `409 INSUFFICIENT_AVAILABLE`, rien n'est publié.
@@ -67,6 +67,7 @@ Le système distingue une transaction dont l'échec est confirmé d'une transact
 2. **Given** un transfert dont la simulation revert avant diffusion pour une raison autre que `ReferenceAlreadyUsed` (ex. solde on-chain insuffisant, jeton en pause), **Then** statut `REJECTED`, aucune transaction diffusée, réservation libérée. *(`ReferenceAlreadyUsed` n'est jamais un rejet : l'effet a eu lieu, cf. US2-3.)*
 3. **Given** Besu injoignable après diffusion (réseau `chain` coupé pour l'adaptateur), **When** le délai de reçu expire, **Then** statut `UNKNOWN`, réservation **conservée**.
 4. **Given** une opération `UNKNOWN`, **When** Besu redevient joignable, **Then** le réconciliateur retrouve le reçu et l'opération converge vers `CONFIRMED`/`SETTLED` ou `FAILED`.
+5. **Given** Besu a **accepté** la transaction puis l'adaptateur perd l'accès avant d'obtenir le résultat (et l'indexeur est arrêté), **Then** la transaction est exécutée on-chain alors que l'application l'ignore : statut `UNKNOWN`, réservation **conservée**, aucun second effet ; après rétablissement : `CONFIRMED` puis `SETTLED`. *(ajouté suite à la revue du 2026-11-08 : le cas 3 coupe le réseau avant diffusion.)*
 
 ### Edge Cases
 - Message Kafka invalide (schéma) → DLQ `tela.operations.dlq.v1`, opération `REJECTED` côté Java si identifiable, aucun effet on-chain.
@@ -99,9 +100,11 @@ Le système distingue une transaction dont l'échec est confirmé d'une transact
 
 ## Success Criteria *(mandatory)*
 - **SC-001**: Les 4 scénarios passent 10 exécutions consécutives sans échec (déterminisme).
-- **SC-002**: 0 double débit sur 100 crashs injectés aléatoirement entre signature et commit.
-- **SC-003**: Latence demande → `CONFIRMED` < 10 s p95 en sandbox (bloc 2 s).
-- **SC-004**: Disponible jamais négatif sur 1 000 demandes concurrentes.
+- **SC-002**: 0 double débit sur ≥ 100 crashs **réels** de l'adaptateur injectés aléatoirement entre signature et commit d'offset.
+- **SC-003**: Latence demande → `CONFIRMED` (ou `SETTLED` direct) < 10 s p95 en sandbox (bloc 2 s), sous charge cadencée ; le débit maximal est mesuré et rapporté séparément.
+- **SC-004**: Disponible **brut** (non borné à 0) jamais négatif sur 1 000 demandes concurrentes, vérifié par échantillonnage continu de snapshots cohérents jusqu'au règlement complet.
+
+> Couverture : voir [validation-matrix.md](./validation-matrix.md). Le disponible présenté à l'utilisateur (`available`, borné à 0) est distinct de l'invariant vérifié (`availableRaw = indexed − pending non indexé`) et de la cohérence indexé/réservations (`heldTotal`).
 
 ## Assumptions
 - H-01, H-03, H-08 ; finalité immédiate QBFT ; un compte = un signataire Web3Signer.

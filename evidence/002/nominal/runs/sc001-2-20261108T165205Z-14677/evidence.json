@@ -1,0 +1,8 @@
+{
+  "spec": "002", "scenario": "nominal", "verdict": "FAIL",
+  "operationId": "01a1bc13-5335-733a-9de3-97193df13c34",
+  "txHash": "0x41eb70ce8d31893e932f2170402d5234a2e34ac728220f33d8f129c1d926f08d",
+  "blockNumber": "5535", "transitions": "RECEIVED>PUBLISHED>BROADCAST>CONFIRMED>SETTLED",
+  "aliceOnChainBefore": "1001294000000", "aliceOnChainAfter": "1001284000000", "aliceIndexedAfter": "1001284000000",
+  "alicePendingAfter": "0", "commit": "7919d008204787820f486389980e38477430bd62", "runId": "sc001-2-20261108T165205Z-14677"
+}

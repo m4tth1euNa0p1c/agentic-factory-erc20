@@ -2,7 +2,7 @@
 
 **Feature Branch**: `003-fixed-rate-swap`
 **Created**: 2026-11-08
-**Status**: Draft — clarifications requises
+**Status**: Ready (v1 bornée) — décisions D-18…D-20 à confronter aux sources TELA
 **Input**: « Échange TCE/TCD via le contrat TalanFixedRateSwap au taux 1 TCE = 1,15 TCD. » Registre : F-03, F-04, H-02, H-05, H-06. Dépend de : 001, 002.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -21,12 +21,12 @@ Alice échange 100 TCE et reçoit 115 TCD ; le parcours réutilise la chaîne 00
 ### User Story 2 — Gestion de la liquidité (Priority: P2)
 La trésorerie dépose et retire de la liquidité TCD ; seul `LIQUIDITY_ROLE` le peut.
 
-### User Story 3 — Échange inverse TCD → TCE (Priority: P3)
-[NEEDS CLARIFICATION: le contrat TELA permet-il l'échange inverse, et à quel taux (1/1,15 arrondi) ?]
+### User Story 3 — Échange inverse TCD → TCE (Priority: P3, hors v1)
+Hors périmètre de la v1 (D-19). Spécifié ensuite avec ses règles explicites de liquidité TCE et d'arrondi (floor(amountIn × 100 / 115)).
 
 ### Edge Cases
-- Modification du taux pendant qu'une opération est en vol → [NEEDS CLARIFICATION: taux figé à la demande ou à l'exécution ?]
-- Approbation : le swap exige un `approve` préalable (2 transactions) ou `permit` (EIP-2612) → décision proposée : `swapWithPermit` pour une seule transaction.
+- Modification du taux pendant une opération : **impossible en v1**, le taux 115/100 est `immutable` (D-18) ; demande et exécution utilisent le même taux. Une cotation figée ne deviendra nécessaire qu'avec un taux modifiable.
+- Approbation : parcours **`approve` puis `swap`** (D-20) — deux transactions pour une même opération métier, rejouables de façon idempotente (`approve` d'un montant exact, `swap` porteur de la référence). Variante `permit` (EIP-2612, déjà supportée par le jeton du démonstrateur) seulement si le jeton TELA réel la supporte et que le besoin est confirmé.
 
 ## Requirements *(mandatory)*
 - **FR-001**: Taux exprimé en rationnel `rateNumerator/rateDenominator` = 115/100, arrondi à l'inférieur (H-06).
@@ -40,3 +40,4 @@ La trésorerie dépose et retire de la liquidité TCD ; seul `LIQUIDITY_ROLE` le
 
 ## Assumptions
 - H-05 (liquidité pré-déposée par la trésorerie), H-06 (arrondi inférieur). À confirmer avec le code TELA.
+- Décisions proposées par la revue du 2026-11-08 et retenues : D-18 taux immuable 115/100, D-19 TCE → TCD seulement en v1, D-20 `approve + swap`.

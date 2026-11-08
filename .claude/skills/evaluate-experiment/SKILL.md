@@ -7,9 +7,13 @@ description: Comparer les résultats d'un essai TELA ou de la factory à son pro
 
 1. Lire la fiche figée et ses six rubriques, la spec source et les artefacts bruts. Ne pas
    prendre le résumé de l'implémenteur comme preuve. Conserver les tentatives invalides.
+   Consulter `validation-matrix.md` pour conserver le lien FR/SC → tâche → test → exécution.
 2. Copier `assets/run.template.json` dans un dossier unique
    `evidence/experiments/<experiment-id>/<run-id>/run.json`. Utiliser le contrat
    `schemas/factory/experiment-run.v1.json`. Ne jamais écraser un run précédent.
+   Les `run.json` des campagnes e2e existantes décrivent la provenance de leur runner ; leur
+   format n'est pas celui de `experiment-run.v1.json`. Les référencer comme preuves hashées
+   dans le rapport du gate, sans les réécrire ni fabriquer des coûts ou un préenregistrement.
 3. Renseigner SHA complet du code testé, SHA-256 de la fiche et de la configuration,
    début/fin, identifiant de run et, dans les artefacts, seed et identifiant CI si disponibles.
    Le rapport est un bilan de campagne : `startedAt` reste le début de la première tentative,
@@ -43,6 +47,8 @@ node scripts/experiment-gate.mjs evaluate experiments/EXP-<spec>-<sujet>.json ev
 Le script vérifie structure, seuils, échantillons déclarés, correspondance des empreintes et
 budgets déclarés. Il ne certifie pas la véracité d'une observation ni l'indépendance d'un agent.
 Ne pas transformer une sortie valide en certification de la plateforme.
+L'absence de budget historique ne révoque pas une validation fonctionnelle antérieure : elle
+empêche d'affirmer un bilan économique ou un GO selon un nouveau protocole non appliqué à l'époque.
 
 `INVALID_DOCUMENT` (sortie 2) signale un contrat mal formé : corriger le dossier, sans le
 compter comme une mesure valide. Sortie 0 : GO; sortie 1 : MODIFY, STOP ou INCONCLUSIVE.

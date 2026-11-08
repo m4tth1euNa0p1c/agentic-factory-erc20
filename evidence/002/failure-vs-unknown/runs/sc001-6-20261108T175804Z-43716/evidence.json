@@ -1,0 +1,9 @@
+{
+  "spec": "002", "scenario": "failure-vs-unknown", "verdict": "PASS",
+  "failed":   { "operationId": "01a1bc4f-cf5f-797a-98cf-cb1ead0e057e", "reason": "REVERTED", "receiptStatus": "false",
+                "txHash": "0x3b5f61adfff25f1e1e7b249c1c16dce7717ca63d91968125f437e834d200f9c7" },
+  "rejected": { "operationId": "01a1bc50-583b-7756-8c92-c1bff64f104a", "reason": "SIMULATION_REVERT:EnforcedPause" },
+  "unknown":  { "operationId": "01a1bc50-ab01-7b9b-ae03-2877c614fe09", "transitions": "RECEIVED>PUBLISHED>UNKNOWN>CONFIRMED>SETTLED" },
+  "unknownAfterAcceptance": { "operationId": "01a1bc51-9407-760d-8774-3cbba72a016d", "txHash": "0xd79c11f34438ce96e3ccf5bdaae63015098a56ac2536fb09c5b3ee066527a72c", "transitions": "RECEIVED>PUBLISHED>BROADCAST>UNKNOWN>CONFIRMED>SETTLED" },
+  "commit": "7d4a02d860a4ed99afff311a9463965a7438b1aa", "runId": "sc001-6-20261108T175804Z-43716"
+}

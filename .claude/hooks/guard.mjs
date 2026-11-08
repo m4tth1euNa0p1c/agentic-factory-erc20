@@ -24,6 +24,10 @@ if (tool === "Bash" || tool === "PowerShell") {
     [/(cat|type|less|more|head|tail|Get-Content|gc|sed|awk|grep|rg)\b[^|;&]*(\s|["'\/\\])\.env(?!\.example)\b/i, "reading .env"],
     [/infra[\\/]\.secrets/i, "accessing infra/.secrets"],
     [/git\s+push\b[^;&|]*(--force\b|-f\b|--force-with-lease)/i, "force push"],
+    // main is protected server-side too (PR + required checks); agents always work on a spec branch
+    [/git\s+push\b[^;&|]*(\s|:)(refs\/heads\/)?(main|master)(\s|$|;|&|\|)/i, "push to main (open a PR from a spec branch)"],
+    [/gh\s+pr\s+merge\b[^;&|]*--admin/i, "bypassing branch protection"],
+    [/gh\s+api\b[^;&|]*branches\/[^/\s]+\/protection/i, "changing branch protection"],
     [/--no-verify\b/, "skipping git hooks"],
     [/git\s+reset\s+--hard\s+origin/i, "hard reset to remote"],
     [/rm\s+-rf\s+(\/|~|\$HOME|\*)(\s|$)/, "destructive rm"],
@@ -38,5 +42,13 @@ if (tool === "Bash" || tool === "PowerShell") {
     [/\bdocker\s+run\b[^;&|]*\s-v\s*["']?(\.|\$PWD|\$\(pwd\)|\$ROOT)["']?:/i, "mounting the repository root into a container (use scripts/sandbox-exec.sh)"],
   ];
   for (const [re, why] of rules) if (re.test(cmd)) deny(why);
+  // bare `git push` while the current branch is main
+  if (/(^|[;&|]\s*)git\s+push(\s+(-u|--set-upstream)?\s*origin)?\s*($|[;&|])/i.test(cmd)) {
+    try {
+      const { execSync } = await import("node:child_process");
+      const br = execSync("git branch --show-current", { cwd: process.env.CLAUDE_PROJECT_DIR || process.cwd(), stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+      if (br === "main" || br === "master") deny("push from main (open a PR from a spec branch)");
+    } catch { /* not a git repo: nothing to protect */ }
+  }
 }
 process.exit(0);
