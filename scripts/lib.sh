@@ -37,11 +37,11 @@ load_env() {
 render_genesis() {
   load_env
   mkdir -p "$GENERATED/besu"
-  local tmp; tmp="$(mktemp -d)"
-  printf '["%s"]' "$BESU_VALIDATOR_ADDRESS" > "$tmp/toEncode.json"
+  local tmp; tmp="$(mktemp -d)"; chmod 755 "$tmp"   # Besu image runs as uid 1000 on Linux
+  printf '["%s"]' "$BESU_VALIDATOR_ADDRESS" > "$tmp/toEncode.json"; chmod 644 "$tmp/toEncode.json"
   local extra
-  extra="$(docker run --rm -v "$(hostpath "$tmp"):/data:ro" "$BESU_IMAGE" \
-    rlp encode --from=/data/toEncode.json --type=QBFT_EXTRA_DATA 2>/dev/null | grep -oE '^0x[0-9a-f]+' | tail -1)"
+  extra="$(docker run --rm $(docker_user) -v "$(hostpath "$tmp"):/data:ro" "$BESU_IMAGE" \
+    rlp encode --from=/data/toEncode.json --type=QBFT_EXTRA_DATA 2>/dev/null | grep -oE '^0x[0-9a-f]+' | tail -1 || true)"
   rm -rf "$tmp"
   [[ -n "$extra" ]] || die "QBFT extraData encoding failed"
   sed -e "s/__CHAIN_ID__/$TELA_CHAIN_ID/" -e "s/__EXTRA_DATA__/$extra/" \

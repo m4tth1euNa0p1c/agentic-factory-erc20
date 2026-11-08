@@ -54,6 +54,10 @@ YAML
   unset pw
 done
 
+# Containers (besu uid 1000, web3signer) must read their mounted key material on Linux hosts.
+# Dev-only trade-off tracked in issue #17 (dedicated uid/chown or Compose secrets in target envs).
+chmod -R a+rX "$SECRETS"
+
 # ---------- 3. Data plane secrets ----------
 for role in POSTGRES_SUPERUSER BACKEND_DB PONDER_DB ADAPTER_DB; do env_set "${role}_PASSWORD" "$(rand_hex 24)"; done
 env_set KAFKA_CLUSTER_ID "$(openssl rand -base64 16 | tr '+/' '-_' | tr -d '=\n')"
