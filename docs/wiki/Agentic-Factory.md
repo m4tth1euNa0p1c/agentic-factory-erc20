@@ -21,7 +21,8 @@
 sync → balayage des specs (`/speckit-analyze`) → tâche débloquée → agent spécialiste → `verifier` (indépendant) → `security-auditor` si zone sensible → preuve + registre + commit `Refs #` → PR.
 
 ## Garde-fous
-- Hook `PreToolUse` (`.claude/hooks/guard.mjs`, 21 tests) : bloque lecture de `.env`/clés, introspection de conteneurs, `/proc/*/environ`, `source .env`, montage de la racine, force-push, `--no-verify`.
+- Hook `PreToolUse` (`.claude/hooks/guard.mjs`) : **garde-fou par expressions régulières, testé contre 25 cas** — défense en profondeur, pas une frontière de sécurité (il ne prouve pas qu'aucun programme ne peut lire un secret ; il bloque aussi parfois du simple texte qui mentionne une commande interdite). Il bloque notamment la lecture de `.env`/clés, introspection de conteneurs, `/proc/*/environ`, `source .env`, montage de la racine, force-push, push vers `main`, contournement des hooks git et de la protection de branche.
+- `main` protégée côté serveur : PR obligatoire, 9 checks requis, admins inclus.
 - Permissions : allowlist fermée (scripts, gh issue/pr, docker compose ps/logs/up/down).
 - Code cible exécuté via `scripts/sandbox-exec.sh` : copie `git archive`, `--network none`, FS lecture seule, limites.
 

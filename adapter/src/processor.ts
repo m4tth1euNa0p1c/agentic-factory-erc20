@@ -6,7 +6,7 @@
 import { keccak256, type Address, type Hex } from "viem";
 import { OperationCommand, referenceOf, result, type OperationResult } from "./messages.ts";
 import {
-  RetryableError, errMsg, type Chain, type Fault, type Journal, type Logger, type Publisher, type Receipt, type Signer, type TxAttempt,
+  type CrashPoint, RetryableError, errMsg, type Chain, type Fault, type Journal, type Logger, type Publisher, type Receipt, type Signer, type TxAttempt,
 } from "./ports.ts";
 
 export type ProcessorDeps = {
@@ -21,7 +21,9 @@ export type ProcessorDeps = {
   reconcileReceiptTimeoutMs?: number; // RECONCILE must not hold the partition (review F2)
   fault: Fault;
   crash: (code: number) => never; // injected (process.exit in prod, throw in tests)
-  pause?: () => Promise<void>; // fault "pause-before-broadcast": window between signing and broadcast (tests only)
+  pause?: () => Promise<void>; // faults "pause-*-broadcast": open a window around the broadcast (tests only)
+  faultProbability?: number; // crash-random
+  random?: () => number;
   log: Logger;
   now?: () => Date;
 };
@@ -89,9 +91,11 @@ export class Processor {
 
     const rawTx = await this.rpc(() => signer.signTransaction({ from: cmd.from, to: token, data, nonce, gas, gasPrice: 0n }));
     const txHash = keccak256(rawTx);
+    this.checkpoint("after-sign", cmd.operationId);
     await journal.insertSigned({ operationId: cmd.operationId, from: cmd.from, nonce, rawTx, txHash });
     this.d.log.info("signed and journaled", { operationId: cmd.operationId, txHash, nonce: nonce.toString() });
 
+    this.checkpoint("after-journal", cmd.operationId);
     if (this.d.fault === "crash-before-broadcast") this.d.crash(137);
     if (this.d.fault === "pause-before-broadcast" && this.d.pause) {
       this.d.log.warn("FAULT INJECTION: pause before broadcast", { operationId: cmd.operationId, txHash });
@@ -130,12 +134,18 @@ export class Processor {
       return this.emit(result(a.operationId, "UNKNOWN", { txHash: a.txHash, reason: "RPC_UNAVAILABLE" }, this.d.now));
     }
     if (sent === "nonce-too-low") return this.nonceConsumed(ctx, a);
+    this.checkpoint("after-broadcast", a.operationId);
     if (fresh && this.d.fault === "crash-after-broadcast") {
       this.d.log.warn("FAULT INJECTION: crash after broadcast", { operationId: a.operationId, txHash: a.txHash });
       this.d.crash(137);
     }
     if (a.state === "SIGNED") await this.d.journal.markBroadcast(a.operationId);
     await this.emit(result(a.operationId, "BROADCAST", { txHash: a.txHash }, this.d.now));
+    this.checkpoint("after-broadcast-published", a.operationId);
+    if (fresh && this.d.fault === "pause-after-broadcast" && this.d.pause) {
+      this.d.log.warn("FAULT INJECTION: pause after broadcast", { operationId: a.operationId, txHash: a.txHash });
+      await this.d.pause();
+    }
     return this.track(ctx, a);
   }
 
@@ -200,6 +210,15 @@ export class Processor {
       return "conflict";
     }
     return { txHash: log.txHash, blockNumber: log.blockNumber };
+  }
+
+  /** crash-random (SC-002): crash with probability p at each checkpoint, on first execution AND on resume. */
+  checkpoint(point: CrashPoint, operationId: string): void {
+    if (this.d.fault !== "crash-random") return;
+    if ((this.d.random ?? Math.random)() < (this.d.faultProbability ?? 0.2)) {
+      this.d.log.warn("FAULT INJECTION: crash at checkpoint", { operationId, point });
+      this.d.crash(137);
+    }
   }
 
   private async emit(r: OperationResult): Promise<OperationResult> {

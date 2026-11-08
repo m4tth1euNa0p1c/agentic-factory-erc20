@@ -26,11 +26,13 @@ public class SettlementJob {
     private final JdbcClient jdbc;
     private final OperationRepository repo;
     private final OperationService service;
+    private final com.talan.tela.operation.IndexedBalances indexed;
 
-    public SettlementJob(JdbcClient jdbc, OperationRepository repo, OperationService service) {
+    public SettlementJob(JdbcClient jdbc, OperationRepository repo, OperationService service, com.talan.tela.operation.IndexedBalances indexed) {
         this.jdbc = jdbc;
         this.repo = repo;
         this.service = service;
+        this.indexed = indexed;
     }
 
     record Indexed(UUID id, Status status, String txHash, long block) {}
@@ -38,6 +40,12 @@ public class SettlementJob {
     @Scheduled(fixedDelayString = "${tela.settlement-interval:1s}")
     @Transactional
     public void settle() {
+        try {
+            indexed.assertNotRegressed();
+        } catch (com.talan.tela.operation.IndexedBalances.IndexerUnavailableException e) {
+            log.warn("read model regressed or unavailable, settlement paused: {}", e.getCause().getMessage());
+            return;
+        }
         java.util.List<Indexed> rows;
         try {
             rows = jdbc.sql("""
@@ -59,6 +67,7 @@ public class SettlementJob {
             repo.updateStatus(r.id(), r.status(), Status.SETTLED, r.txHash(), r.block(), null, "indexer");
             log.info("operation {} {} -> SETTLED (indexed at block {})", r.id(), r.status(), r.block());
         }
+        indexed.advanceWatermark();
     }
 
     @Scheduled(fixedDelayString = "${tela.reconcile-interval:5s}")

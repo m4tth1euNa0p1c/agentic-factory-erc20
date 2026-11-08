@@ -60,7 +60,8 @@ public class TransferController {
         }
     }
 
-    public record BalanceDto(String token, String indexed, String pending, String available, String indexedAtBlock) {}
+    public record BalanceDto(String token, String indexed, String pending, String available, String availableRaw,
+            String heldTotal, String indexedAtBlock) {}
 
     @PostMapping("/transfers")
     public ResponseEntity<OperationDto> createTransfer(
@@ -89,11 +90,11 @@ public class TransferController {
     public List<BalanceDto> getBalances(@PathVariable @Pattern(regexp = ADDRESS) String address) {
         String account = address.toLowerCase(Locale.ROOT);
         return TOKENS.stream().map(t -> {
-            var ix = indexed.balance(account, t);
-            BigInteger held = repo.heldAmount(account, t);
-            BigInteger available = ix.balance().subtract(held).max(BigInteger.ZERO);
-            return new BalanceDto(t, ix.balance().toString(), held.toString(), available.toString(),
-                    indexed.head().map(String::valueOf).orElse(null));
+            var a = indexed.availability(account, t);
+            // `available` is what the user may still reserve (display, clamped at 0);
+            // `availableRaw` is the unclamped invariant value, exposed so verifiers can check it is never negative.
+            return new BalanceDto(t, a.indexed().toString(), a.pending().toString(), a.raw().max(BigInteger.ZERO).toString(),
+                    a.raw().toString(), a.heldTotal().toString(), indexed.head().map(String::valueOf).orElse(null));
         }).toList();
     }
 }

@@ -52,5 +52,15 @@
 
 - [x] T053 [blockchain-adapter][backend-java] Correctifs revue #18 : F1 (classification diffusion + NONCE_CONSUMED), F2 (backoff/plafond RECONCILE, RECONCILE non bloquant), F3 (ordre des lectures), F4 (revert ≠ échec si référence exécutée ; RECONCILE sans journal ne signe pas), F5 (getLogs paginé), F6 (NODE_ENV production par défaut), F7 (pas de rawTx en log), liste blanche des comptes signables
 
+## Phase 8: Validation complète (revue externe 2026-11-08)
+- [x] T054 [verifier][blockchain-adapter] SC-002 : fault `crash-random` (checkpoints after-sign → after-result), superviseur in-container, campagne `sc002-random-crashes.sh`
+- [x] T055 [verifier] SC-003 : campagne de latence `sc003-latency.sh` (p50/p95/max depuis `operation_transition`)
+- [x] T056 [verifier][backend-java] SC-004 : 1000 demandes concurrentes (Java + `sc004-concurrency.sh`), invariant brut échantillonné
+- [x] T057 [backend-java] Disponible en snapshot unique, `availableRaw`/`heldTotal` (D-21) ; test du double comptage transitoire
+- [x] T058 [verifier][blockchain-adapter] US4-5 : UNKNOWN après acceptation par Besu (`pause-after-broadcast`, scénario D)
+- [x] T059 [verifier] Preuves par exécution (`runs/<RUN_ID>/run.json`) ; `validation-matrix.md`
+- [x] T061 [indexer][backend-java] D-23 : `reorgWindow: 0` + garde de régression du modèle de lecture (watermark), sonde de cohérence
+- [ ] T060 [verifier] Exécuter les campagnes SC-001…SC-004 et rattacher les preuves au SHA de la PR
+
 ## Dependencies
 Phase 1 → Phase 2 → US1 → (US2 ∥ US3 ∥ US4) → Polish. T004 dépend de 001/T010.

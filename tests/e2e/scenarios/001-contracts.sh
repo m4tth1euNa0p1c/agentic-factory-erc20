@@ -41,7 +41,7 @@ cat > "$EVIDENCE_DIR/evidence.json" <<JSON
   "txHash": "$tx",
   "receiptStatus": "$status",
   "blockNumber": $((block)), "aliceBefore": "$a0", "aliceAfter": "$a2", "bobBefore": "$b0", "bobAfter": "$b1",
-  "eventsForReference": $logs, "commit": "$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo none)" }
+  "eventsForReference": $logs, "commit": "$GIT_SHA", "runId": "$RUN_ID" }
 JSON
 step "verdict: $([[ $fail == 0 ]] && echo PASS || echo FAIL) -> $EVIDENCE_DIR/evidence.json"
 exit $fail

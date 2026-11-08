@@ -78,12 +78,14 @@ components:
         updatedAt: { type: string, format: date-time }
     Balance:
       type: object
-      required: [token, indexed, pending, available, indexedAtBlock]
+      required: [token, indexed, pending, available, availableRaw, heldTotal, indexedAtBlock]
       properties:
         token: { $ref: "#/components/schemas/Token" }
-        indexed: { type: string }
-        pending: { type: string }
-        available: { type: string }
+        indexed: { type: string, description: "balance indexed by Ponder" }
+        pending: { type: string, description: "HELD reservations whose execution is not indexed yet" }
+        available: { type: string, description: "what may still be reserved (display value, clamped at 0)" }
+        availableRaw: { type: string, description: "indexed - pending, unclamped; invariant >= 0 (diagnostic)" }
+        heldTotal: { type: string, description: "all HELD reservations, incl. executions indexed but not yet settled" }
         indexedAtBlock: { type: [string, "null"] }
     Problem:
       type: object

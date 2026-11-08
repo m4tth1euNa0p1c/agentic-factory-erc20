@@ -30,6 +30,8 @@ Liste des opérations avec filtre par statut ; détail avec txHash, bloc, horoda
 - **FR-001**: Client typé généré depuis `schemas/openapi/tela-api.v1.yaml`.
 - **FR-002**: Aucun accès direct navigateur → Besu/Web3Signer/Kafka.
 - **FR-003**: Montants saisis en décimal (6 décimales), transmis en unités minimales entières (chaîne).
+- **FR-004**: La chronologie affiche les transitions **réellement observées** (`operation_transition`), sans supposer que tous les états intermédiaires ont lieu (D-14 : `PUBLISHED → SETTLED` est légitime).
+- **FR-005**: Afficher `available` (réservable) ; `availableRaw`/`heldTotal` uniquement en vue diagnostic.
 
 ## Success Criteria *(mandatory)*
 - **SC-001**: Test Playwright du parcours transfert nominal vert en CI.

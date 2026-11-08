@@ -149,6 +149,8 @@ services:
       NODE_ENV: ${ADAPTER_NODE_ENV:-production}   # fault injection refused unless explicitly development (review F6)
       ADAPTER_FAULT: ${ADAPTER_FAULT:-none}
       ADAPTER_FAULT_PAUSE_MS: ${ADAPTER_FAULT_PAUSE_MS:-10000}
+      ADAPTER_FAULT_PROBABILITY: ${ADAPTER_FAULT_PROBABILITY:-0.2}
+      ADAPTER_SUPERVISE: ${ADAPTER_SUPERVISE:-0}
       TELA_CHAIN_ID: ${TELA_CHAIN_ID}
       BESU_RPC_URL: http://besu:8545
       WEB3SIGNER_URL: http://web3signer:9000

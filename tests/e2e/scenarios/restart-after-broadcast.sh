@@ -50,7 +50,7 @@ cat > "$EVIDENCE_DIR/evidence.json" <<JSON
   "txHash": "$tx",
   "adapterRestarts": $((restarts1 - restarts0)), "crashes": $crashes, "signatures": $signed,
   "aliceDelta": "$((chainA0 - chainA1))", "eventsForReference": $(ref_events "$TCE_ADDRESS" "$ALICE_ADDRESS" "$ref"),
-  "transitions": "$trail", "commit": "$(git -C "$ROOT" rev-parse --short HEAD)"
+  "transitions": "$trail", "commit": "$GIT_SHA", "runId": "$RUN_ID"
 }
 JSON
 printf '%s\n' "$logs" > "$EVIDENCE_DIR/adapter.log"
