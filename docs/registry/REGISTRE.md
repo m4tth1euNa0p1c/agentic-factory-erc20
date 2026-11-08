@@ -57,6 +57,7 @@
 | D-21 | Disponible = indexé − réservations **non encore indexées**, calculé en un seul snapshot SQL ; `availableRaw` exposé | Revue 2026-11-08 : supprime le double comptage transitoire et rend l'invariant vérifiable | 2026-11-08 |
 | D-22 | `main` protégée (PR + 9 checks) ; clé API factory = secret de l'environnement `factory` limité à `main` | Revue 2026-11-08 | 2026-11-08 |
 | D-23 | Ponder `reorgWindow: 0` (QBFT = finalité immédiate) + garde Java : un head indexé sous le plus haut jamais vu ⇒ réservations refusées (503 `INDEXER_UNAVAILABLE`) et règlement suspendu | Revue 2026-11-08 / P-15 | 2026-11-08 |
+| D-24 | UI : nginx n'accepte que les `Host` connus (sinon 421, anti DNS rebinding) ; réseau `ui` dédié frontend↔backend | Revue PR #28 | 2026-11-08 |
 | D-10 | Client Kafka JS : `@confluentinc/kafka-javascript` | `kafkajs` non maintenu | 2026-11-08 |
 
 ## PREUVES d'exécution
@@ -84,3 +85,4 @@
 | P-19 | SC-001 1re tentative **interrompue** : FAIL sur `failure-vs-unknown` itération 1 dû au **harnais** (hauteur 5282 > limite eth_getLogs 5000 de Besu → comptage d'événements à 0) ; assertions de solde on-chain PASS ; bug `set -e` de la campagne qui l'a arrêtée. Corrigé (requêtes paginées depuis le bloc de déploiement) | `evidence/002/failure-vs-unknown/runs/sc001-1-*`, `evidence/002/campaign-sc001/runs/` | 002-validation |
 | P-20 | 2e tentative SC-001 interrompue par une **régression du harnais** (`logs_count` traitait « 0 événement » comme une erreur) → arrêtée, corrigée (`7d4a02d`) ; ses runs FAIL sont conservés | `evidence/002/*/runs/sc001-*` (16:45–16:55) | 002-validation |
 | P-21 | **Validation complète sur `7d4a02d`** (images reconstruites depuis ce SHA) : SC-004 PASS, SC-003 PASS, SC-002 PASS (119 crashs réels, 120 ops, 0 double débit), **SC-001 PASS 40/40** | `evidence/002/campaign-sc00{1,2,3,4}/runs/` (20261108T172015Z-24324, 20261108T170453Z-20051, 20261108T170050Z-18974, 20261108T165652Z-17196) | 002-validation |
+| P-22 | UI 005 : 31 tests unitaires (vérifiés en conteneur propre), Playwright 2/2 sur la stack réelle, avant et après les correctifs de revue ; Host étranger → 421, Postgres injoignable depuis `ui` | `evidence/005-operator-ui/playwright/` | 005-operator-ui-v1 |
