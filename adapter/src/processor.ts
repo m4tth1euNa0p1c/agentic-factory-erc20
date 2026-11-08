@@ -13,6 +13,7 @@ export type ProcessorDeps = {
   receiptTimeoutMs: number;
   fault: Fault;
   crash: (code: number) => never; // injected (process.exit in prod, throw in tests)
+  pause?: () => Promise<void>; // fault "pause-before-broadcast": opens a window between signing and broadcast (tests only)
   log: Logger;
   now?: () => Date;
 };
@@ -81,6 +82,10 @@ export class Processor {
     this.d.log.info("signed and journaled", { operationId: cmd.operationId, txHash, nonce: nonce.toString() });
 
     if (this.d.fault === "crash-before-broadcast") this.d.crash(137);
+    if (this.d.fault === "pause-before-broadcast" && this.d.pause) {
+      this.d.log.warn("FAULT INJECTION: pause before broadcast", { operationId: cmd.operationId, txHash });
+      await this.d.pause();
+    }
     return this.broadcastAndTrack({ operationId: cmd.operationId, from: cmd.from, nonce, rawTx, txHash, state: "SIGNED", finalStatus: null, blockNumber: null }, true);
   }
 

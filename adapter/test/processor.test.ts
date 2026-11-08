@@ -163,6 +163,27 @@ describe("US4 confirmed failure vs unknown result", () => {
     expect(signer.calls).toBe(1);
   });
 
+  it("pause-before-broadcast window: token paused meanwhile -> mined revert -> FAILED (not REJECTED)", async () => {
+    const p = new Processor({
+      journal, chain, signer, publisher: pub, tokens: { TCE, TCD: TCE, TIF: TCE }, receiptTimeoutMs: 1000, fault: "pause-before-broadcast", log: silent,
+      crash: (code) => { throw new Crash(code); }, pause: async () => { chain.paused = true; },
+    });
+    expect(await p.handle(cmd())).toMatchObject({ status: "FAILED", reason: "REVERTED" });
+    expect(chain.bal(ALICE)).toBe(100_000_000n);
+  });
+
+  it("pause-before-broadcast window: Besu unreachable meanwhile -> UNKNOWN, then RECONCILE -> CONFIRMED", async () => {
+    const p = new Processor({
+      journal, chain, signer, publisher: pub, tokens: { TCE, TCD: TCE, TIF: TCE }, receiptTimeoutMs: 1000, fault: "pause-before-broadcast", log: silent,
+      crash: (code) => { throw new Crash(code); }, pause: async () => { chain.down = true; },
+    });
+    expect(await p.handle(cmd())).toMatchObject({ status: "UNKNOWN", reason: "RPC_UNAVAILABLE" });
+    chain.down = false;
+    expect(await make().handle(cmd({ type: "RECONCILE" }))).toMatchObject({ status: "CONFIRMED" });
+    expect(signer.calls).toBe(1);
+    expect(chain.bal(ALICE)).toBe(90_000_000n);
+  });
+
   it("receipt timeout -> UNKNOWN with RECEIPT_TIMEOUT", async () => {
     chain.autoMine = false;
     expect(await make().handle(cmd())).toMatchObject({ status: "UNKNOWN", reason: "RECEIPT_TIMEOUT" });

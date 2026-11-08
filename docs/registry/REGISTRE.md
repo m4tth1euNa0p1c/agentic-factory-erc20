@@ -45,6 +45,8 @@
 | D-11 | EVM `cancun` (genèse `cancunTime: 0`) : OZ 5.6 utilise `mcopy` | Constat de compilation | 2026-11-08 |
 | D-12 | Références d'opération **scopées par émetteur** (`mapping(sender => ref => used)`) | Revue sécurité M-4 : empêche le squatting d'une référence par un tiers | 2026-11-08 |
 | D-13 | Kafka non publié sur l'hôte ; Web3Signer uniquement sur `signing` ; Besu sans QBFT/TXPOOL | Revue sécurité M-3, F-1 | 2026-11-08 |
+| D-14 | Règlement `SETTLED` sur preuve indexée (event + to/amount identiques), quel que soit le statut non terminal | Robustesse si le résultat de l'adaptateur est perdu ou retardé | 2026-11-08 |
+| D-15 | Injection de panne `pause-before-broadcast` (fenêtre signature→diffusion) pour tests FAILED/UNKNOWN déterministes | Reproductibilité US4 | 2026-11-08 |
 | D-10 | Client Kafka JS : `@confluentinc/kafka-javascript` | `kafkajs` non maintenu | 2026-11-08 |
 
 ## PREUVES d'exécution
@@ -58,3 +60,8 @@
 | P-05 | Déploiement signé exclusivement par Web3Signer (`forge script --unlocked`, aucune clé exportée) | `scripts/deploy-contracts.sh` | 001 |
 | P-06 | Adaptateur (29 tests unitaires) : nominal, crash avant/après diffusion, journal perdu, conflit de référence, FAILED/REJECTED/UNKNOWN, RECONCILE | `adapter/test/` | 002 |
 | P-07 | Adaptateur live : crash réel après diffusion (`ADAPTER_FAULT`) → redémarrage → 1 signature, 1 débit, 1 txHash ; rejeu d'une commande exécutée sans effet | `evidence/002/adapter/evidence.json` | 002 |
+| P-08 | Backend (13 tests, Testcontainers PG 18.4 + Kafka 4.4) : 20 requêtes concurrentes → exactement 10 réservées ; résultats idempotents et hors ordre ; UNKNOWN conserve la réservation | `backend/src/test/` | 002 |
+| P-09 | E2E nominal : RECEIVED>PUBLISHED>BROADCAST>CONFIRMED>SETTLED, 1 débit, indexé = balanceOf, pending 0, Idempotency-Key, 409, 400 | `evidence/002/nominal/evidence.json` | 002 |
+| P-10 | E2E crash après diffusion (stack complète) : 1 signature, 1 débit, 1 événement, reprise du journal | `evidence/002/restart-after-broadcast/evidence.json` | 002 |
+| P-11 | E2E Ponder arrêté + 20 demandes concurrentes : 10 acceptées, disponible jamais négatif, CONFIRMED tant que l'index est périmé, convergence SETTLED | `evidence/002/ponder-lag/evidence.json` | 002 |
+| P-12 | E2E échec vs inconnu : revert miné → FAILED (receipt 0) ; pause → REJECTED sans diffusion ; Besu coupé → UNKNOWN (réservation conservée) → RECONCILE → SETTLED | `evidence/002/failure-vs-unknown/evidence.json` | 002 |

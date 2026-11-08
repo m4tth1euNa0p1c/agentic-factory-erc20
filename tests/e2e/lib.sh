@@ -39,6 +39,42 @@ ref_events() { # <token> <from> <ref> -> number of TransferWithReference events
     | grep -o '"transactionHash"' | wc -l | tr -d ' '
 }
 
+# ---------- Java API (spec 002 OpenAPI) ----------
+API="http://127.0.0.1:8080/api/v1"
+lc() { printf '%s' "$1" | tr 'A-F' 'a-f'; }
+jget() { python -c "import sys,json;d=json.load(sys.stdin);print(eval('d'+sys.argv[1]))" "$1" | tr -d '\r\n'; } # jget '["status"]' (strip CR: Windows python)
+post_transfer() { # <idem-key> <from> <to> <amount> -> prints "<http_code> <body>"
+  local f; f="$(mktemp)"
+  curl -s -m 10 -o "$(hostpath "$f")" -w '%{http_code}' -H 'content-type: application/json' -H "Idempotency-Key: $1" \
+    --data "{\"from\":\"$2\",\"to\":\"$3\",\"token\":\"TCE\",\"amount\":\"$4\"}" "$API/transfers"
+  printf ' '; cat "$f"; rm -f "$f"
+}
+op_status() { curl -s -m 5 "$API/operations/$1" | jget '["status"]'; }
+wait_status() { # <operationId> <status> [timeout_s]
+  local end=$(( $(date +%s) + ${3:-90} )) s=""
+  while (( $(date +%s) < end )); do
+    s=$(op_status "$1" 2>/dev/null || true); [[ "$s" == "$2" ]] && return 0
+    sleep 1
+  done
+  step "timeout waiting $1 -> $2 (last=$s)"; return 1
+}
+bal_field() { # <address> <field: indexed|pending|available|indexedAtBlock>
+  curl -s -m 5 "$API/accounts/$1/balances" | python -c "import sys,json;print([b for b in json.load(sys.stdin) if b['token']=='TCE'][0][sys.argv[1]])" "$2" | tr -d '\r\n'
+}
+transitions() { "$ROOT/scripts/db-read.sh" "select string_agg(to_status, '>' order by id) from backend.operation_transition where operation_id='$1'"; }
+wait_indexer_caught_up() { # indexed head >= chain head - 1
+  local end=$(( $(date +%s) + ${1:-60} ))
+  while (( $(date +%s) < end )); do
+    local ch ih; ch=$(cast_ro block-number 2>/dev/null); ih=$(bal_field "$ALICE_ADDRESS" indexedAtBlock 2>/dev/null || echo 0)
+    [[ -n "$ch" && "$ih" != "None" && $((ih)) -ge $((ch - 1)) ]] && return 0; sleep 1
+  done; return 1
+}
+app_up() { # [ADAPTER_FAULT] — (re)start app services with the given adapter fault
+  ADAPTER_FAULT="${1:-none}" dc --profile app up -d --wait indexer backend adapter >/dev/null 2>&1 || {
+    step "FAIL app services did not start"; dc --profile app ps >&2; exit 1; }
+  if [[ -n "${1:-}" ]]; then ADAPTER_FAULT="$1" dc --profile app up -d --force-recreate --wait adapter >/dev/null 2>&1; fi
+}
+
 EVIDENCE_DIR=""
 evidence_init() { EVIDENCE_DIR="$ROOT/evidence/$1"; mkdir -p "$EVIDENCE_DIR"; : > "$EVIDENCE_DIR/steps.log"; }
 step() { printf '[%s] %s\n' "$(date -u +%FT%TZ)" "$*" | tee -a "$EVIDENCE_DIR/steps.log" >&2; }

@@ -11,7 +11,8 @@ RECEIVED ─► PUBLISHED ─► BROADCAST ─► CONFIRMED ─► SETTLED
    └─► (409/400 : jamais créée)
 BROADCAST|UNKNOWN ─► FAILED (receipt.status = 0)
 ```
-Terminaux : `SETTLED`, `FAILED`, `REJECTED`. Réservation `HELD` jusqu'à un terminal.
+Terminaux : `SETTLED`, `FAILED`, `REJECTED`.
+**Règlement par preuve on-chain (D-14)** : dès que `tela_read.operation_execution` contient (token, from, ref) avec `to` et `amount` identiques, toute opération non terminale passe `SETTLED` (source `indexer`), même si le résultat de l'adaptateur n'est pas encore arrivé (observé en e2e : `PUBLISHED>SETTLED` après crash de l'adaptateur). Réservation `HELD` jusqu'à un terminal.
 Rang (pour transitions hors ordre) : RECEIVED 0 < PUBLISHED 1 < BROADCAST 2 < UNKNOWN 3 < CONFIRMED 4 < SETTLED 5 ; FAILED/REJECTED terminaux (rang 9). Une transition n'est appliquée que si rang(cible) > rang(courant) et la paire est autorisée.
 
 ## backend (schema `backend`)

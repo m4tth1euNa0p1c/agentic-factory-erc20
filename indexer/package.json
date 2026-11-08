@@ -1,0 +1,23 @@
+{
+  "name": "@tela/indexer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TELA read chain: Besu -> Ponder -> PostgreSQL (schema ponder_tela, views tela_read) (spec 002)",
+  "scripts": {
+    "dev": "ponder dev",
+    "start": "ponder start --schema ponder_tela --views-schema tela_read",
+    "codegen": "ponder codegen",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "hono": "4.13.17",
+    "ponder": "0.18.6",
+    "viem": "2.57.16"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "5.9.3"
+  },
+  "engines": { "node": ">=22.12" }
+}

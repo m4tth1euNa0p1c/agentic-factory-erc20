@@ -53,7 +53,7 @@ export interface Publisher {
   publish(r: OperationResult): Promise<void>;
 }
 
-export type Fault = "none" | "crash-after-broadcast" | "crash-before-broadcast";
+export type Fault = "none" | "crash-after-broadcast" | "crash-before-broadcast" | "pause-before-broadcast";
 
 export type Logger = {
   info(msg: string, f?: Record<string, unknown>): void;

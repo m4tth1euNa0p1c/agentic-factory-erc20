@@ -148,6 +148,7 @@ services:
     environment:
       NODE_ENV: ${ADAPTER_NODE_ENV:-development}
       ADAPTER_FAULT: ${ADAPTER_FAULT:-none}
+      ADAPTER_FAULT_PAUSE_MS: ${ADAPTER_FAULT_PAUSE_MS:-10000}
       TELA_CHAIN_ID: ${TELA_CHAIN_ID}
       BESU_RPC_URL: http://besu:8545
       WEB3SIGNER_URL: http://web3signer:9000
@@ -161,5 +162,42 @@ services:
     depends_on:
       besu: { condition: service_healthy }
       web3signer: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+
+  indexer:
+    <<: *hardening
+    profiles: [app]
+    build: { context: ./indexer }
+    image: tela/indexer:dev
+    environment:
+      TELA_CHAIN_ID: ${TELA_CHAIN_ID}
+      PONDER_RPC_URL: http://besu:8545
+      DATABASE_URL: postgres://tela_ponder:${PONDER_DB_PASSWORD}@postgres:5432/tela
+      TCE_ADDRESS: ${TCE_ADDRESS}
+      TCD_ADDRESS: ${TCD_ADDRESS}
+      TIF_ADDRESS: ${TIF_ADDRESS}
+      TOKENS_START_BLOCK: ${TOKENS_START_BLOCK:-0}
+    networks: [chain, data]
+    depends_on:
+      besu: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+
+  backend:
+    <<: *hardening
+    profiles: [app]
+    build: { context: ./backend }
+    image: tela/backend:dev
+    read_only: true
+    tmpfs: [/tmp]
+    environment:
+      BACKEND_DATABASE_URL: jdbc:postgresql://postgres:5432/tela
+      BACKEND_DB_USER: tela_backend
+      BACKEND_DB_PASSWORD: ${BACKEND_DB_PASSWORD}
+      KAFKA_BROKERS: kafka:9092
+      TELA_RECONCILE_AFTER: ${TELA_RECONCILE_AFTER:-10s}
+    ports: ["127.0.0.1:8080:8080"]
+    networks: [data, bus]
+    depends_on:
       postgres: { condition: service_healthy }
       kafka: { condition: service_healthy }

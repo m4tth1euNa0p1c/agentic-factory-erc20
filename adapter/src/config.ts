@@ -18,7 +18,8 @@ const Env = z.object({
   TCD_ADDRESS: addr,
   TIF_ADDRESS: addr,
   RECEIPT_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
-  ADAPTER_FAULT: z.enum(["none", "crash-after-broadcast", "crash-before-broadcast"]).default("none"),
+  ADAPTER_FAULT: z.enum(["none", "crash-after-broadcast", "crash-before-broadcast", "pause-before-broadcast"]).default("none"),
+  ADAPTER_FAULT_PAUSE_MS: z.coerce.number().int().min(0).max(120_000).default(10_000),
   HEALTH_PORT: z.coerce.number().int().default(8081),
 });
 export type Config = z.infer<typeof Env>;

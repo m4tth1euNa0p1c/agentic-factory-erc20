@@ -43,6 +43,7 @@ const processor = new Processor({
   receiptTimeoutMs: cfg.RECEIPT_TIMEOUT_MS,
   fault: cfg.ADAPTER_FAULT,
   crash: (code) => process.exit(code),
+  pause: () => new Promise((r) => setTimeout(r, cfg.ADAPTER_FAULT_PAUSE_MS)),
   log,
 });
 
