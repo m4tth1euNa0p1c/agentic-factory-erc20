@@ -1,0 +1,17 @@
+{
+  "spec": "001",
+  "scenario": "contracts",
+  "verdict": "PASS",
+  "chainId": 48151,
+  "token": "0x770d49CE68977fDAC318522277f4cC60ec705B27",
+  "reference": "0x651e02bdb33779632a9d3350301927219ac9a614945e2c8dce55c93aa5939b62",
+  "txHash": "0x7380030fb66eec046946b7eb0c22cfffe64a462822a4bf82fe428e5ca6acb05e",
+  "receiptStatus": "0x1",
+  "blockNumber": 39,
+  "aliceBefore": "1000000000000",
+  "aliceAfter": "999990000000",
+  "bobBefore": "0",
+  "bobAfter": "10000000",
+  "eventsForReference": 1,
+  "commit": "none"
+}

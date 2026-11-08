@@ -29,6 +29,13 @@ if (tool === "Bash" || tool === "PowerShell") {
     [/rm\s+-rf\s+(\/|~|\$HOME|\*)(\s|$)/, "destructive rm"],
     [/(printenv|env)\s*$|\bset\s*$/m, "dumping environment"],
     [/gh\s+(secret|auth\s+token)/i, "reading GitHub secrets/tokens"],
+    // Security review M-1: container introspection leaks interpolated secrets / mounted key files.
+    [/\bdocker\s+(compose\s+)?(config|exec|cp|inspect)\b/i, "container introspection (use scripts/*.sh)"],
+    [/\bdocker\s+(container\s+)?(exec|cp|inspect)\b/i, "container introspection (use scripts/*.sh)"],
+    [/\/proc\/(\d+|self|1)\/environ/i, "reading process environment"],
+    [/\/secrets\/|\/var\/lib\/web3signer|keystores?\//i, "accessing key material paths"],
+    [/(^|[\s;&|(])(source|\.)\s+["']?[^\s;&|]*\.env\b(?!\.example)/i, "sourcing .env into the agent shell"],
+    [/\bdocker\s+run\b[^;&|]*\s-v\s*["']?(\.|\$PWD|\$\(pwd\)|\$ROOT)["']?:/i, "mounting the repository root into a container (use scripts/sandbox-exec.sh)"],
   ];
   for (const [re, why] of rules) if (re.test(cmd)) deny(why);
 }
