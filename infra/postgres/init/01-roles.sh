@@ -17,7 +17,7 @@ GRANT CONNECT ON DATABASE tela TO tela_backend, tela_ponder;
 CREATE SCHEMA backend AUTHORIZATION tela_backend;
 CREATE SCHEMA ponder_tela AUTHORIZATION tela_ponder;
 CREATE SCHEMA tela_read AUTHORIZATION tela_ponder;
-GRANT CREATE ON DATABASE tela TO tela_ponder;   -- ponder manages its own internal schemas
+GRANT CREATE, TEMPORARY ON DATABASE tela TO tela_ponder;   -- ponder manages its own schemas and uses temp tables
 
 GRANT USAGE ON SCHEMA tela_read TO tela_backend;
 ALTER DEFAULT PRIVILEGES FOR ROLE tela_ponder IN SCHEMA tela_read GRANT SELECT ON TABLES TO tela_backend;
