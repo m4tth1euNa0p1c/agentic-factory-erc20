@@ -21,7 +21,6 @@ public class OperationRepository {
     }
 
     static Operation map(ResultSet rs, int i) throws SQLException {
-        long block = rs.getLong("block_number");
         return new Operation(
                 rs.getObject("operation_id", UUID.class),
                 rs.getString("idempotency_key"),
@@ -33,7 +32,7 @@ public class OperationRepository {
                 rs.getString("reference"),
                 Status.valueOf(rs.getString("status")),
                 rs.getString("tx_hash"),
-                rs.wasNull() ? null : block,
+                rs.getObject("block_number", Long.class), // nullable read: an unknown block is null, never 0 (#27)
                 rs.getString("failure_reason"),
                 rs.getObject("created_at", OffsetDateTime.class),
                 rs.getObject("updated_at", OffsetDateTime.class));

@@ -1,0 +1,1 @@
+{ "criterion": "SC-003", "verdict": "PASS", "operations": 10, "paceSeconds": 3, "p50": 1.39, "p95": 2.23, "max": 2.23, "blockPeriodSeconds": 2, "gitSha": "98ef63b9fdc72b608d3f9f764bb01c32ae4d5f45", "runId": "20261108T195811Z-60862" }

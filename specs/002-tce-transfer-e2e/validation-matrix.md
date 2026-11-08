@@ -10,12 +10,14 @@
 | SC-001 | Les 4 scénarios passent 10 fois consécutivement | T051 | `tests/e2e/campaigns/sc001-repeat.sh 10` | `evidence/002/campaign-sc001/runs/20261108T172015Z-24324/` | **PASS 40/40** (10 × 4 scénarios) |
 | SC-002 | 0 double débit sur ≥ 100 crashs réels aléatoires entre signature et commit | T054 | `tests/e2e/campaigns/sc002-random-crashes.sh 100` (+ `adapter/test/crash-random.test.ts`, 200 ops) | `evidence/002/campaign-sc002/runs/20261108T170453Z-20051/` | **PASS** : 119 crashs réels (5 points), 120 ops, 0 double débit |
 | SC-003 | Demande → `CONFIRMED` (ou `SETTLED` direct, D-14) < 10 s au p95 | T055 | `tests/e2e/campaigns/sc003-latency.sh 60 3` | `evidence/002/campaign-sc003/runs/20261108T170050Z-18974/` | **PASS** : p50 1,23 s, p95 2,22 s (60 ops, 1 req/3 s, blocs 2 s) ; débit limité → #26 |
-| SC-004 | Disponible jamais négatif sur 1 000 demandes concurrentes | T056 | `tests/e2e/campaigns/sc004-concurrency.sh 1000 100` (+ `sc004_thousandConcurrentRequests` Java) | `evidence/002/campaign-sc004/runs/20261108T165652Z-17196/` | **PASS** : 1000 req., 100/900, disponible brut min = 0 |
+| SC-004 | Disponible jamais négatif sur 1 000 demandes concurrentes | T056 | `tests/e2e/campaigns/sc004-concurrency.sh 1000 100` (+ `sc004_thousandConcurrentRequests` Java) | `evidence/002/campaign-sc004/runs/20261108T165652Z-17196/` | **PASS** : 1000 req., 100/900, disponible brut min = 0 sur **103 relevés** (`invariant-samples.txt`) |
 
 **Version validée : `7d4a02d`** — images reconstruites depuis ce SHA avant les campagnes (digests dans chaque `run.json`).
 Note : `run.json` indique `dirty: true` pour SC-001/002/003 ; la seule différence avec `7d4a02d` était les pointeurs `evidence/*/LATEST` écrits par les campagnes précédentes (vérifié : 0 fichier hors `evidence/` modifié). Le calcul `dirty` exclut désormais `evidence/`.
 
-**Statut spec 002 : tous les critères de succès SC-001…SC-004 sont démontrés sur une même version.**
+**Statut spec 002 : tous les critères de succès SC-001…SC-004 sont démontrés sur une même version, dans le périmètre de la sandbox documentée.**
+
+Portée (revue du 2026-11-08) : les campagnes finales sont **locales** (`run.json` : `ci: null`) ; la CI vérifie séparément l'intégration et les 4 scénarios. Pour SC-003, la run `20261108T170050Z-18974` n'archive que p50/p95/max ; les latences individuelles sont archivées à partir des exécutions suivantes (`latencies.txt`). Les 97 relevés cités auparavant pour SC-004 appartenaient à la campagne précédente.
 
 ## Exigences fonctionnelles
 

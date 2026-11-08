@@ -15,6 +15,9 @@ for i in $(seq 1 "$N"); do
 done
 read -r s f r o <<<"$(wait_all_terminal 600 $ids)"
 in="'$(printf '%s' "${ids# }" | sed "s/ /','/g")'"
+# archive every individual latency so the percentiles can be recomputed independently (review 2026-11-08)
+"$ROOT/scripts/db-read.sh" "select o.operation_id, extract(epoch from (min(tr.at) filter (where tr.to_status in ('CONFIRMED','SETTLED')) - min(tr.at) filter (where tr.to_status='RECEIVED')))
+   from backend.operation o join backend.operation_transition tr using (operation_id) where o.operation_id in ($in) group by o.operation_id order by 2"   | tr -d '\r' > "$EVIDENCE_DIR/latencies.txt"
 stats=$("$ROOT/scripts/db-read.sh" "with t as (
    select o.operation_id,
           extract(epoch from (min(tr.at) filter (where tr.to_status in ('CONFIRMED','SETTLED')) - min(tr.at) filter (where tr.to_status='RECEIVED'))) as s

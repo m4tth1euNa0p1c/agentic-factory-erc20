@@ -27,7 +27,7 @@
 | H-06 | Arrondi du swap à l'inférieur, en faveur du pool | Contrat swap | 003 |
 | H-07 | TIF = jeton de part de fonds avec émission/rachat par un rôle opérateur | Spec TIF | 004 |
 | H-08 | Java lit les soldes dans les tables Ponder (lecture seule, schéma dédié) | Couplage Java/Ponder | 002 |
-| H-10 | ~~Ponder écrit le solde et l'exécution d'un même bloc dans la même transaction~~ **Réfutée telle quelle** (P-15) : avec la fenêtre de réorg par défaut, la reprise après crash fait régresser le modèle de lecture ; vraie avec `reorgWindow: 0` (P-16) | Disponible transitoirement faux | 002 |
+| H-10 | Deux propriétés distinctes du modèle de lecture Ponder : (a) **atomicité SQL** — solde et exécution d'un même lot publiés dans la même transaction : observée vraie (sonde 10 ops, P-16) ; (b) **monotonie temporelle** — pas de retour à un ancien checkpoint : **fausse** avec la fenêtre de réorg par défaut (la reprise après crash ré-expose l'état d'un checkpoint antérieur, P-15), assurée par `reorgWindow: 0` + garde de watermark évaluée dans le même snapshot que les montants (D-23) | Disponible transitoirement faux | 002 |
 | H-11 | Écarts assumés vs présentation TELA : 1 validateur (TELA : 6) et blocs de 2 s (TELA : 15 s) ; signature séparée + persistance au lieu de `eth_sendTransaction` ; `transferWithReference` ajouté aux ERC-20 | La compatibilité avec les contrats TELA réels reste à établir (#13) | 001, 002 |
 | H-09 | L'émission (mint) est réservée à un rôle `MINTER` (trésorerie) | Contrats | 001 |
 
