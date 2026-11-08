@@ -1,0 +1,7 @@
+{
+  "spec": "002", "scenario": "ponder-lag", "verdict": "PASS",
+  "invariant": { "snapshots": 28, "minRawAvailable": "0", "minNaiveIndexedMinusHeld": "-123000000" },
+  "requests": 20, "accepted": 10, "refused": 10, "amount": "12300000",
+  "availableBefore": "123000000", "availableDuringLag": "0", "onChainAfter": "0",
+  "operations": "01a1bc55-276a-71b5-a7b2-0bd24bbcf5e4 01a1bc55-2ba8-7c76-a40c-7ee10d3436d8 01a1bc55-27e9-7518-890c-31275d2b29d8 01a1bc55-27f2-7e1e-9029-e5b37c1954d5 01a1bc55-2902-7396-851d-f78eaa209b4c 01a1bc55-2940-7fd7-90f4-45cfac85ebf0 01a1bc55-2a8c-719f-ab77-4d220d1ce9f4 01a1bc55-2aa0-7b4c-b3b1-233174d8467e 01a1bc55-2abe-70d6-895c-af44b8ae26c0 01a1bc55-2b0e-7391-935b-85b439695d0f ", "commit": "7d4a02d860a4ed99afff311a9463965a7438b1aa", "runId": "sc001-7-20261108T180351Z-46073"
+}

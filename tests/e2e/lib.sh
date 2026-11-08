@@ -120,7 +120,7 @@ evidence_init() { # <spec>/<scenario>
   EVIDENCE_BASE="$ROOT/evidence/$1"; EVIDENCE_DIR="$EVIDENCE_BASE/runs/$RUN_ID"
   mkdir -p "$EVIDENCE_DIR"; : > "$EVIDENCE_DIR/steps.log"
   GIT_SHA="$(git -C "$(hostpath "$ROOT")" rev-parse HEAD 2>/dev/null || echo unknown)"
-  local dirty=false; [[ -n "$(git -C "$(hostpath "$ROOT")" status --porcelain --untracked-files=no 2>/dev/null)" ]] && dirty=true
+  local dirty=false; [[ -n "$(git -C "$(hostpath "$ROOT")" status --porcelain --untracked-files=no -- . ':!evidence' 2>/dev/null)" ]] && dirty=true   # evidence/ excluded: it is written by the runs themselves
   local ci=null; [[ -n "${GITHUB_RUN_ID:-}" ]] && ci="\"${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\""
   local images="" svc cid img
   for svc in besu web3signer postgres kafka adapter backend indexer; do
