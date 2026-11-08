@@ -136,3 +136,30 @@ services:
             --topic "$$t" --partitions 6 --replication-factor 1 --config min.insync.replicas=1
         done
         /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list
+
+  # ---------------- spec 002 application services (profile: app) ----------------
+  adapter:
+    <<: *hardening
+    profiles: [app]
+    build: { context: ./adapter }
+    image: tela/adapter:dev
+    read_only: true
+    tmpfs: [/tmp]
+    environment:
+      NODE_ENV: ${ADAPTER_NODE_ENV:-development}
+      ADAPTER_FAULT: ${ADAPTER_FAULT:-none}
+      TELA_CHAIN_ID: ${TELA_CHAIN_ID}
+      BESU_RPC_URL: http://besu:8545
+      WEB3SIGNER_URL: http://web3signer:9000
+      ADAPTER_DATABASE_URL: postgres://tela_adapter:${ADAPTER_DB_PASSWORD}@postgres:5432/tela_adapter
+      KAFKA_BROKERS: kafka:9092
+      TCE_ADDRESS: ${TCE_ADDRESS}
+      TCD_ADDRESS: ${TCD_ADDRESS}
+      TIF_ADDRESS: ${TIF_ADDRESS}
+      RECEIPT_TIMEOUT_MS: ${RECEIPT_TIMEOUT_MS:-20000}
+    networks: [chain, signing, data, bus]
+    depends_on:
+      besu: { condition: service_healthy }
+      web3signer: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      kafka: { condition: service_healthy }

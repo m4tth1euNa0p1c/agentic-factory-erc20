@@ -10,7 +10,7 @@
 ## Phase 2: Fondations
 - [ ] T004 [P] [network-devops] Services `backend`, `adapter`, `indexer` dans `compose.yaml` (profil `app`), réseaux selon la matrice
 - [ ] T005 [P] [indexer] Squelette Ponder (`indexer/`), schéma `account_balance`, `operation_execution`, `chain_head`, vues `tela_read`
-- [ ] T006 [P] [blockchain-adapter] Squelette adaptateur (`adapter/`), config zod, journal `tx_attempt` (migration)
+- [x] T006 [P] [blockchain-adapter] Squelette adaptateur (`adapter/`), config zod, journal `tx_attempt` (migration)
 - [ ] T007 [P] [backend-java] Squelette Spring Boot (`backend/`), Flyway `V1__operations.sql`, `scripts/mvn.sh`
 - [ ] T008 [verifier] Harnais `tests/e2e/run.sh` + helpers (cast via conteneur, curl API, collecte evidence.json)
 
@@ -18,7 +18,7 @@
 - [ ] T010 [US1] [verifier] Scénario rouge `tests/e2e/scenarios/nominal.sh`
 - [ ] T011 [US1] [backend-java] `POST /transfers` : validation, Idempotency-Key, verrou, disponible, réservation, outbox (tests concurrence)
 - [ ] T012 [US1] [backend-java] Relai outbox → Kafka (clé = from)
-- [ ] T013 [US1] [blockchain-adapter] Processor : simulate → nonce → sign (Web3Signer) → persist → broadcast → receipt → publish
+- [x] T013 [US1] [blockchain-adapter] Processor : simulate → nonce → sign (Web3Signer) → persist → broadcast → receipt → publish
 - [ ] T014 [US1] [indexer] Handlers `Transfer` + `TransferWithReference` ; test soldes vs balanceOf
 - [ ] T015 [US1] [backend-java] Consommateur résultats idempotent + machine à états (rangs)
 - [ ] T016 [US1] [backend-java] Settlement : CONFIRMED ∧ référence indexée ⇒ SETTLED + libération ; `GET /balances`
@@ -26,9 +26,9 @@
 
 ## Phase 4: US2 — Redémarrage après émission (P1)
 - [ ] T020 [US2] [verifier] Scénario rouge `restart-after-broadcast.sh` (+ variante journal effacé)
-- [ ] T021 [US2] [blockchain-adapter] Reprise : tentative existante ⇒ rediffusion rawTx / reçu par hash
-- [ ] T022 [US2] [blockchain-adapter] `ReferenceAlreadyUsed` en simulation ⇒ recherche du log d'origine ⇒ CONFIRMED
-- [ ] T023 [US2] [blockchain-adapter] Injection `ADAPTER_FAULT=crash-after-broadcast` (refusée en production)
+- [x] T021 [US2] [blockchain-adapter] Reprise : tentative existante ⇒ rediffusion rawTx / reçu par hash
+- [x] T022 [US2] [blockchain-adapter] `ReferenceAlreadyUsed` en simulation ⇒ recherche du log d'origine ⇒ CONFIRMED
+- [x] T023 [US2] [blockchain-adapter] Injection `ADAPTER_FAULT=crash-after-broadcast` (refusée en production)
 - [ ] T024 [US2] [verifier] Preuve `evidence/002/restart-after-broadcast/` (1 seul débit, 1 seul événement)
 
 ## Phase 5: US3 — Retard Ponder + concurrence (P2)
@@ -38,10 +38,12 @@
 
 ## Phase 6: US4 — Échec certain vs inconnu (P2)
 - [ ] T040 [US4] [verifier] Scénario rouge `failure-vs-unknown.sh` (pause jeton, coupure réseau `chain`)
-- [ ] T041 [US4] [blockchain-adapter] Classification FAILED/REJECTED/UNKNOWN + timeout reçu configurable
-- [ ] T042 [US4] [blockchain-adapter] Commande `RECONCILE` : reçu par hash puis log par référence
+- [x] T041 [US4] [blockchain-adapter] Classification FAILED/REJECTED/UNKNOWN + timeout reçu configurable
+- [x] T042 [US4] [blockchain-adapter] Commande `RECONCILE` : reçu par hash puis log par référence
 - [ ] T043 [US4] [backend-java] Réconciliateur planifié (UNKNOWN/BROADCAST > N s ⇒ RECONCILE)
 - [ ] T044 [US4] [verifier] Preuve `evidence/002/failure-vs-unknown/`
+
+- [x] T045 [US2] [verifier] Preuve intermédiaire niveau adaptateur (Kafka réel → Web3Signer → Besu, crash réel) : `evidence/002/adapter/`
 
 ## Phase 7: Polish
 - [ ] T050 [security-auditor] Revue security-audit (guidance) : adapter, backend API, Kafka, rôles PG

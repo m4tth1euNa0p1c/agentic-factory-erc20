@@ -1,0 +1,22 @@
+{
+  "spec": "002",
+  "scenario": "adapter",
+  "verdict": "PASS",
+  "nominal": {
+    "operationId": "79508418-db36-4199-bcd8-b1fd78ce45d1",
+    "txHash": "0x946faa388b9a1d9b09ffa33c654a6317d63da3a6a79c9465068588594adcf6fb",
+    "aliceDelta": "1000000"
+  },
+  "crashAfterBroadcast": {
+    "operationId": "9ca1d411-57fd-4658-818a-2c707071b0de",
+    "restarts": 1,
+    "signatures": 1,
+    "aliceDelta": "1000000",
+    "distinctTxHashes": 1
+  },
+  "redelivery": {
+    "operationId": "79508418-db36-4199-bcd8-b1fd78ce45d1",
+    "aliceDelta": "0"
+  },
+  "commit": ""
+}

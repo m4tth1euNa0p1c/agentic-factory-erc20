@@ -56,3 +56,5 @@
 | P-03 | Slither 0.11.6 : 0 finding (Low→High) sur TelaToken et TalanFixedRateSwap | `evidence/001/slither/` | 001 |
 | P-04 | On-chain : `transferWithReference` débite une fois, rejeu refusé (`ReferenceAlreadyUsed`) avant diffusion, 1 seul événement | `evidence/001/contracts/evidence.json` | 001 |
 | P-05 | Déploiement signé exclusivement par Web3Signer (`forge script --unlocked`, aucune clé exportée) | `scripts/deploy-contracts.sh` | 001 |
+| P-06 | Adaptateur (29 tests unitaires) : nominal, crash avant/après diffusion, journal perdu, conflit de référence, FAILED/REJECTED/UNKNOWN, RECONCILE | `adapter/test/` | 002 |
+| P-07 | Adaptateur live : crash réel après diffusion (`ADAPTER_FAULT`) → redémarrage → 1 signature, 1 débit, 1 txHash ; rejeu d'une commande exécutée sans effet | `evidence/002/adapter/evidence.json` | 002 |
