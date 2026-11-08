@@ -60,7 +60,8 @@ public class TransferController {
         }
     }
 
-    public record BalanceDto(String token, String indexed, String pending, String available, String indexedAtBlock) {}
+    public record BalanceDto(String token, String indexed, String pending, String available, String availableRaw,
+            String heldTotal, String indexedAtBlock) {}
 
     @PostMapping("/transfers")
     public ResponseEntity<OperationDto> createTransfer(
@@ -77,6 +78,32 @@ public class TransferController {
         return repo.find(operationId).map(o -> ResponseEntity.ok(OperationDto.of(o))).orElse(ResponseEntity.notFound().build());
     }
 
+    public record TransitionDto(String from, String to, String source, String at) {}
+
+    @GetMapping("/operations/{operationId}/transitions")
+    public ResponseEntity<List<TransitionDto>> transitions(@PathVariable UUID operationId) {
+        if (repo.find(operationId).isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(repo.transitions(operationId).stream()
+                .map(t -> new TransitionDto(t.from(), t.to(), t.source(), String.valueOf(t.at()))).toList());
+    }
+
+    public record IndexerStatusDto(String indexedBlock, String indexedBlockTimestamp, String watermark, boolean regressed) {}
+
+    /** Indexing freshness for the UI (spec 005 US1, A-03). */
+    @GetMapping("/system/indexer-status")
+    public IndexerStatusDto indexerStatus() {
+        try {
+            var s = indexed.status();
+            return new IndexerStatusDto(str(s.indexedBlock()), str(s.indexedBlockTimestamp()), str(s.watermark()), s.regressed());
+        } catch (org.springframework.dao.DataAccessException e) {
+            throw new IndexedBalances.IndexerUnavailableException(e);
+        }
+    }
+
+    private static String str(Long v) {
+        return v == null ? null : v.toString();
+    }
+
     @GetMapping("/operations")
     public List<OperationDto> listOperations(
             @RequestParam(required = false) @Pattern(regexp = ADDRESS) String account,
@@ -89,11 +116,11 @@ public class TransferController {
     public List<BalanceDto> getBalances(@PathVariable @Pattern(regexp = ADDRESS) String address) {
         String account = address.toLowerCase(Locale.ROOT);
         return TOKENS.stream().map(t -> {
-            var ix = indexed.balance(account, t);
-            BigInteger held = repo.heldAmount(account, t);
-            BigInteger available = ix.balance().subtract(held).max(BigInteger.ZERO);
-            return new BalanceDto(t, ix.balance().toString(), held.toString(), available.toString(),
-                    indexed.head().map(String::valueOf).orElse(null));
+            var a = indexed.availability(account, t);
+            // `available` is what the user may still reserve (display, clamped at 0);
+            // `availableRaw` is the unclamped invariant value, exposed so verifiers can check it is never negative.
+            return new BalanceDto(t, a.indexed().toString(), a.pending().toString(), a.raw().max(BigInteger.ZERO).toString(),
+                    a.raw().toString(), a.heldTotal().toString(), indexed.head().map(String::valueOf).orElse(null));
         }).toList();
     }
 }

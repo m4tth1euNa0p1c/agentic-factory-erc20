@@ -1,6 +1,6 @@
 # TELA Agentic Factory Constitution
 
-Version: 1.0.0 · Ratified: 2026-11-08 · Last amended: 2026-11-08
+Version: 1.1.0 · Ratified: 2026-11-08 · Last amended: 2026-11-08 (1.1.0: success-criteria traceability, per-run evidence)
 
 ## Core Principles
 
@@ -9,6 +9,12 @@ Every change starts from a spec in `specs/NNN-*/` (spec → plan → tasks → i
 A task is **done only when evidence exists**: a reproducible command, its output stored under
 `evidence/`, and for any blockchain effect the `operationId`, `txHash`, receipt status and the
 observed balance delta. "It works" without evidence is rejected by the verifier agent.
+**Every** functional requirement **and every success criterion (SC-xxx)** of a spec is mapped in
+`specs/NNN-*/validation-matrix.md` to a task, an executable test and a per-run proof
+(`evidence/<spec>/<x>/runs/<RUN_ID>/` with `run.json`: full SHA, dirty flag, configuration, image digests, CI link).
+A spec is "validated" only when all its SC rows have a PASS proof attached to a SHA; otherwise its status reads
+"functional scenarios pass; criteria X, Y not demonstrated". An assertion must test the guarantee itself
+(raw values, not display values that are clamped or derived from it).
 
 ### II. Visible Assumptions
 Nothing inferred about the real TELA is presented as fact. Every statement about the target system

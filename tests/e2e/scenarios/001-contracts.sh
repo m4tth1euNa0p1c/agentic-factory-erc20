@@ -31,7 +31,7 @@ if printf '%s' "$replay" | grep -qiE "ReferenceAlreadyUsed|${sel#0x}"; then step
 a2=$(balance "$TCE_ADDRESS" "$ALICE_ADDRESS")
 assert_eq "$a2" "$a1" "no second debit after replay" || fail=1
 
-logs=$(cast_ro logs --from-block 0 --address "$TCE_ADDRESS" "TransferWithReference(bytes32 indexed,address indexed,address indexed,uint256)" "$ref" --json | grep -o '"transactionHash"' | wc -l | tr -d ' ')
+logs=$(logs_count "$(deploy_block)" "$TCE_ADDRESS" "TransferWithReference(bytes32 indexed,address indexed,address indexed,uint256)" "$ref")
 assert_eq "$logs" "1" "exactly one TransferWithReference event for ref" || fail=1
 
 cat > "$EVIDENCE_DIR/evidence.json" <<JSON
@@ -41,7 +41,7 @@ cat > "$EVIDENCE_DIR/evidence.json" <<JSON
   "txHash": "$tx",
   "receiptStatus": "$status",
   "blockNumber": $((block)), "aliceBefore": "$a0", "aliceAfter": "$a2", "bobBefore": "$b0", "bobAfter": "$b1",
-  "eventsForReference": $logs, "commit": "$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo none)" }
+  "eventsForReference": $logs, "commit": "$GIT_SHA", "runId": "$RUN_ID" }
 JSON
 step "verdict: $([[ $fail == 0 ]] && echo PASS || echo FAIL) -> $EVIDENCE_DIR/evidence.json"
 exit $fail

@@ -24,7 +24,8 @@ const Env = z.object({
   LOGS_BLOCK_RANGE: z.coerce.bigint().default(4000n),
   RECONCILE_RECEIPT_TIMEOUT_MS: z.coerce.number().int().positive().default(3_000),
   RECEIPT_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
-  ADAPTER_FAULT: z.enum(["none", "crash-after-broadcast", "crash-before-broadcast", "pause-before-broadcast"]).default("none"),
+  ADAPTER_FAULT: z.enum(["none", "crash-after-broadcast", "crash-before-broadcast", "pause-before-broadcast", "pause-after-broadcast", "crash-random"]).default("none"),
+  ADAPTER_FAULT_PROBABILITY: z.coerce.number().min(0).max(1).default(0.2),
   ADAPTER_FAULT_PAUSE_MS: z.coerce.number().int().min(0).max(120_000).default(10_000),
   HEALTH_PORT: z.coerce.number().int().default(8081),
 });

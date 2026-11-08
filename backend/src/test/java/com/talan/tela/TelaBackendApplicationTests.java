@@ -40,12 +40,27 @@ class TelaBackendApplicationTests {
     @Autowired OutboxRelay relay;
     @Autowired SettlementJob settlement;
     @Autowired JdbcClient jdbc;
+    @Autowired com.talan.tela.operation.IndexedBalances indexed;
 
     @BeforeEach
     void reset() {
         jdbc.sql("TRUNCATE backend.processed_result, backend.outbox, backend.operation_transition, backend.reservation, backend.operation, backend.account_lock").update();
         jdbc.sql("TRUNCATE tela_read.account_balance, tela_read.operation_execution").update();
         indexBalance(ALICE, BigInteger.valueOf(100_000_000)); // 100 TCE indexed
+        jdbc.sql("TRUNCATE tela_read.chain_head, backend.indexer_watermark").update();
+        jdbc.sql("INSERT INTO tela_read.chain_head VALUES ('head', 100, 0)").update();
+    }
+
+    /** D-23: a regressed read model (indexer rolled back) must not be used to grant new reservations. */
+    @Test
+    void readModelRegressionBlocksNewReservationsAndSettlement() {
+        settlement.settle(); // watermark := 100
+        jdbc.sql("UPDATE tela_read.chain_head SET block_number = 40").update(); // rollback / crash recovery
+        assertThatThrownBy(() -> service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-regress-01"))
+                .isInstanceOf(com.talan.tela.operation.IndexedBalances.IndexerUnavailableException.class);
+        jdbc.sql("UPDATE tela_read.chain_head SET block_number = 101").update(); // caught up again
+        assertThat(service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-regress-02").operation().status())
+                .isEqualTo(Status.RECEIVED);
     }
 
     void indexBalance(String account, BigInteger v) {
@@ -159,6 +174,64 @@ class TelaBackendApplicationTests {
         assertThat(jdbc.sql("SELECT count(*) FROM backend.outbox WHERE payload LIKE '%\"RECONCILE\"%'").query(Integer.class).single()).isEqualTo(1);
         service.applyResult(new Result(a, Status.CONFIRMED, "0x" + "01".repeat(32), 11L, null));
         assertThat(repo.find(a).orElseThrow().status()).isEqualTo(Status.CONFIRMED);
+    }
+
+    @Test
+    void noTransientDoubleCountBetweenIndexingAndSettlement() {
+        var op = service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-transient1").operation();
+        // Ponder indexed the execution and the new balance, the settlement job has NOT run yet
+        jdbc.sql("INSERT INTO tela_read.operation_execution VALUES (?, ?, 'TCE', ?, ?, ?, ?, 7, 0)")
+                .param("TCE:" + ALICE + ":" + op.reference()).param(op.reference()).param(ALICE).param(BOB)
+                .param(new BigDecimal(TEN)).param("0x" + "cd".repeat(32)).update();
+        indexBalance(ALICE, BigInteger.valueOf(90_000_000));
+        var a = indexed.availability(ALICE, "TCE");
+        assertThat(a.heldTotal()).isEqualTo(TEN);          // reservation still HELD
+        assertThat(a.pending()).isZero();                   // ...but already reflected in the indexed balance
+        assertThat(a.raw()).isEqualTo(BigInteger.valueOf(90_000_000)); // naive indexed - held would say 80
+    }
+
+    /** SC-004: 1000 concurrent requests, never over-reserved, raw availability never negative. */
+    @Test
+    void sc004_thousandConcurrentRequests() throws Exception {
+        BigInteger one = BigInteger.valueOf(1_000_000); // 100 TCE indexed -> exactly 100 slots of 1 TCE
+        var ok = new AtomicInteger();
+        var refused = new AtomicInteger();
+        var minRaw = new java.util.concurrent.atomic.AtomicReference<>(BigInteger.valueOf(Long.MAX_VALUE));
+        List<Callable<Void>> tasks = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            String key = "key-sc004-" + i + "-" + UUID.randomUUID();
+            tasks.add(() -> {
+                try {
+                    service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", one), key);
+                    ok.incrementAndGet();
+                } catch (OperationService.InsufficientAvailableException e) {
+                    refused.incrementAndGet();
+                }
+                BigInteger raw = indexed.availability(ALICE, "TCE").raw();
+                minRaw.accumulateAndGet(raw, BigInteger::min);
+                return null;
+            });
+        }
+        try (var pool = Executors.newVirtualThreadPerTaskExecutor()) {
+            for (var f : pool.invokeAll(tasks)) f.get();
+        }
+        assertThat(ok.get()).isEqualTo(100);
+        assertThat(refused.get()).isEqualTo(900);
+        assertThat(minRaw.get().signum()).isGreaterThanOrEqualTo(0);
+        assertThat(held()).isEqualTo(BigInteger.valueOf(100_000_000));
+    }
+
+    @Test
+    void transitionsAndIndexerStatusAreExposed() {
+        var op = service.createTransfer(new TransferRequest(ALICE, BOB, "TCE", TEN), "key-trans-0001").operation();
+        service.applyResult(new Result(op.operationId(), Status.CONFIRMED, "0x" + "aa".repeat(32), 5L, null));
+        assertThat(repo.transitions(op.operationId())).extracting(OperationRepository.Transition::to)
+                .containsExactly("RECEIVED", "CONFIRMED"); // observed only: BROADCAST never happened here
+        settlement.settle();
+        var s = indexed.status();
+        assertThat(s.indexedBlock()).isEqualTo(100L);
+        assertThat(s.watermark()).isEqualTo(100L);
+        assertThat(s.regressed()).isFalse();
     }
 
     @Test

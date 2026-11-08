@@ -25,6 +25,9 @@ const producer = kafka.producer({ kafkaJS: { idempotent: true, acks: -1 } });
 const consumer = kafka.consumer({
   kafkaJS: { groupId: cfg.KAFKA_GROUP_ID, autoCommit: false, fromBeginning: true },
   "max.poll.interval.ms": 900_000,
+  // a crashed consumer does not leave the group: keep the takeover delay short (sandbox)
+  "session.timeout.ms": 6_000,
+  "heartbeat.interval.ms": 2_000,
 });
 await producer.connect();
 await consumer.connect();
@@ -46,6 +49,7 @@ const processor = new Processor({
   fault: cfg.ADAPTER_FAULT,
   crash: (code) => process.exit(code),
   pause: () => new Promise((r) => setTimeout(r, cfg.ADAPTER_FAULT_PAUSE_MS)),
+  faultProbability: cfg.ADAPTER_FAULT_PROBABILITY,
   log,
 });
 
@@ -78,6 +82,8 @@ await consumer.run({
         throw e; // not committed -> redelivered after restart
       }
     }
+    // last checkpoint before the offset commit: result published, offset not yet committed (SC-002)
+    if (value && typeof value === "object" && "operationId" in value) processor.checkpoint("after-result", String((value as { operationId: unknown }).operationId));
     await consumer.commitOffsets([{ topic, partition, offset: (BigInt(message.offset) + 1n).toString() }]);
   },
 });

@@ -54,7 +54,7 @@ cat > "$EVIDENCE_DIR/evidence.json" <<JSON
   "txHash": "$tx",
   "blockNumber": "$blk", "transitions": "$trail",
   "aliceOnChainBefore": "$chainA0", "aliceOnChainAfter": "$chainA1", "aliceIndexedAfter": "$(bal_field "$alice" indexed)",
-  "alicePendingAfter": "$(bal_field "$alice" pending)", "commit": "$(git -C "$ROOT" rev-parse --short HEAD)"
+  "alicePendingAfter": "$(bal_field "$alice" pending)", "commit": "$GIT_SHA", "runId": "$RUN_ID"
 }
 JSON
 step "verdict: $verdict"
