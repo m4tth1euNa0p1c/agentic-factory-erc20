@@ -1,0 +1,218 @@
+{
+  "passed": true,
+  "baseRef": "HEAD",
+  "checks": [
+    {
+      "name": "schema-valid:schemas/factory/experiment.v1.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "schema-valid:schemas/factory/experiment-run.v1.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "document-valid:.claude/skills/design-experiment/assets/experiment.template.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "document-valid:.claude/skills/evaluate-experiment/assets/run.template.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "document-valid:experiments/EXP-002-validation.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "frontmatter-valid:.claude/agents/experiment-designer.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "frontmatter-valid:.claude/agents/orchestrator.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "frontmatter-valid:.claude/agents/verifier.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "frontmatter-valid:.claude/skills/design-experiment/SKILL.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "frontmatter-valid:.claude/skills/evaluate-experiment/SKILL.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "frontmatter-valid:.claude/skills/factory-run/SKILL.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "issue-template-yaml-valid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "principles-I-through-VII-preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "constitution-1.2.0-and-VIII",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "historical-registry-rows-preserved",
+      "passed": true,
+      "detail": 64
+    },
+    {
+      "name": "registry-ids-unique",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "new-governance-ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "matrix-covers-every-FR-and-SC-once",
+      "passed": true,
+      "detail": {
+        "requirements": [
+          "FR-001",
+          "FR-002",
+          "FR-003",
+          "FR-004",
+          "FR-005",
+          "FR-006",
+          "FR-007",
+          "FR-008",
+          "FR-009",
+          "FR-010",
+          "SC-001",
+          "SC-002",
+          "SC-003",
+          "SC-004"
+        ],
+        "mapped": [
+          "FR-001",
+          "FR-002",
+          "FR-003",
+          "FR-004",
+          "FR-005",
+          "FR-006",
+          "FR-007",
+          "FR-008",
+          "FR-009",
+          "FR-010",
+          "SC-001",
+          "SC-002",
+          "SC-003",
+          "SC-004"
+        ]
+      }
+    },
+    {
+      "name": "CI-only-four-added-lines",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "CI-ten-jobs-preserved",
+      "passed": true,
+      "detail": [
+        "factory-guard",
+        "secrets",
+        "trivy",
+        "contracts",
+        "sandbox-e2e",
+        "adapter",
+        "indexer",
+        "backend",
+        "frontend",
+        "e2e-002"
+      ]
+    },
+    {
+      "name": "frontend-job-unchanged",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "main-file-preserved:.claude/hooks/guard.mjs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "main-file-preserved:.claude/hooks/guard.test.mjs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "main-file-preserved:.claude/settings.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "main-file-preserved:.github/workflows/factory.yml",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "main-file-preserved:specs/002-tce-transfer-e2e/validation-matrix.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "main-file-preserved:specs/005-operator-ui/validation-matrix.md",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "initial-pilot-archive-exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pilot-only-context-changed",
+      "passed": true,
+      "detail": [
+        "problem",
+        "reference"
+      ]
+    },
+    {
+      "name": "gate-contract-unchanged:scripts/experiment-gate.mjs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "gate-contract-unchanged:scripts/experiment-gate.test.mjs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "gate-contract-unchanged:schemas/factory/experiment.v1.json",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "gate-contract-unchanged:schemas/factory/experiment-run.v1.json",
+      "passed": true,
+      "detail": null
+    }
+  ]
+}

@@ -6,7 +6,7 @@ preuves ont été créées avant l'attribution du commit de livraison, sans inve
 Livraison : [PR #24](https://github.com/m4tth1euNa0p1c/agentic-factory-erc20/pull/24).
 Premier commit du code et des preuves : `9753f2ba29b73dc877687973ab80c0b566b0e93b`.
 
-## Résultats locaux
+## Résultats locaux initiaux
 
 | Vérification | Résultat | Trace |
 |---|---|---|
@@ -60,3 +60,27 @@ Le contrôle CI ajouté teste le mécanisme et la structure du pilote. Il ne col
 mesures des futures expériences et n'impose pas seul leur acceptation sémantique. Les agents
 doivent appliquer le protocole et la revue indépendante aux rapports de chaque campagne.
 Le statut de la CI GitHub de livraison est suivi dans la PR, séparément de ces tests locaux.
+
+## Réconciliation avec main après #25 et #28
+
+Base main : `98ef63b9fdc72b608d3f9f764bb01c32ae4d5f45`.
+Commit du code réconcilié : `93a743a31c6ab6b971e5d1e17527ef1132964207`.
+Le [run d'intégration](integration/runs/20261108-main-98ef63b/run.json) rattache les nouvelles
+traces aux empreintes des sources de ce commit. Le travail local utilise une matérialisation
+partielle dont les 96 fichiers d'entrée ont été comparés aux blobs distants ; il ne prétend
+pas être un checkout complet et propre. Les logs et la clôture documentaire sont ajoutés
+dans un commit de preuve ultérieur, sans changement du gate, de ses tests ni du hook.
+
+| Vérification actuelle | Résultat | Trace dans le dossier d'intégration |
+|---|---|---|
+| Gate de décision | 21/21 PASS | `decision-tests.log` |
+| Hook conservé depuis main | 25/25 PASS | `hook-tests.log` |
+| Pilote historique | VALID_PLAN / DRAFT ; départ INCONCLUSIVE, code 1 attendu | `pilot-validate.json`, `pilot-start.json` |
+| Contrats et intégration documentaire | 33 contrôles PASS : schémas, matrice FR/SC, constitution, registre, archives et CI | `contracts.json`, `verify-integration.py` |
+| Contre-relecture indépendante | Aucun défaut bloquant identifié dans le diff inspecté | `integration-review.md` |
+
+Le [compte rendu](integration/runs/20261108-main-98ef63b/review.md) distingue l'audit en
+lecture seule des campagnes 002, les corrections d'intégration et les suivis de #27.
+Les campagnes 002 restent validées dans leur périmètre ; la fiche initiale est historique.
+Ces contrôles ne rejouent aucune campagne TELA, ne mesurent aucun gain de productivité et
+n'inventent aucun coût. La CI de la branche complète est suivie dans la PR #24.
