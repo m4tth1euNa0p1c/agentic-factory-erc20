@@ -1,0 +1,11 @@
+# Accepted findings — each entry: justification + expiry. Reviewed 2026-11-08 (PR #18). Tracked in issue #17.
+# indexer/ (Ponder 0.18.6 transitive deps, no fixed Ponder release yet):
+
+# drizzle-orm 0.41 — SQL injection via improperly escaped SQL *identifiers*.
+# Not reachable: identifiers come only from our static ponder.schema.ts, never from input.
+CVE-2026-39356 exp:2027-02-01
+
+# @graphql-tools/utils — prototype pollution / DoS through GraphQL requests.
+# Not reachable: the indexer exposes no GraphQL endpoint (src/api/index.ts) and is not published on the host.
+CVE-2026-104852 exp:2027-02-01
+CVE-2026-114604 exp:2027-02-01

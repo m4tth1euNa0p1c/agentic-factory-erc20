@@ -46,9 +46,11 @@
 - [x] T045 [US2] [verifier] Preuve intermédiaire niveau adaptateur (Kafka réel → Web3Signer → Besu, crash réel) : `evidence/002/adapter/`
 
 ## Phase 7: Polish
-- [ ] T050 [security-auditor] Revue security-audit (guidance) : adapter, backend API, Kafka, rôles PG
-- [ ] T051 [verifier] SC-001 : 10 exécutions consécutives des 4 scénarios
+- [x] T050 [security-auditor] Revue security-audit (guidance) : adapter, backend API, Kafka, rôles PG
+- [~] T051 [verifier] SC-001 : 10 exécutions consécutives des 4 scénarios — **partiel** : nominal 10/10, incidents 3×3 (8 PASS + 1 run invalidé par une modification du harnais en cours d'exécution), puis 5/5 après correctifs de revue (`evidence/002/determinism/`). Reste : 10× chaque scénario d'incident
 - [ ] T052 [orchestrator] Mise à jour registre (PREUVES) + wiki
+
+- [x] T053 [blockchain-adapter][backend-java] Correctifs revue #18 : F1 (classification diffusion + NONCE_CONSUMED), F2 (backoff/plafond RECONCILE, RECONCILE non bloquant), F3 (ordre des lectures), F4 (revert ≠ échec si référence exécutée ; RECONCILE sans journal ne signe pas), F5 (getLogs paginé), F6 (NODE_ENV production par défaut), F7 (pas de rawTx en log), liste blanche des comptes signables
 
 ## Dependencies
 Phase 1 → Phase 2 → US1 → (US2 ∥ US3 ∥ US4) → Polish. T004 dépend de 001/T010.

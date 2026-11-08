@@ -48,10 +48,10 @@ describe("US1 nominal", () => {
     expect(signer.calls).toBe(0);
   });
 
-  it("sends schema-invalid messages to DLQ and never signs", async () => {
+  it("sends schema-invalid messages to DLQ, never signs and never publishes a result (forgery guard)", async () => {
     const r = await make().handle(cmd({ amount: "1.5" }));
     expect(r).toEqual({ dlq: true, reason: "INVALID_MESSAGE" });
-    expect(pub.statuses(OP)).toEqual(["REJECTED"]);
+    expect(pub.out).toHaveLength(0);
     expect(signer.calls).toBe(0);
   });
 
@@ -125,6 +125,46 @@ describe("US2 restart after broadcast", () => {
   });
 });
 
+describe("security review #18", () => {
+  it("F1: nonce consumed by another writer -> FAILED NONCE_CONSUMED (terminal, reservation can be released)", async () => {
+    await expect(make("crash-before-broadcast").handle(cmd())).rejects.toBeInstanceOf(Crash);
+    chain.externalTx(ALICE); // a script signs for alice through Web3Signer and takes nonce 0
+    expect(await make().handle(cmd({ type: "RECONCILE" }))).toMatchObject({ status: "FAILED", reason: "NONCE_CONSUMED" });
+    expect(chain.bal(ALICE)).toBe(100_000_000n);
+    expect((await journal.get(OP))?.state).toBe("FINAL");
+  });
+
+  it("F1: re-broadcast of our own mined tx (node says nonce too low) -> CONFIRMED via receipt", async () => {
+    const first = await make().handle(cmd());
+    (await journal.get(OP))!; journal.rows.get(OP)!.state = "BROADCAST"; journal.rows.get(OP)!.finalStatus = null; // simulate lost finalisation
+    chain.mined.delete((first as { txHash: `0x${string}` }).txHash); // receipt lookup fails first, then log found
+    expect(await make().handle(cmd({ type: "RECONCILE" }))).toMatchObject({ status: "CONFIRMED" });
+  });
+
+  it("F4: our tx reverted but the reference was executed by another tx -> CONFIRMED (never a false FAILED)", async () => {
+    await make().handle(cmd());                       // tx1 executes the operation
+    journal.rows.clear();                              // journal lost
+    chain.revertOnMine = false;
+    // a second attempt for the same op is now impossible to sign: simulation says ReferenceAlreadyUsed -> CONFIRMED
+    expect(await make().handle(cmd())).toMatchObject({ status: "CONFIRMED" });
+    expect(signer.calls).toBe(1);
+  });
+
+  it("F4: RECONCILE without journal never signs", async () => {
+    expect(await make().handle(cmd({ type: "RECONCILE" }))).toMatchObject({ status: "UNKNOWN", reason: "NOT_JOURNALED" });
+    expect(signer.calls).toBe(0);
+  });
+
+  it("allowlist: refuses to sign for an account outside ADAPTER_SIGNABLE_ACCOUNTS", async () => {
+    const p = new Processor({
+      journal, chain, signer, publisher: pub, tokens: { TCE, TCD: TCE, TIF: TCE }, receiptTimeoutMs: 1000, fault: "none", log: silent,
+      crash: (code) => { throw new Crash(code); }, signableAccounts: new Set([BOB.toLowerCase()]),
+    });
+    expect(await p.handle(cmd())).toMatchObject({ status: "REJECTED", reason: "FROM_NOT_ALLOWED" });
+    expect(signer.calls).toBe(0);
+  });
+});
+
 describe("US4 confirmed failure vs unknown result", () => {
   it("receipt status 0 -> FAILED (reason REVERTED)", async () => {
     chain.revertOnMine = true;
@@ -152,7 +192,7 @@ describe("US4 confirmed failure vs unknown result", () => {
     const p = make();
     // go down right after the tx reached the mempool
     const orig = chain.sendRawTransaction.bind(chain);
-    chain.sendRawTransaction = async (raw) => { await orig(raw); chain.down = true; };
+    chain.sendRawTransaction = async (raw) => { const r = await orig(raw); chain.down = true; return r; };
     expect(await p.handle(cmd())).toMatchObject({ status: "UNKNOWN", reason: "RPC_UNAVAILABLE" });
     expect(pub.statuses(OP)).not.toContain("FAILED");
 

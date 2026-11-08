@@ -8,7 +8,7 @@ import { ViemChain } from "./chain.ts";
 import { Web3Signer } from "./signer.ts";
 import { PgJournal } from "./journal.ts";
 import { Processor, isDlq } from "./processor.ts";
-import { RetryableError } from "./ports.ts";
+import { RetryableError, errMsg } from "./ports.ts";
 
 const log = {
   info: (msg: string, f: Record<string, unknown> = {}) => console.log(JSON.stringify({ level: "info", t: new Date().toISOString(), msg, ...f })),
@@ -32,7 +32,9 @@ await consumer.subscribe({ topics: [cfg.TOPIC_COMMANDS] });
 
 const processor = new Processor({
   journal,
-  chain: new ViemChain(cfg.BESU_RPC_URL, cfg.TELA_CHAIN_ID),
+  chain: new ViemChain(cfg.BESU_RPC_URL, cfg.TELA_CHAIN_ID, { startBlock: cfg.TOKENS_START_BLOCK, logsRange: cfg.LOGS_BLOCK_RANGE }),
+  signableAccounts: cfg.ADAPTER_SIGNABLE_ACCOUNTS,
+  reconcileReceiptTimeoutMs: cfg.RECONCILE_RECEIPT_TIMEOUT_MS,
   signer: new Web3Signer(cfg.WEB3SIGNER_URL),
   publisher: {
     publish: async (r) => {
@@ -67,8 +69,9 @@ await consumer.run({
         }
         break;
       } catch (e) {
-        if (e instanceof RetryableError && attempt < 60) {
-          log.warn("retryable failure, backing off", { attempt, err: e.message });
+        // keep the total retry budget (~10 min) below max.poll.interval.ms (15 min) to avoid rebalances mid-processing
+        if (e instanceof RetryableError && attempt < 25) {
+          log.warn("retryable failure, backing off", { attempt, err: errMsg(e) });
           await sleep(Math.min(30_000, 500 * 2 ** Math.min(attempt, 6)));
           continue;
         }

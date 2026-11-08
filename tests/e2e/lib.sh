@@ -70,9 +70,10 @@ wait_indexer_caught_up() { # indexed head >= chain head - 1
   done; return 1
 }
 app_up() { # [ADAPTER_FAULT] — (re)start app services with the given adapter fault
-  ADAPTER_FAULT="${1:-none}" dc --profile app up -d --wait indexer backend adapter >/dev/null 2>&1 || {
+  local nodeenv=production; [[ "${1:-none}" != none ]] && nodeenv=development   # faults only outside production (F6)
+  ADAPTER_NODE_ENV=$nodeenv ADAPTER_FAULT="${1:-none}" dc --profile app up -d --wait indexer backend adapter >/dev/null 2>&1 || {
     step "FAIL app services did not start"; dc --profile app ps >&2; exit 1; }
-  if [[ -n "${1:-}" ]]; then ADAPTER_FAULT="$1" dc --profile app up -d --force-recreate --wait adapter >/dev/null 2>&1; fi
+  if [[ -n "${1:-}" ]]; then ADAPTER_NODE_ENV=$nodeenv ADAPTER_FAULT="$1" dc --profile app up -d --force-recreate --wait adapter >/dev/null 2>&1; fi
 }
 
 EVIDENCE_DIR=""

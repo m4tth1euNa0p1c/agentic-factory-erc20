@@ -38,7 +38,8 @@ jobs:
         with: { persist-credentials: false }
       - run: |
           docker run --rm -v "$PWD:/repo" aquasec/trivy:0.76.2 fs --scanners vuln,misconfig,secret \
-            --severity HIGH,CRITICAL --exit-code 1 --skip-dirs /repo/contracts/lib /repo
+            --severity HIGH,CRITICAL --exit-code 1 --offline-scan --ignorefile /repo/.trivyignore \
+            --skip-dirs /repo/contracts/lib /repo
 
   contracts:
     name: contracts (forge + slither)

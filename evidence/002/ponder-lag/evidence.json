@@ -5,10 +5,10 @@
   "requests": 20,
   "accepted": 10,
   "refused": 10,
-  "amount": "10000000",
-  "availableBefore": "100000000",
+  "amount": "12300000",
+  "availableBefore": "123000000",
   "availableDuringLag": "0",
   "onChainAfter": "0",
-  "operations": "01a1bb8d-a524-73ef-8ec1-06dfb0bcffb0 01a1bb8d-a966-7d1c-8af8-3048e915e895 01a1bb8d-a5f1-73f4-a582-bd632bcc1a41 01a1bb8d-a646-7f7b-a8f1-8081193b2942 01a1bb8d-a67e-70de-8240-fb4b655f68df 01a1bb8d-a6f6-7e9e-ad87-0091afd9e5e9 01a1bb8d-a747-7c21-a7c8-fce98b05e4eb 01a1bb8d-a7e2-7c81-8bb8-1fba8407851d 01a1bb8d-a86a-7310-bce4-685557c49bbd 01a1bb8d-a8d3-7bf2-9efb-3fd0ec811c07 ",
+  "operations": "01a1bba8-33e8-7db7-a498-862999e0b222 01a1bba8-3779-7e6c-b332-6ef0adda9b4e 01a1bba8-3407-73b8-a887-c79441b2a242 01a1bba8-3513-732e-9b52-3f2f9d807118 01a1bba8-3522-79fc-ab4f-ede14a3aa447 01a1bba8-3575-7c34-9d90-44c65c584d56 01a1bba8-361a-7f55-9e1f-43cbd7ba294c 01a1bba8-36d2-7a4b-8a24-ef3c3e8e12d5 01a1bba8-3708-7977-a87f-754fd7f568c6 01a1bba8-3755-7170-814c-fe8ec8f4ace8 ",
   "commit": ""
 }

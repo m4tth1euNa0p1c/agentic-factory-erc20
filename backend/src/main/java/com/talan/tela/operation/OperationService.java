@@ -61,7 +61,10 @@ public class OperationService {
         existing = repo.findByIdempotencyKey(idempotencyKey);
         if (existing.isPresent()) return replay(existing.get(), req);
 
-        BigInteger available = indexed.balance(req.from(), req.token()).balance().subtract(repo.heldAmount(req.from(), req.token()));
+        // Read reservations BEFORE the indexed balance (review #18 F3): a reservation is released only after its
+        // execution is indexed, so this order can only under-estimate the available amount, never over-estimate it.
+        BigInteger held = repo.heldAmount(req.from(), req.token());
+        BigInteger available = indexed.balance(req.from(), req.token()).balance().subtract(held);
         if (available.compareTo(req.amount()) < 0) throw new InsufficientAvailableException(available.max(BigInteger.ZERO));
 
         UUID id = Ids.uuidV7();

@@ -40,17 +40,27 @@ export class FakeChain implements Chain {
     this.check();
     return this.nonces.get(from.toLowerCase()) ?? 0n;
   }
-  async sendRawTransaction(raw: Hex) {
+  async latestNonce(from: Address) {
+    this.check();
+    return this.nonces.get(from.toLowerCase()) ?? 0n;
+  }
+  async sendRawTransaction(raw: Hex): Promise<"sent" | "known" | "nonce-too-low"> {
     this.check();
     this.sendCount++;
     const hash = keccak256(raw);
-    if (this.mined.has(hash) || this.mempool.has(hash)) return; // already known: idempotent
+    if (this.mempool.has(hash)) return "known";
+    if (this.mined.has(hash)) return "nonce-too-low"; // Besu: a mined tx's nonce is consumed
     const p = this.decoded.get(raw);
     if (!p) throw new Error("unknown raw tx");
-    if (p.nonce < (this.nonces.get(p.from.toLowerCase()) ?? 0n)) return; // nonce too low (same tx re-sent)
+    if (p.nonce < (this.nonces.get(p.from.toLowerCase()) ?? 0n)) return "nonce-too-low"; // consumed by another tx
     this.mempool.set(hash, p);
     this.nonces.set(p.from.toLowerCase(), p.nonce + 1n);
     if (this.autoMine) this.mine();
+    return "sent";
+  }
+  /** Another writer (e.g. a script signing through Web3Signer) consumes the next nonce of `from`. */
+  externalTx(from: Address) {
+    this.nonces.set(from.toLowerCase(), (this.nonces.get(from.toLowerCase()) ?? 0n) + 1n);
   }
   mine() {
     for (const [hash, p] of this.mempool) {

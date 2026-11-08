@@ -146,7 +146,7 @@ services:
     read_only: true
     tmpfs: [/tmp]
     environment:
-      NODE_ENV: ${ADAPTER_NODE_ENV:-development}
+      NODE_ENV: ${ADAPTER_NODE_ENV:-production}   # fault injection refused unless explicitly development (review F6)
       ADAPTER_FAULT: ${ADAPTER_FAULT:-none}
       ADAPTER_FAULT_PAUSE_MS: ${ADAPTER_FAULT_PAUSE_MS:-10000}
       TELA_CHAIN_ID: ${TELA_CHAIN_ID}
@@ -158,6 +158,8 @@ services:
       TCD_ADDRESS: ${TCD_ADDRESS}
       TIF_ADDRESS: ${TIF_ADDRESS}
       RECEIPT_TIMEOUT_MS: ${RECEIPT_TIMEOUT_MS:-20000}
+      ADAPTER_SIGNABLE_ACCOUNTS: ${ALICE_ADDRESS},${BOB_ADDRESS}   # customer accounts only, never admin/minter keys
+      TOKENS_START_BLOCK: ${TOKENS_START_BLOCK:-0}
     networks: [chain, signing, data, bus]
     depends_on:
       besu: { condition: service_healthy }

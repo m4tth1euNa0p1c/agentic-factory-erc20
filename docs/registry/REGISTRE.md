@@ -47,6 +47,8 @@
 | D-13 | Kafka non publié sur l'hôte ; Web3Signer uniquement sur `signing` ; Besu sans QBFT/TXPOOL | Revue sécurité M-3, F-1 | 2026-11-08 |
 | D-14 | Règlement `SETTLED` sur preuve indexée (event + to/amount identiques), quel que soit le statut non terminal | Robustesse si le résultat de l'adaptateur est perdu ou retardé | 2026-11-08 |
 | D-15 | Injection de panne `pause-before-broadcast` (fenêtre signature→diffusion) pour tests FAILED/UNKNOWN déterministes | Reproductibilité US4 | 2026-11-08 |
+| D-16 | L'adaptateur ne signe que pour une liste blanche de comptes clients (`ADAPTER_SIGNABLE_ACCOUNTS`) ; jamais deployer/treasury/operator | Revue #18 : un producteur Kafka ne doit pas obtenir de signatures admin | 2026-11-08 |
+| D-17 | `FAILED` n'est publié que si la référence est prouvée non exécutée ; `nonce too low` sans reçu ni événement + nonce consommé ⇒ `FAILED NONCE_CONSUMED` | Revue #18 F1/F4 | 2026-11-08 |
 | D-10 | Client Kafka JS : `@confluentinc/kafka-javascript` | `kafkajs` non maintenu | 2026-11-08 |
 
 ## PREUVES d'exécution
@@ -65,3 +67,5 @@
 | P-10 | E2E crash après diffusion (stack complète) : 1 signature, 1 débit, 1 événement, reprise du journal | `evidence/002/restart-after-broadcast/evidence.json` | 002 |
 | P-11 | E2E Ponder arrêté + 20 demandes concurrentes : 10 acceptées, disponible jamais négatif, CONFIRMED tant que l'index est périmé, convergence SETTLED | `evidence/002/ponder-lag/evidence.json` | 002 |
 | P-12 | E2E échec vs inconnu : revert miné → FAILED (receipt 0) ; pause → REJECTED sans diffusion ; Besu coupé → UNKNOWN (réservation conservée) → RECONCILE → SETTLED | `evidence/002/failure-vs-unknown/evidence.json` | 002 |
+| P-13 | Après correctifs revue #18 : adapter 42 tests, backend 13 tests, 5 scénarios e2e PASS ; déterminisme nominal 10/10 | `evidence/002/determinism/` | 002 |
+| P-14 | Trivy : 7 HIGH transitifs Ponder → 2 corrigés par overrides, 3 acceptés avec justification/expiration (`.trivyignore`), endpoint GraphQL supprimé | `.trivyignore`, `indexer/package.json` | 002 |

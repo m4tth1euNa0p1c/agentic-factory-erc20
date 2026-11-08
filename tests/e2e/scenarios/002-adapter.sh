@@ -9,7 +9,7 @@ fail=0
 AMOUNT=1000000 # 1 TCE
 
 ensure_adapter() { # <fault>
-  ADAPTER_FAULT="$1" dc --profile app up -d --force-recreate --wait adapter >/dev/null 2>&1 || { step "FAIL adapter did not start"; dc logs --tail=50 adapter >&2; exit 1; }
+  ADAPTER_NODE_ENV=development ADAPTER_FAULT="$1" dc --profile app up -d --force-recreate --wait adapter >/dev/null 2>&1 || { step "FAIL adapter did not start"; dc logs --tail=50 adapter >&2; exit 1; }
 }
 
 # ---------- A. nominal ----------

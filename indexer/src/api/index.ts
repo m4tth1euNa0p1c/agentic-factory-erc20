@@ -1,10 +1,6 @@
-// Read-only API served by Ponder (internal network only, never published on the host).
-// Java reads PostgreSQL views directly; this endpoint is for diagnostics/GraphQL.
-import { db } from "ponder:api";
-import schema from "ponder:schema";
+// Ponder requires an API module. GraphQL is intentionally NOT exposed (security review / Trivy:
+// @graphql-tools/utils prototype-pollution CVEs); Java reads the `tela_read` SQL views directly.
 import { Hono } from "hono";
-import { graphql } from "ponder";
 
 const app = new Hono();
-app.use("/graphql", graphql({ db, schema }));
 export default app;

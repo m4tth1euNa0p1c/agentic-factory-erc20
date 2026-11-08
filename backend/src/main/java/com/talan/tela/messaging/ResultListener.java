@@ -46,8 +46,13 @@ public class ResultListener {
             return;
         }
         String block = text(n, "blockNumber");
+        String reason = text(n, "reason");
+        if ((block != null && !block.matches("^[0-9]{1,18}$")) || (reason != null && !reason.matches("^[A-Za-z0-9_:]{1,128}$"))) {
+            log.warn("invalid result fields skipped operationId={}", opId);
+            return;
+        }
         service.applyResult(new OperationService.Result(UUID.fromString(opId), Status.valueOf(status), tx,
-                block == null ? null : Long.valueOf(block), text(n, "reason")));
+                block == null ? null : Long.valueOf(block), reason));
     }
 
     private static String text(JsonNode n, String f) {

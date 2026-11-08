@@ -1,0 +1,5 @@
+nominal: PASS
+restart-after-broadcast: PASS
+ponder-lag: PASS
+failure-vs-unknown: PASS
+002-adapter: PASS

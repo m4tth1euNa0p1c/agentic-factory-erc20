@@ -27,6 +27,8 @@ export interface Journal {
 
 export type Receipt = { status: "success" | "reverted"; blockNumber: bigint; transactionHash: Hex };
 
+export type SendOutcome = "sent" | "known" | "nonce-too-low";
+
 export type SimulationOutcome =
   | { ok: true; gas: bigint }
   | { ok: false; kind: "revert"; errorName: string }; // deterministic revert
@@ -34,8 +36,13 @@ export type SimulationOutcome =
 export interface Chain {
   simulateTransfer(p: { token: Address; from: Address; to: Address; amount: bigint; ref: Hex }): Promise<SimulationOutcome>;
   pendingNonce(from: Address): Promise<bigint>;
-  /** Idempotent: "already known" / "nonce too low" for the same tx are swallowed by the implementation. */
-  sendRawTransaction(raw: Hex): Promise<void>;
+  latestNonce(from: Address): Promise<bigint>;
+  /**
+   * "sent": accepted; "known": this exact tx is already in the pool/chain (idempotent re-broadcast);
+   * "nonce-too-low": the nonce is consumed — by this tx OR another one (caller must find out, review F1).
+   * Any other error is thrown.
+   */
+  sendRawTransaction(raw: Hex): Promise<SendOutcome>;
   /** Resolves null on timeout. Throws on RPC unavailability. */
   waitForReceipt(hash: Hex, timeoutMs: number): Promise<Receipt | null>;
   getReceipt(hash: Hex): Promise<Receipt | null>;
@@ -52,6 +59,12 @@ export interface Signer {
 export interface Publisher {
   publish(r: OperationResult): Promise<void>;
 }
+
+/** Short, non-sensitive error description for logs: never String(e) (may embed raw signed txs, review F7). */
+export const errMsg = (e: unknown): string => {
+  const x = e as { name?: string; shortMessage?: string; details?: string; message?: string };
+  return [x?.name, x?.shortMessage ?? x?.details ?? (x?.message ?? "").split("\n")[0]].filter(Boolean).join(": ").slice(0, 300);
+};
 
 export type Fault = "none" | "crash-after-broadcast" | "crash-before-broadcast" | "pause-before-broadcast";
 

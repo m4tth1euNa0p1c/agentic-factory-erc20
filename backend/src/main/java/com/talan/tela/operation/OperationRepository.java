@@ -114,14 +114,17 @@ public class OperationRepository {
                 SELECT * FROM operation
                 WHERE status IN ('BROADCAST','UNKNOWN')
                   AND updated_at < now() - make_interval(secs => ?)
-                  AND (last_reconcile_at IS NULL OR last_reconcile_at < now() - make_interval(secs => ?))
-                ORDER BY updated_at LIMIT 100""")
+                  AND reconcile_attempts < 30
+                  AND (last_reconcile_at IS NULL
+                       OR last_reconcile_at < now() - make_interval(secs => ? * power(2, least(reconcile_attempts, 6))))
+                ORDER BY updated_at LIMIT 20""")
                 .param((double) afterSeconds).param((double) afterSeconds)
                 .query(OperationRepository::map).list();
     }
 
     public void touchReconcile(UUID id) {
-        jdbc.sql("UPDATE operation SET last_reconcile_at = now() WHERE operation_id = ?").param(id).update();
+        // exponential backoff + cap (review #18 F2): no RECONCILE storm on the single adapter consumer
+        jdbc.sql("UPDATE operation SET last_reconcile_at = now(), reconcile_attempts = reconcile_attempts + 1 WHERE operation_id = ?").param(id).update();
     }
 
     private void audit(UUID id, Status from, Status to, String source) {

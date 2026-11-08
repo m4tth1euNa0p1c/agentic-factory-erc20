@@ -17,6 +17,12 @@ const Env = z.object({
   TCE_ADDRESS: addr,
   TCD_ADDRESS: addr,
   TIF_ADDRESS: addr,
+  /** Comma-separated accounts the adapter may sign for (customer accounts only; never admin/minter keys). */
+  ADAPTER_SIGNABLE_ACCOUNTS: z.string().min(42).transform((s) => new Set(s.split(",").map((x) => x.trim().toLowerCase()).filter(Boolean)))
+    .refine((set) => [...set].every((a) => /^0x[0-9a-f]{40}$/.test(a)), "invalid address in ADAPTER_SIGNABLE_ACCOUNTS"),
+  TOKENS_START_BLOCK: z.coerce.bigint().default(0n),
+  LOGS_BLOCK_RANGE: z.coerce.bigint().default(4000n),
+  RECONCILE_RECEIPT_TIMEOUT_MS: z.coerce.number().int().positive().default(3_000),
   RECEIPT_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
   ADAPTER_FAULT: z.enum(["none", "crash-after-broadcast", "crash-before-broadcast", "pause-before-broadcast"]).default("none"),
   ADAPTER_FAULT_PAUSE_MS: z.coerce.number().int().min(0).max(120_000).default(10_000),
