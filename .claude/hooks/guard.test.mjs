@@ -16,6 +16,18 @@ const cases = [
   [{ tool_name: "Bash", tool_input: { command: "git push -u origin main" } }, 0],
   [{ tool_name: "Bash", tool_input: { command: "bash scripts/sandbox.sh up" } }, 0],
   [{ tool_name: "Bash", tool_input: { command: "gh secret list" } }, 2],
+  // security review M-1 regressions
+  [{ tool_name: "Bash", tool_input: { command: "docker compose config" } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: "docker compose exec -T besu cat /secrets/key" } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: "docker exec tela-web3signer-1 ls" } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: "docker inspect tela-postgres-1" } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: "cat /proc/1/environ" } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: `source ${dot} && echo $X` } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: `. ./${dot}` } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: 'docker run --rm -v "$PWD:/x" alpine ls /x' } }, 2],
+  [{ tool_name: "Bash", tool_input: { command: "docker compose logs --tail=50 besu" } }, 0],
+  [{ tool_name: "Bash", tool_input: { command: "docker compose ps" } }, 0],
+  [{ tool_name: "Bash", tool_input: { command: "tests/e2e/run.sh 001-contracts" } }, 0],
 ];
 let fail = 0;
 for (const [input, want] of cases) {

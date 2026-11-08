@@ -8,8 +8,8 @@ x-hardening: &hardening
   logging: { driver: json-file, options: { max-size: "10m", max-file: "3" } }
 
 networks:
-  chain:    {}   # besu <-> web3signer/adapter/indexer
-  signing:  { internal: true }   # web3signer <-> adapter (+ one-shot deployer)
+  chain:    {}   # besu <-> adapter/indexer (read RPC)
+  signing:  { internal: true }   # web3signer <-> besu, adapter, one-shot deployer
   data:     {}   # postgres <-> backend/indexer/adapter
   bus:      {}   # kafka <-> backend/adapter
 
@@ -30,16 +30,17 @@ services:
       - --rpc-http-enabled
       - --rpc-http-host=0.0.0.0
       - --rpc-http-port=8545
-      - --rpc-http-api=ETH,NET,WEB3,TXPOOL,QBFT
+      - --rpc-http-api=ETH,NET,WEB3          # no QBFT (validator votes) / TXPOOL / ADMIN (review M-3)
       - --host-allowlist=besu,localhost,127.0.0.1
       - --p2p-host=0.0.0.0
+      - --discovery-enabled=false
       - --logging=INFO
     volumes:
       - ./infra/generated/besu/genesis.json:/config/genesis.json:ro
       - ./infra/.secrets/besu/key:/secrets/key:ro
       - besu-data:/var/lib/besu
     ports: ["127.0.0.1:8545:8545"]
-    networks: [chain]
+    networks: [chain, signing]   # web3signer reaches besu only through the internal `signing` network
     healthcheck:
       test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8545 && printf \"GET /liveness HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n\" >&3 && grep -q UP <&3'"]
       interval: 5s
@@ -62,7 +63,7 @@ services:
       - --downstream-http-request-timeout=10000
     volumes:
       - ./infra/.secrets/web3signer:/var/lib/web3signer:ro
-    networks: [chain, signing]
+    networks: [signing]          # never on `chain` (review F-1): only the adapter/deployer can reach it
     depends_on: { besu: { condition: service_healthy } }
     healthcheck:
       test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/9000 && printf \"GET /upcheck HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n\" >&3 && grep -q OK <&3'"]
@@ -98,9 +99,11 @@ services:
       CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: INTERNAL://:9092,CONTROLLER://:9093,HOST://:29092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,HOST://127.0.0.1:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,HOST:PLAINTEXT
+      # No host listener: an unauthenticated producer on the commands topic would be a signing oracle.
+      # SASL/SCRAM + ACLs per principal are tracked as a follow-up before any shared environment.
+      KAFKA_LISTENERS: INTERNAL://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
@@ -111,7 +114,6 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_LOG_DIRS: /var/lib/kafka/data
     volumes: [kafka-data:/var/lib/kafka/data]
-    ports: ["127.0.0.1:29092:29092"]
     networks: [bus]
     healthcheck:
       test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1"]

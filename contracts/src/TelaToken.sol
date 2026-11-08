@@ -13,8 +13,9 @@ contract TelaToken is ERC20, ERC20Permit, AccessControl, Pausable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
-    /// @dev ref => consumed. Global for the token (not per sender).
-    mapping(bytes32 ref => bool used) private _usedReferences;
+    /// @dev sender => ref => consumed. Scoped per sender so that no third party can pre-consume
+    ///      ("squat") another account's business reference (security review M-4).
+    mapping(address sender => mapping(bytes32 ref => bool used)) private _usedReferences;
 
     error ReferenceAlreadyUsed(bytes32 ref);
     error ZeroReference();
@@ -39,14 +40,14 @@ contract TelaToken is ERC20, ERC20Permit, AccessControl, Pausable {
 
     /// @notice Transfer `amount` to `to`, tagged with a business `ref` that can only be used once.
     function transferWithReference(address to, uint256 amount, bytes32 ref) external returns (bool) {
-        _consumeReference(ref, amount);
+        _consumeReference(_msgSender(), ref, amount);
         _transfer(_msgSender(), to, amount);
         emit TransferWithReference(ref, _msgSender(), to, amount);
         return true;
     }
 
-    function isReferenceUsed(bytes32 ref) external view returns (bool) {
-        return _usedReferences[ref];
+    function isReferenceUsed(address sender, bytes32 ref) external view returns (bool) {
+        return _usedReferences[sender][ref];
     }
 
     function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
@@ -64,11 +65,11 @@ contract TelaToken is ERC20, ERC20Permit, AccessControl, Pausable {
 
     /// @dev Effects before interactions: the ref is marked before any balance movement.
     ///      A revert later in the call (insufficient balance, pause) rolls the mark back atomically.
-    function _consumeReference(bytes32 ref, uint256 amount) internal {
+    function _consumeReference(address sender, bytes32 ref, uint256 amount) internal {
         if (ref == bytes32(0)) revert ZeroReference();
         if (amount == 0) revert ZeroAmount();
-        if (_usedReferences[ref]) revert ReferenceAlreadyUsed(ref);
-        _usedReferences[ref] = true;
+        if (_usedReferences[sender][ref]) revert ReferenceAlreadyUsed(ref);
+        _usedReferences[sender][ref] = true;
     }
 
     /// @dev Single choke point: every balance movement (transfer, mint, burn) honours the pause.

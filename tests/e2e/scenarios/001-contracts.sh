@@ -21,7 +21,7 @@ assert_eq "$status" "0x1" "first transferWithReference succeeds" || fail=1
 a1=$(balance "$TCE_ADDRESS" "$ALICE_ADDRESS"); b1=$(balance "$TCE_ADDRESS" "$BOB_ADDRESS")
 assert_eq "$((a0 - a1))" "$amount" "alice debited exactly once" || fail=1
 assert_eq "$((b1 - b0))" "$amount" "bob credited" || fail=1
-assert_eq "$(cast_ro call "$TCE_ADDRESS" "isReferenceUsed(bytes32)(bool)" "$ref")" "true" "reference consumed" || fail=1
+assert_eq "$(cast_ro call "$TCE_ADDRESS" "isReferenceUsed(address,bytes32)(bool)" "$ALICE_ADDRESS" "$ref")" "true" "reference consumed" || fail=1
 
 # Replay: must be refused before broadcast (simulation) with ReferenceAlreadyUsed(ref)
 replay=$(cast_sign send "$TCE_ADDRESS" "transferWithReference(address,uint256,bytes32)" "$BOB_ADDRESS" "$amount" "$ref" \

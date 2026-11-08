@@ -23,7 +23,9 @@
 ## Phase 4: User Story 3 — CI sécurité (P2)
 - [x] T013 [US3] [network-devops] `.github/workflows/ci.yml` : forge test, Slither, Gitleaks, Trivy config, tests hooks (actions épinglées par SHA)
 - [x] T014 [P] [US3] [network-devops] `.github/dependabot.yml` (actions, npm, maven, docker)
-- [ ] T015 [US3] [security-auditor] Revue guidance-mode de 001 (skill security-audit + smart-contract-security) → commentaire PR
+- [x] T015 [US3] [security-auditor] Revue guidance-mode de 001 (skill security-audit + smart-contract-security) → commentaire PR
+
+- [x] T016 [US3] [network-devops] Correctifs revue sécurité M-1 (guard/settings), M-2 (sandbox-exec copie propre), M-3 (APIs Besu), M-4 (refs par émetteur), F-1 (réseau Web3Signer)
 
 ## Dependencies
 T001→T003→T005→T006 ; T007→T008→T010→T011→T012 ; T013 après T008 ; T015 après T012/T013.

@@ -43,14 +43,16 @@
 | D-08 | Outbox transactionnelle côté Java pour publier vers Kafka | Pas de perte entre DB et Kafka | 2026-11-08 |
 | D-09 | Monorepo, un dossier par composant, sandbox Docker Compose | Reproductibilité (F-07) | 2026-11-08 |
 | D-11 | EVM `cancun` (genèse `cancunTime: 0`) : OZ 5.6 utilise `mcopy` | Constat de compilation | 2026-11-08 |
+| D-12 | Références d'opération **scopées par émetteur** (`mapping(sender => ref => used)`) | Revue sécurité M-4 : empêche le squatting d'une référence par un tiers | 2026-11-08 |
+| D-13 | Kafka non publié sur l'hôte ; Web3Signer uniquement sur `signing` ; Besu sans QBFT/TXPOOL | Revue sécurité M-3, F-1 | 2026-11-08 |
 | D-10 | Client Kafka JS : `@confluentinc/kafka-javascript` | `kafkajs` non maintenu | 2026-11-08 |
 
 ## PREUVES d'exécution
 
 | ID | Preuve | Fichier | Commit |
 |---|---|---|---|
-| P-01 | Sandbox vierge : QBFT produit des blocs, 5 clés Web3Signer, rôles PG, 3 topics, admin API refusée, Web3Signer non publié (12/12 OK) | `evidence/001/sandbox-check.txt` | 001 |
-| P-02 | Contrats : 15 tests (unit, fuzz 512, invariants 64×32) verts ; couverture lignes 100 % | `evidence/001/forge-test.txt`, `evidence/001/coverage.txt` | 001 |
+| P-01 | Sandbox vierge : QBFT produit des blocs, 5 clés Web3Signer, rôles PG, 3 topics, admin API refusée, Web3Signer non publié (16/16 OK, incl. QBFT/TXPOOL désactivés, Web3Signer injoignable depuis `chain`, Kafka non publié) | `evidence/001/sandbox-check.txt` | 001 |
+| P-02 | Contrats : 16 tests (unit, fuzz 512, invariants 64×32, anti-squatting M-4) verts ; couverture lignes 100 % | `evidence/001/forge-test.txt`, `evidence/001/coverage.txt` | 001 |
 | P-03 | Slither 0.11.6 : 0 finding (Low→High) sur TelaToken et TalanFixedRateSwap | `evidence/001/slither/` | 001 |
 | P-04 | On-chain : `transferWithReference` débite une fois, rejeu refusé (`ReferenceAlreadyUsed`) avant diffusion, 1 seul événement | `evidence/001/contracts/evidence.json` | 001 |
 | P-05 | Déploiement signé exclusivement par Web3Signer (`forge script --unlocked`, aucune clé exportée) | `scripts/deploy-contracts.sh` | 001 |

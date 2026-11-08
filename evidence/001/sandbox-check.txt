@@ -1,12 +1,16 @@
 [tela] OK   besu chainId=48151
-[tela] OK   besu produces blocks (0x42 -> 0x43)
+[tela] OK   besu produces blocks (0x2b -> 0x2d)
 [tela] OK   besu admin API disabled
+[tela] OK   besu QBFT vote API disabled (M-3)
+[tela] OK   besu TXPOOL API disabled
 [tela] OK   web3signer holds DEPLOYER key
 [tela] OK   web3signer holds TREASURY key
 [tela] OK   web3signer holds OPERATOR key
 [tela] OK   web3signer holds ALICE key
 [tela] OK   web3signer holds BOB key
 [tela] OK   web3signer not published on host
+[tela] OK   web3signer unreachable from chain network (F-1)
+[tela] OK   kafka not published on host
 [tela] OK   postgres roles
 [tela] OK   kafka topics
 [tela] OK   contracts deployed (TCE code)

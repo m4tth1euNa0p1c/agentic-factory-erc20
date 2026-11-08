@@ -68,7 +68,7 @@ Chaque PR exécute build, tests, analyse statique et détection de secrets avant
 - **FR-004**: Besu NE DOIT exposer que `ETH,NET,WEB3,TXPOOL,QBFT`.
 - **FR-005**: PostgreSQL DOIT séparer les rôles backend / ponder / adapter (moindre privilège).
 - **FR-006**: Les jetons DOIVENT être ERC-20 (6 décimales), `AccessControl`, `Pausable`, avec `mint` réservé à `MINTER_ROLE` (H-09).
-- **FR-007**: Les jetons DOIVENT exposer `transferWithReference(address to, uint256 amount, bytes32 reference)` qui rejette une référence déjà utilisée (D-03) et `isReferenceUsed(bytes32)`.
+- **FR-007**: Les jetons DOIVENT exposer `transferWithReference(address to, uint256 amount, bytes32 reference)` qui rejette une référence déjà utilisée **par le même émetteur** (D-03, revue M-4 : pas de squatting par un tiers) et `isReferenceUsed(address sender, bytes32 ref)`.
 - **FR-008**: Le déploiement DOIT être scripté, signé via Web3Signer (aucune clé hors Web3Signer) et produire `deployments/local.json`.
 - **FR-009**: Les ABI DOIVENT être exportées dans `contracts/abi/`.
 - **FR-010**: La CI DOIT exécuter forge test, Slither, Gitleaks, Trivy config et les tests des hooks de la factory.

@@ -41,7 +41,8 @@ contract TelaTokenTest is Test {
         tce.transferWithReference(bob, 10e6, ref);
         assertEq(tce.balanceOf(bob), 10e6);
         assertEq(tce.balanceOf(alice), 90e6);
-        assertTrue(tce.isReferenceUsed(ref));
+        assertTrue(tce.isReferenceUsed(alice, ref));
+        assertFalse(tce.isReferenceUsed(bob, ref));
     }
 
     // US2-3
@@ -55,13 +56,26 @@ contract TelaTokenTest is Test {
         assertEq(tce.balanceOf(bob), 10e6);
     }
 
-    function test_referenceIsGlobalNotPerSender() public {
+    /// Security review M-4: a third party must not be able to "squat" (pre-consume) Alice's reference.
+    function test_referenceIsScopedPerSender_noSquatting() public {
         bytes32 ref = keccak256("op-1");
-        vm.prank(alice);
+        vm.prank(treasury);
+        tce.mint(bob, 1);
+        vm.prank(bob); // attacker front-runs with Alice's reference
         tce.transferWithReference(bob, 1, ref);
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSelector(TelaToken.ReferenceAlreadyUsed.selector, ref));
+        assertFalse(tce.isReferenceUsed(alice, ref));
+        vm.prank(alice); // Alice's genuine operation still executes
+        tce.transferWithReference(bob, 10e6, ref);
+        assertEq(tce.balanceOf(alice), 90e6);
+    }
+
+    function testFuzz_thirdPartyCannotConsumeReference(address attacker, bytes32 ref) public {
+        vm.assume(attacker != alice && attacker != address(0) && ref != bytes32(0));
+        vm.prank(treasury);
+        tce.mint(attacker, 1);
+        vm.prank(attacker);
         tce.transferWithReference(alice, 1, ref);
+        assertFalse(tce.isReferenceUsed(alice, ref));
     }
 
     function test_transferWithReference_rejectsZeroAmountAndZeroRef() public {
@@ -78,7 +92,7 @@ contract TelaTokenTest is Test {
         vm.prank(alice);
         vm.expectRevert();
         tce.transferWithReference(bob, 101e6, ref);
-        assertFalse(tce.isReferenceUsed(ref));
+        assertFalse(tce.isReferenceUsed(alice, ref));
     }
 
     // US2-4
@@ -126,7 +140,7 @@ contract TelaTokenTest is Test {
     }
 }
 
-/// Invariant: a reference can produce at most one balance movement; supply only changes via mint.
+/// Invariant: a (sender, reference) pair can produce at most one balance movement; supply only changes via mint.
 contract ReferenceHandler is Test {
     TelaToken internal tce;
     address[] internal actors;
@@ -147,11 +161,13 @@ contract ReferenceHandler is Test {
         if (tce.balanceOf(from) < amount) return;
         vm.prank(from);
         try tce.transferWithReference(to, amount, ref) {
-            executions[ref] += 1;
+            executions[keccak256(abi.encode(from, ref))] += 1;
         } catch {}
     }
 
     function refCount() external view returns (uint256) { return refs.length; }
+    function actorCount() external view returns (uint256) { return actors.length; }
+    function actor(uint256 i) external view returns (address) { return actors[i]; }
 }
 
 contract TelaTokenInvariantTest is Test {
@@ -173,8 +189,10 @@ contract TelaTokenInvariantTest is Test {
     }
 
     function invariant_eachReferenceExecutedAtMostOnce() public view {
-        for (uint256 i; i < handler.refCount(); ++i) {
-            assertLe(handler.executions(handler.refs(i)), 1);
+        for (uint256 a; a < handler.actorCount(); ++a) {
+            for (uint256 i; i < handler.refCount(); ++i) {
+                assertLe(handler.executions(keccak256(abi.encode(handler.actor(a), handler.refs(i)))), 1);
+            }
         }
     }
 
