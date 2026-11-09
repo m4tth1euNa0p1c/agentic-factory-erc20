@@ -30,6 +30,12 @@
 | H-10 | Deux propriétés distinctes du modèle de lecture Ponder : (a) **atomicité SQL** — solde et exécution d'un même lot publiés dans la même transaction : observée vraie (sonde 10 ops, P-16) ; (b) **monotonie temporelle** — pas de retour à un ancien checkpoint : **fausse** avec la fenêtre de réorg par défaut (la reprise après crash ré-expose l'état d'un checkpoint antérieur, P-15), assurée par `reorgWindow: 0` + garde de watermark évaluée dans le même snapshot que les montants (D-23) | Disponible transitoirement faux | 002 |
 | H-11 | Écarts assumés vs présentation TELA : 1 validateur (TELA : 6) et blocs de 2 s (TELA : 15 s) ; signature séparée + persistance au lieu de `eth_sendTransaction` ; `transferWithReference` ajouté aux ERC-20 | La compatibilité avec les contrats TELA réels reste à établir (#13) | 001, 002 |
 | H-09 | L'émission (mint) est réservée à un rôle `MINTER` (trésorerie) | Contrats | 001 |
+| H-12 | GitLab Talan : hébergement, version, runners (Docker/K8s), registry — inconnus | Portage forge et CI | 008 |
+| H-13 | Réseau Besu Talan : finalité instantanée (QBFT) **à confirmer** ; base fee / min gas, permissioning, TLS/JWT RPC inconnus | Gas (H-04), `reorgWindow: 0` (D-23), client RPC | 008 |
+| H-14 | Contrats TELA réels : adresses, bloc de déploiement, présence d'une référence d'opération inconnus | Idempotence on-chain (H-11), indexation | 008 |
+| H-15 | Key store Web3Signer Talan (Vault / HSM / KMS) et mTLS client inconnus | Signature | 008 |
+| H-16 | Cible de déploiement (Kubernetes+Helm ou VM+Compose) et gestion des secrets (Vault, External Secrets) inconnues | Artefacts de déploiement | 008 |
+| H-17 | Kafka et PostgreSQL managés : SASL, TLS, droits DDL inconnus | Config, migrations | 008 |
 
 ## DÉCISIONS proposées
 

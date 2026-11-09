@@ -1,12 +1,12 @@
 # Balayage complet des specs (cross-spec analysis)
 
-> Exécuté le 2026-11-08 sur 000–005 (méthode `/speckit-analyze` appliquée à l'ensemble). Relancé à chaque modification de `tasks.md` (cf. skill `factory-run`, étape 2).
+> Exécuté le 2026-11-08 sur 000–005, mis à jour le 2026-11-09 (008, audit `docs/audit/2026-11-09-talan-readiness.md`) (méthode `/speckit-analyze` appliquée à l'ensemble). Relancé à chaque modification de `tasks.md` (cf. skill `factory-run`, étape 2).
 
 | ID | Sévérité | Specs | Constat | Résolution |
 |---|---|---|---|---|
 | A-01 | CRITICAL | 002 US2-3 / US4-2 | `ReferenceAlreadyUsed` classé à la fois `CONFIRMED` et `REJECTED` | **Corrigé** : jamais un rejet ; recherche du log d'origine ⇒ `CONFIRMED` |
 | A-02 | HIGH | 002, 005 | Aucune authentification de l'API ; `from` choisi par l'appelant | Accepté pour v0 sandbox (API sur 127.0.0.1) ; **spec 006-authn** à créer avant tout environnement partagé |
-| A-03 | MEDIUM | 005 US1 / OpenAPI | Fraîcheur de l'indexation : l'API expose `indexedAtBlock` mais pas le bloc courant | Ajouter `GET /api/v1/system/indexer-status` (bloc indexé vs tête) en 005 ; Ponder `chain_head` + lecture RPC Besu read-only |
+| A-03 | MEDIUM | 005 US1 / OpenAPI | Fraîcheur de l'indexation : l'API expose `indexedAtBlock` mais pas le bloc courant | **Résolu** : `GET /api/v1/system/indexer-status` livré (bloc indexé, watermark, régression) |
 | A-04 | MEDIUM | 001, 002 | Kafka en PLAINTEXT dans le sandbox | Accepté (réseau `bus` isolé) ; cible SASL_SSL/mTLS consignée en hypothèse de prod |
 | A-05 | MEDIUM | 003 | Taux figé à la demande ou à l'exécution non défini | **Résolu** (revue 2026-11-08) : taux immuable D-18, TCE→TCD D-19, approve+swap D-20 ; 003 Ready |
 | A-06 | MEDIUM | 004 | Nature de TIF inconnue | 004 bloquée tant que les sources TELA ne sont pas fournies |
@@ -17,12 +17,15 @@
 | A-11 | MEDIUM | 002 US3/SC-004 | Assertion « disponible jamais négatif » lue sur une valeur bornée à 0 ; double comptage transitoire entre indexation et règlement | **Corrigé** : disponible en un seul snapshot SQL (`pending` = réservations non encore indexées), `availableRaw` exposé, échantillonnage continu |
 | A-12 | LOW | 002 / 005 | Cycle de statuts présenté comme obligatoire alors que D-14 autorise `PUBLISHED → SETTLED` | **Corrigé** : US1-2 et 005 FR-004 |
 | A-14 | HIGH | 002 | Le modèle de lecture Ponder régresse après redémarrage (fenêtre de réorg par défaut), hypothèse H-10 fausse | **Corrigé** : D-23 (`reorgWindow: 0` + garde de watermark Java), sonde `probe-readmodel-consistency.sh` |
+| A-14 | HIGH | 001, 002, 008 | Stack et factory couplées à la sandbox (gas nul, pas de TLS/SASL, `gh` codé en dur, hook sans règles infra réelle) | Spec **008** (lots L1–L6) ; H-12…H-17 ouvertes |
+| A-15 | MEDIUM | 006, 007 | Numérotation : #12 réserve 006-authn (dossier absent), 007 en PR #24 | 006 réservé à l'authentification ; 008 = readiness |
 | A-13 | LOW | preuves | Champ `commit` vide (Git for Windows + MSYS_NO_PATHCONV) ; preuves écrasées à chaque exécution | **Corrigé** : `run.json` par exécution ; anciennes preuves dans `evidence/legacy/` |
 
 ## Couverture exigences → tâches
 - 001 : FR-001..010 couverts par T001–T015 (FR-010 ↔ T013).
 - 002 : FR-001..012 couverts (FR-009 ↔ T042/T043, FR-012 ↔ T017/T024/T032/T044).
-- 003–005 : pas encore de `tasks.md` (Draft) — générés après clarification.
+- 003–004 : pas encore de `tasks.md` (Draft / bloquées). 005 : `tasks.md` livré (PR #28).
+- 008 : FR-001..012 ↔ T001–T052 (L1 ↔ FR-001..004, L2 ↔ FR-005..006, L3 ↔ FR-011..012, L4 ↔ FR-007..010).
 
 ## Constitution
 Aucune violation. Écarts justifiés dans *Complexity Tracking* (001 : Foundry sur réseau `signing` ; 002 : outbox, journal adaptateur).
