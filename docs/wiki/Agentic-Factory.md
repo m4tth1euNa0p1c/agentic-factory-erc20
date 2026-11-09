@@ -1,6 +1,25 @@
 # Agentic Factory
 
 ## Agents (`.claude/agents/`)
+```mermaid
+flowchart TB
+  H(("👤 Propriétaire"))
+  O["orchestrator"]
+  subgraph impl["Spécialistes"]
+    ND["network-devops"]
+    SC["smart-contracts"]
+    BJ["backend-java"]
+    BA["blockchain-adapter"]
+    IX["indexer"]
+    FE["frontend"]
+  end
+  V["verifier"]
+  S["security-auditor"]
+  H --> O --> impl --> V --> O
+  impl --> S --> O
+  O -->|"PR"| H
+```
+
 | Agent | Périmètre | Preuve exigée |
 |---|---|---|
 | orchestrator | specs, schemas, registre, délégation | tâches cochées + registre |
@@ -9,24 +28,38 @@
 | backend-java | backend/ | `mvnw verify` (Testcontainers) |
 | blockchain-adapter | adapter/ | vitest + scénario e2e |
 | indexer | indexer/ | indexé = balanceOf |
-| frontend | frontend/ | Playwright |
+| frontend | frontend/ | tests unitaires + Playwright |
 | verifier | evidence/, tests/e2e | rapport PASS/FAIL ré-exécuté |
 | security-auditor | lecture seule | revue skill `security-audit` |
 
+Les périmètres sont aujourd'hui une **convention** (prose des agents) ; leur application par le hook est prévue (spec 008, #31).
+
 ## Skills
 - Spec Kit : `speckit-specify / plan / tasks / analyze / implement / converge / clarify / checklist / constitution`
-- `security-audit` (Cloudflare, vendorisé @c1c8a8c, MIT) · `smart-contract-security` · `factory-run`
+- `security-audit` (Cloudflare, vendorisé, MIT) · `smart-contract-security` · `factory-run`
 
 ## Cycle `/factory-run NNN`
-sync → balayage des specs (`/speckit-analyze`) → tâche débloquée → agent spécialiste → `verifier` (indépendant) → `security-auditor` si zone sensible → preuve + registre + commit `Refs #` → PR.
+```mermaid
+flowchart LR
+  A[sync] --> B["/speckit-analyze"] --> C{"tâche débloquée ?"}
+  C -- non --> Z(["porte humaine G1/G2"])
+  C -- oui --> D["spécialiste"] --> E["verifier"]
+  E -- FAIL --> D
+  E -- PASS --> F{"zone sensible ?"}
+  F -- oui --> G["security-auditor"] --> I
+  F -- non --> I["preuve + registre + commit"]
+  I --> J["PR + 9 checks"] --> K(["G4 fusion 👤"])
+```
+Les portes humaines sont détaillées dans [[Validations-humaines]].
 
 ## Garde-fous
-- Hook `PreToolUse` (`.claude/hooks/guard.mjs`) : **garde-fou par expressions régulières, testé contre 25 cas** — défense en profondeur, pas une frontière de sécurité (il ne prouve pas qu'aucun programme ne peut lire un secret ; il bloque aussi parfois du simple texte qui mentionne une commande interdite). Il bloque notamment la lecture de `.env`/clés, introspection de conteneurs, `/proc/*/environ`, `source .env`, montage de la racine, force-push, push vers `main`, contournement des hooks git et de la protection de branche.
+- Hook `PreToolUse` (`.claude/hooks/guard.mjs`, 25 cas testés) : bloque lecture de `.env`/clés, introspection de conteneurs, `/proc/*/environ`, force-push simple, push vers `main`, `--no-verify`, contournement de la protection de branche. **Défense en profondeur, pas une frontière** : l'audit 008 a montré 22 contournements possibles sur une infra réelle (push `+main`, `kubectl`, `helm`, `terraform`, `ssh`, `vault`, `glab`…) → durcissement #31 avant toute cible Talan.
 - `main` protégée côté serveur : PR obligatoire, 9 checks requis, admins inclus.
-- Permissions : allowlist fermée (scripts, gh issue/pr, docker compose ps/logs/up/down).
 - Code cible exécuté via `scripts/sandbox-exec.sh` : copie `git archive`, `--network none`, FS lecture seule, limites.
 
-## Ce que la factory a appris en exécutant (exemples de preuves qui ont corrigé la conception)
+## Ce que la factory a appris en exécutant
 - Revue M-4 : références globales → squatting possible → références scopées par émetteur.
-- E2E US4 : couper `chain` ne coupait pas Besu (Besu est aussi sur `signing`).
-- E2E US2 : Ponder peut indexer avant que l'adaptateur ne redémarre → règlement sur preuve on-chain (D-14).
+- E2E : couper `chain` ne coupait pas Besu (Besu aussi sur `signing`).
+- E2E : Ponder peut indexer avant que l'adaptateur ne redémarre → règlement sur preuve on-chain (D-14).
+- Échantillonneur d'invariant : Ponder revenait à un checkpoint antérieur après crash → `reorgWindow: 0` + watermark (D-23, P-15/P-16).
+- Campagnes : deux échecs dus au **harnais** (limite `eth_getLogs` 5000 blocs, `pipefail`) documentés comme tels (P-19, P-20), pas cachés.
