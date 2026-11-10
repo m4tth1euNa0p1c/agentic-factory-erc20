@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit, Agent
 model: opus
 hooks:
   PreToolUse:
-    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell"
       hooks:
         - type: command
           command: "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/perimeter-guard.mjs\" orchestrator"

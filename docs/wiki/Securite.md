@@ -22,5 +22,5 @@
 
 ## Ouvert
 - #12 Authentification/autorisation de l'API — **avant tout environnement partagé**.
-- #31 Garde-fous v2 : **livré en PR, en revue** (22 contournements de l'audit 008 couverts par `.claude/hooks/guard.test.mjs`, 71 cas ; `specs/008-talan-readiness/tasks.md` T001–T006). Reste à fusionner (G4) avant toute cible Talan, dont les profils attendent #37. Voir [[Agentic-Factory]].
+- #31 Garde-fous v2 : **livré en PR, en revue** (22 contournements de l'audit 008 couverts par `.claude/hooks/guard.test.mjs`, 157 cas ; `specs/008-talan-readiness/tasks.md` T001–T006). Reste à fusionner (G4) avant toute cible Talan, dont les profils attendent #37. Voir [[Agentic-Factory]].
 - #17/#20/#27/#29 : SASL/ACL Kafka, secrets Compose, digests d'images, durcissements UI.

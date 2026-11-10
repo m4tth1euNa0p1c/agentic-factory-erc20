@@ -262,7 +262,7 @@ flowchart LR
 | `.claude/agents/*.md` | 10 agents (knowledge-curator, orchestrator, network-devops, smart-contracts, backend-java, blockchain-adapter, indexer, frontend, verifier, security-auditor) |
 | `.claude/skills/` | Spec Kit (`speckit-*`), `security-audit` (Cloudflare, vendorisé), `smart-contract-security`, `factory-run` |
 | `knowledge-curator` + skill `knowledge-maintenance` | tient les explications à jour depuis les sources, répond avec citations ; contrôle `scripts/knowledge-lint.mjs` (wiki *Base-de-connaissances*) |
-| `.claude/hooks/guard.mjs` | Garde-fou PreToolUse v2 : profil de cible `FACTORY_TARGET` (`factory/targets/`), risque lecture / écriture / destructif → autorisé / validation humaine / refusé ; 71 cas testés dont les 22 contournements de l'audit 008 — défense en profondeur, **pas** une frontière |
+| `.claude/hooks/guard.mjs` | Garde-fou PreToolUse v2 : profil de cible `FACTORY_TARGET` (`factory/targets/`), risque lecture / écriture / destructif → autorisé / validation humaine / refusé ; 157 cas testés dont les 22 contournements de l'audit 008 — défense en profondeur, **pas** une frontière |
 | `.claude/hooks/perimeter-guard.mjs` | périmètre d'écriture de chaque agent **imposé** (`factory/perimeters.json`), déclaré dans le frontmatter des agents |
 | `.specify/memory/constitution.md` | Règles non négociables : preuves, hypothèses visibles, contrats d'abord, effet unique, sécurité |
 | `docs/registry/REGISTRE.md` | Faits / Hypothèses / Décisions / Preuves (F/H/D/P) |

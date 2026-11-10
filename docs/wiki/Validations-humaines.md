@@ -62,8 +62,11 @@ Comment lire : les portes en jaune sont actives (G8 l'est depuis le lot L1 de la
 | **G5** Factory en CI | commentaire `/factory-run NNN` | être OWNER | **serveur** : environnement `factory` limité à `main` | run Actions |
 | **G6** Permission locale | commande hors allowlist ou bloquée par le hook | accepter/refuser le prompt | Claude Code + hook `guard.mjs` (`harness+hook`) | `guard.test.mjs` |
 | **G7** Risque résiduel | finding non corrigé | fusionner en connaissance de cause | convention, issue de suivi | commentaire de revue |
-| **G8** Cible réelle | endpoint hors sandbox | choisir explicitement le profil `FACTORY_TARGET` (`factory/targets/*.json`) ; actions mutantes refusées par défaut | **hook** `guard.mjs` v2 : destructif = refus, écriture infra / diffusion selon le profil, profil inconnu = tout refusé (D-26) | `guard.test.mjs` : 71 cas dont les 22 contournements de l'audit 008 |
+| **G8** Cible réelle | endpoint hors sandbox | choisir explicitement le profil `FACTORY_TARGET` (`factory/targets/*.json`) ; actions mutantes refusées par défaut | **hook** `guard.mjs` v2 : destructif = refus, écriture infra / diffusion selon le profil, profil inconnu = tout refusé (D-26) | `guard.test.mjs` : 157 cas dont les 22 contournements de l'audit 008 |
 | **G9** Décision d'expérience | fin d'expérience | valider la décision bornée | **prévu** (#24) | fiche d'expérience |
+
+## Mode bypass
+En mode *bypass permissions*, une demande de validation (`ask`) émise par le hook n'atteint personne : la fusion de la PR #40 est passée sans demande visible (constat F10 de la revue de la PR #41). Depuis la v2.1, sur une cible réelle, ces demandes deviennent des **refus** ; en sandbox, elles restent des `ask` non bloquants en bypass. Désactiver le mode bypass reste une décision humaine.
 
 ## Ce que les portes ne garantissent pas (honnêtement)
 - **G4** : aucune approbation de relecteur n'est exigée (dépôt mono-propriétaire). Si le propriétaire autorise un agent à fusionner dans la session, une PR verte peut être fusionnée sans relecture humaine ligne à ligne.
@@ -72,7 +75,7 @@ Comment lire : les portes en jaune sont actives (G8 l'est depuis le lot L1 de la
 - **G1, G2, G3, G7** sont des conventions : un agent qui les ignore n'est pas bloqué techniquement, mais la constitution et le verifier le signalent.
 
 ## Contradictions / mises à jour
-- 2026-11-10 : la page indiquait G8 « prévu (#31) ». Source plus récente : `factory/human-gates.yaml` (G8 `enforcement: hook`, 71 cas testés) et D-26 dans `docs/registry/REGISTRE.md`. Le lot L1 est livré en PR, pas encore fusionné : l'imposition effective par G8 sur `main` dépend de G4.
+- 2026-11-10 : la page indiquait G8 « prévu (#31) ». Source plus récente : `factory/human-gates.yaml` (G8 `enforcement: hook`, 157 cas testés) et D-26 dans `docs/registry/REGISTRE.md`. Le lot L1 est livré en PR, pas encore fusionné : l'imposition effective par G8 sur `main` dépend de G4.
 - 2026-11-10 : `.claude/settings.json` a changé (deny `.env` élargi, `gh pr`/`gh issue` réduits aux verbes utiles). Le merge d'une PR est désormais `ask` dans le hook (G4) et l'approbation de PR est refusée (`.claude/hooks/guard.mjs`).
 
 ## Validations attendues aujourd'hui

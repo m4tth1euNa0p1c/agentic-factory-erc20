@@ -95,7 +95,7 @@ gates:
     enforcement: hook
     hook_rules: "profils factory/targets/*.json ; destructif = refus ; écriture infra / diffusion hors liste = ask ou refus selon le profil ; profil inconnu = tout refusé"
     known_gap: règles par expressions régulières sur le texte des commandes (défense en profondeur, pas une frontière) ; valeurs réelles des profils Talan à fournir (#37)
-    evidence: .claude/hooks/guard.test.mjs (71 cas dont les 22 contournements de l'audit 008)
+    evidence: .claude/hooks/guard.test.mjs (157 cas dont les 22 contournements de l'audit 008)
 
   - id: G9
     name: Décision d'expérience

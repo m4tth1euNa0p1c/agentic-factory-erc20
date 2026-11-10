@@ -5,8 +5,10 @@ import { fileURLToPath } from "node:url";
 
 const HOOK = path.join(path.dirname(fileURLToPath(import.meta.url)), "perimeter-guard.mjs");
 const ROOT = path.resolve(path.dirname(HOOK), "..", "..");
-const call = (agent, tool_name, file_path) =>
-  spawnSync("node", [HOOK, agent], { input: JSON.stringify({ tool_name, tool_input: { file_path } }), env: { ...process.env, CLAUDE_PROJECT_DIR: ROOT } }).status;
+const call = (agent, tool_name, file_path) => {
+  const tool_input = typeof file_path === "object" ? file_path : (tool_name === "Bash" || tool_name === "PowerShell") ? { command: file_path } : { file_path };
+  return spawnSync("node", [HOOK, agent], { input: JSON.stringify({ tool_name, tool_input }), env: { ...process.env, CLAUDE_PROJECT_DIR: ROOT } }).status;
+};
 
 const cases = [
   ["backend-java", "Edit", "backend/src/main/java/X.java", 0],
@@ -29,13 +31,27 @@ const cases = [
   ["backend-java", "Read", "adapter/src/main.ts", 0],
   ["backend-java", "Write", path.join(ROOT, "backend", "abs.txt"), 0],
   ["backend-java", "Write", "C:/Windows/x.txt", 2],
+  // review PR #41 F3 / F13
+  ["orchestrator", "Edit", "factory/perimeters.json", 2],
+  ["orchestrator", "Edit", "factory/targets/talan-staging.json", 2],
+  ["orchestrator", "Edit", "factory/human-gates.yaml", 2],
+  ["orchestrator", "Edit", "CLAUDE.md", 2],
+  ["orchestrator", "Edit", "factory/kit/manifest.json", 0],
+  ["network-devops", "Edit", ".claude/settings.json", 2],
+  ["backend-java", "Bash", "sed -i 's/deny/allow/' factory/targets/talan-dev.json", 2],
+  ["verifier", "Bash", "printf x > .claude/hooks/guard.mjs", 2],
+  ["network-devops", "PowerShell", "Set-Content factory/perimeters.json x", 2],
+  ["backend-java", "Bash", "cat factory/perimeters.json", 0],
+  ["backend-java", "Bash", "scripts/mvn.sh -f backend verify", 0],
+  ["backend-java", "NotebookEdit", { file_path: "backend/ok.ipynb", notebook_path: "adapter/x.ipynb" }, 2],
+  ["backend-java", "Edit", {}, 2],
 ];
 let fail = 0;
 for (const [agent, tool, file, want] of cases) {
   const got = call(agent, tool, file);
   const ok = got === want;
   if (!ok) fail++;
-  console.log(`${ok ? "PASS" : "FAIL"} exit=${got} want=${want} ${agent} ${tool} ${file}`);
+  console.log(`${ok ? "PASS" : "FAIL"} exit=${got} want=${want} ${agent} ${tool} ${typeof file === "object" ? JSON.stringify(file) : file}`);
 }
 console.log(`${cases.length - fail}/${cases.length}`);
 process.exit(fail ? 1 : 0);

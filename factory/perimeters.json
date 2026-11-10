@@ -1,14 +1,49 @@
 {
-  "$comment": "Périmètres d'écriture des agents de la factory. Appliqués par .claude/hooks/perimeter-guard.mjs <agent>, déclaré dans le frontmatter de chaque agent (en plus du hook global guard.mjs). knowledge-curator a son propre hook, plus strict (liste exacte de commandes).",
+  "$comment": "Périmètres d'écriture des agents de la factory. Appliqués par .claude/hooks/perimeter-guard.mjs <agent>, déclaré dans le frontmatter de chaque agent (en plus du hook global guard.mjs). knowledge-curator a son propre hook, plus strict (liste exacte de commandes). Les fichiers de règles (.claude/, factory/targets, factory/perimeters.json, factory/human-gates.yaml, CLAUDE.md) ne sont dans aucun périmètre : seul l'humain les modifie (revue de PR).",
   "agents": {
-    "orchestrator": ["specs/", "schemas/", "docs/registry/", "docs/research/", "docs/audit/", "docs/HUMAN-ACTIONS.md", "factory/", ".specify/", "README.md", "CLAUDE.md"],
-    "network-devops": ["infra/", "scripts/", "compose.yaml", ".github/", "docs/runbooks/", "config/", "deploy/", "deployments/"],
-    "smart-contracts": ["contracts/"],
-    "backend-java": ["backend/"],
-    "blockchain-adapter": ["adapter/"],
-    "indexer": ["indexer/"],
-    "frontend": ["frontend/"],
-    "verifier": ["evidence/", "tests/e2e/"],
-    "security-auditor": ["evidence/security/", "docs/audit/"]
+    "orchestrator": [
+      "specs/",
+      "schemas/",
+      "docs/registry/",
+      "docs/research/",
+      "docs/audit/",
+      "docs/HUMAN-ACTIONS.md",
+      "factory/kit/",
+      ".specify/",
+      "README.md"
+    ],
+    "network-devops": [
+      "infra/",
+      "scripts/",
+      "compose.yaml",
+      ".github/",
+      "docs/runbooks/",
+      "config/",
+      "deploy/",
+      "deployments/"
+    ],
+    "smart-contracts": [
+      "contracts/"
+    ],
+    "backend-java": [
+      "backend/"
+    ],
+    "blockchain-adapter": [
+      "adapter/"
+    ],
+    "indexer": [
+      "indexer/"
+    ],
+    "frontend": [
+      "frontend/"
+    ],
+    "verifier": [
+      "evidence/",
+      "tests/e2e/"
+    ],
+    "security-auditor": [
+      "evidence/security/",
+      "docs/audit/"
+    ]
   }
 }

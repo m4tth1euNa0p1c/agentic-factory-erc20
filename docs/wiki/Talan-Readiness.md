@@ -11,7 +11,7 @@ Objectif : sortir la factory et la stack de la sandbox pour travailler sur l'inf
 | Hygiène | ⚠️ pas de bloat (61 Mo = sous-modules) ; preuves éparpillées, CI sans cache ni lint |
 
 ## Avancement
-- **L1 Garde-fous v2 (#31) : livré, en revue** — T001 à T006 cochées (`specs/008-talan-readiness/tasks.md`) ; hook v2 à profils de cible, 71 cas testés dont les 22 contournements, périmètres d'agents imposés (`factory/perimeters.json`) ; décision D-26. Détail dans [[Agentic-Factory]] ; porte G8 dans [[Validations-humaines]]. Les valeurs des profils Talan dépendent encore de #37.
+- **L1 Garde-fous v2 (#31) : livré, en revue** — T001 à T006 cochées (`specs/008-talan-readiness/tasks.md`) ; hook v2 à profils de cible, 157 cas testés dont les 22 contournements, périmètres d'agents imposés (`factory/perimeters.json`) ; décision D-26. Détail dans [[Agentic-Factory]] ; porte G8 dans [[Validations-humaines]]. Les valeurs des profils Talan dépendent encore de #37.
 - L2 à L6 : tâches non cochées (`specs/008-talan-readiness/tasks.md`), inchangées.
 
 ## Plan
