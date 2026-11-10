@@ -1,0 +1,158 @@
+{
+  "$comment": "Page d'explication -> sources dont elle dérive. Tenu par l'agent knowledge-curator ; empreintes recalculées par `node scripts/knowledge-lint.mjs --update-sources` après chaque curation. Une source modifiée depuis rend la page « stale ».",
+  "updated": "2026-11-10",
+  "pages": {
+    "docs/wiki/Home.md": {
+      "sources": [
+        {
+          "path": "specs/ANALYSIS.md",
+          "sha256": "1e870f55e2527840a8c48560a3c7e2d3a45b5e08e563945217d9da832844ee49"
+        },
+        {
+          "path": "specs/002-tce-transfer-e2e/validation-matrix.md",
+          "sha256": "c864e0abb2922eed1c3cadb995086a72a421b34363d6e45f2f93380fbdc44438"
+        }
+      ]
+    },
+    "docs/wiki/Architecture.md": {
+      "sources": [
+        {
+          "path": "compose.yaml",
+          "sha256": "ffd45d2f3a1723defd74adeb91830066f2a2aad2fe60d5351c1c0f20172062e6"
+        },
+        {
+          "path": "schemas/openapi/tela-api.v1.yaml",
+          "sha256": "c44d3d1195d788079c1e24336da449e1614d82370cb4100463e63dbe320cdfe8"
+        },
+        {
+          "path": "specs/002-tce-transfer-e2e/spec.md",
+          "sha256": "96004808d3de2bc4bbbee5a59636476ae2a1743c1d14aa70f1ae6a8a9d6793d5"
+        },
+        {
+          "path": "docs/registry/REGISTRE.md",
+          "sha256": "229d2d8e99c95d37ca51db79350903125275d58c12b39f3dd6a13ba34094ec7f"
+        }
+      ]
+    },
+    "docs/wiki/Agentic-Factory.md": {
+      "sources": [
+        {
+          "path": ".claude/skills/factory-run/SKILL.md",
+          "sha256": "5e77f995774815f75f06edeeb0ee00af3eb08efed1ac6d9a0ed395bd3da60f96"
+        },
+        {
+          "path": ".claude/hooks/guard.mjs",
+          "sha256": "709ea93350a7c8c50c04b2eca693f69b988ee0e82853add67aa3b6b5c54d19c9"
+        },
+        {
+          "path": ".claude/agents/orchestrator.md",
+          "sha256": "b888889e05ab4fc7f1b36f66d508dede6a74a5cefe55cbf7d7e511c57eb214d1"
+        },
+        {
+          "path": ".claude/agents/verifier.md",
+          "sha256": "1e353172ce9ed222e8f7f1cf2cf7fb9f8b74e7e15075878460d511de5ce75738"
+        }
+      ]
+    },
+    "docs/wiki/Validations-humaines.md": {
+      "sources": [
+        {
+          "path": "factory/human-gates.yaml",
+          "sha256": "b01226a583bcbea7e1ff563dc5e739b9451765b2d17f88931fbf91c67ec04f14"
+        },
+        {
+          "path": ".github/workflows/factory.yml",
+          "sha256": "5af514206f3d325e5ce10b7e1320bf87d84e9c070847ef36ff04f5586096d4c9"
+        },
+        {
+          "path": ".claude/settings.json",
+          "sha256": "9737291938faa365fe1e7e7b3eac4b24904dd6b720a79cd9e8e46efe4bbf9221"
+        }
+      ]
+    },
+    "docs/wiki/Runbook-Sandbox.md": {
+      "sources": [
+        {
+          "path": "scripts/sandbox.sh",
+          "sha256": "977e871e9ca1d0a0a374f8cafb2b087216aef214f0019c75af2053bdf092d5ab"
+        },
+        {
+          "path": "tests/e2e/run.sh",
+          "sha256": "6b337b43e0221e567f4e6e94435244b67e7ad6f1575378fc15fa3dbfb227f1fb"
+        },
+        {
+          "path": "compose.yaml",
+          "sha256": "ffd45d2f3a1723defd74adeb91830066f2a2aad2fe60d5351c1c0f20172062e6"
+        }
+      ]
+    },
+    "docs/wiki/Scenarios-et-preuves.md": {
+      "sources": [
+        {
+          "path": "specs/002-tce-transfer-e2e/validation-matrix.md",
+          "sha256": "c864e0abb2922eed1c3cadb995086a72a421b34363d6e45f2f93380fbdc44438"
+        },
+        {
+          "path": "docs/registry/REGISTRE.md",
+          "sha256": "229d2d8e99c95d37ca51db79350903125275d58c12b39f3dd6a13ba34094ec7f"
+        }
+      ]
+    },
+    "docs/wiki/Securite.md": {
+      "sources": [
+        {
+          "path": "compose.yaml",
+          "sha256": "ffd45d2f3a1723defd74adeb91830066f2a2aad2fe60d5351c1c0f20172062e6"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "sha256": "0cde87b1f5cc19716fff5df9eaf5fa0b327733a92d6636f42d30ac1aef2ac132"
+        },
+        {
+          "path": "docs/registry/REGISTRE.md",
+          "sha256": "229d2d8e99c95d37ca51db79350903125275d58c12b39f3dd6a13ba34094ec7f"
+        }
+      ]
+    },
+    "docs/wiki/Talan-Readiness.md": {
+      "sources": [
+        {
+          "path": "docs/audit/2026-11-09-talan-readiness.md",
+          "sha256": "783b25e051f96dfdfd63d4c509896532a99947afafdbb0b11c797c1feb2e282c"
+        },
+        {
+          "path": "specs/008-talan-readiness/tasks.md",
+          "sha256": "0ba2af90ea3336702f3a2f3af5ee5460d54f6d503504bfac0bb6858487d79bb5"
+        }
+      ]
+    },
+    "docs/wiki/Factory-Kit.md": {
+      "sources": [
+        {
+          "path": "factory/kit/manifest.json",
+          "sha256": "ba57ff12a8bc233496acb5ad0c12e75a933f257763e524b196a98bddc1838e13"
+        },
+        {
+          "path": "factory/kit/kit.mjs",
+          "sha256": "6e6bc47b3dfbd322214e1d5661e06b9daf5621eeabf55d79da26fb0b66ac2e9f"
+        }
+      ]
+    },
+    "docs/wiki/Base-de-connaissances.md": {
+      "sources": [
+        {
+          "path": ".claude/agents/knowledge-curator.md",
+          "sha256": "4c834ee9881dfd190646d46a529547c83c35fabd2e474f9aaf2f09a8cc3cc17d"
+        },
+        {
+          "path": ".claude/skills/knowledge-maintenance/SKILL.md",
+          "sha256": "365a64eba100f6eb19a07a42e69b2b970e6e44195aee98ecb893168fa427846b"
+        },
+        {
+          "path": "scripts/knowledge-lint.mjs",
+          "sha256": "b47083e35ae2d6e687e23dcb89392d4add1b88b0b1c19263828f51c41ac5807d"
+        }
+      ]
+    }
+  }
+}

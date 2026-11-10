@@ -1,0 +1,24 @@
+# {{PROJECT}} — instructions agents (TELA Agentic Factory kit)
+
+Dépôt équipé par le kit de la TELA Agentic Factory (source `{{SOURCE_SHA}}`, modules : {{MODULES}}).
+Travail en **Spec-Driven Development** (Spec Kit) : aucune implémentation sans spec, plan et tâches.
+
+## À lire d'abord
+1. `.specify/memory/constitution.md` — règles non négociables (à créer/adapter avec `/speckit-constitution`).
+2. `docs/registry/REGISTRE.md` — faits / hypothèses / décisions / preuves. Ne jamais présenter une hypothèse comme un fait.
+3. `specs/NNN-*/` — spec, plan, tasks de la feature en cours.
+4. `factory/human-gates.yaml` — où la factory doit s'arrêter et attendre un humain.
+
+## Commandes
+- SDD : `/speckit-constitution`, `/speckit-specify`, `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`, `/speckit-analyze`, `/speckit-implement`
+- Factory : `/factory-run NNN`
+- Validations en attente : `scripts/human-gates.sh`
+- Hook : `node .claude/hooks/guard.test.mjs`
+- Kit : `scripts/factory-kit.sh status .`
+
+## Règles
+- Ne lis jamais `.env` ni les dossiers de secrets (hook bloquant).
+- Une tâche est finie quand `evidence/<spec>/<tâche>/` contient la preuve et que `verifier` a rendu PASS.
+- Zones sensibles (contrats, signature, authentification, infra, CI) : revue `security-auditor` obligatoire.
+- **Aucune action sur une infrastructure réelle** (kubectl, helm, terraform, ssh, vault, RPC/signature hors local) sans validation humaine explicite (porte G8).
+- Commits : Conventional Commits + référence d'issue. Jamais de `--force`, jamais de `--no-verify`.

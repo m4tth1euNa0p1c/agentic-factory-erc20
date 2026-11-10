@@ -1,5 +1,7 @@
 # Actions humaines requises
 
+> Vue d'ensemble des portes de validation humaine (G1–G9) : [wiki Validations-humaines](wiki/Validations-humaines.md) · `factory/human-gates.yaml` · tableau GitHub *TELA — Validations humaines* · `scripts/human-gates.sh`.
+
 Tout ce qui est automatisable est généré par `scripts/bootstrap-env.sh` (clés, mots de passe, ids).
 Restent à la main de l'humain :
 

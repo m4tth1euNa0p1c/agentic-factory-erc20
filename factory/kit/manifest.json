@@ -1,0 +1,90 @@
+{
+  "$comment": "Modules réutilisables de la TELA Agentic Factory. Lu par scripts/factory-kit.sh (factory/kit/kit.mjs). Seuls les fichiers suivis par git sont exportés : jamais .env, secrets, preuves ni code applicatif.",
+  "version": 1,
+  "modules": {
+    "core": {
+      "description": "Spec Kit (SDD), orchestrateur, vérificateur, auditeur sécurité (skill Cloudflare), hook de garde, portes de validation humaine, cycle /factory-run",
+      "portability": "local: oui · infra réelle: NON avant #31 (G8) · GitLab: NON avant #32 (gh codé en dur)",
+      "paths": [
+        ".specify/.gitignore",
+        ".specify/init-options.json",
+        ".specify/integration.json",
+        ".specify/integrations/",
+        ".specify/memory/.constitution-template.json",
+        ".specify/scripts/",
+        ".specify/templates/",
+        ".specify/workflows/",
+        ".claude/skills/speckit-analyze/",
+        ".claude/skills/speckit-checklist/",
+        ".claude/skills/speckit-clarify/",
+        ".claude/skills/speckit-constitution/",
+        ".claude/skills/speckit-converge/",
+        ".claude/skills/speckit-implement/",
+        ".claude/skills/speckit-plan/",
+        ".claude/skills/speckit-specify/",
+        ".claude/skills/speckit-tasks/",
+        ".claude/skills/security-audit/",
+        ".claude/skills/factory-run/",
+        ".claude/agents/orchestrator.md",
+        ".claude/agents/verifier.md",
+        ".claude/agents/security-auditor.md",
+        ".claude/hooks/guard.mjs",
+        ".claude/hooks/guard.test.mjs",
+        "factory/human-gates.yaml",
+        "factory/kit/",
+        "scripts/human-gates.sh",
+        "scripts/factory-kit.sh"
+      ],
+      "templates": {
+        "factory/kit/templates/CLAUDE.md.tmpl": "CLAUDE.md",
+        "factory/kit/templates/settings.json": ".claude/settings.json"
+      }
+    },
+    "blockchain": {
+      "description": "Agents EVM (contrats Solidity/Foundry, adaptateur viem + Web3Signer, indexeur Ponder) et checklist de sécurité smart contracts",
+      "portability": "oui (orienté Besu / Web3Signer / ERC-20)",
+      "requires": ["core"],
+      "paths": [
+        ".claude/agents/smart-contracts.md",
+        ".claude/agents/blockchain-adapter.md",
+        ".claude/agents/indexer.md",
+        ".claude/skills/smart-contract-security/"
+      ]
+    },
+    "stack-tela": {
+      "description": "Agents de la stack applicative TELA (Spring Boot, Angular, infra/CI)",
+      "portability": "à relire : chemins et commandes de ce monorepo (backend/, frontend/, scripts/sandbox.sh)",
+      "requires": ["core"],
+      "paths": [
+        ".claude/agents/backend-java.md",
+        ".claude/agents/frontend.md",
+        ".claude/agents/network-devops.md"
+      ]
+    },
+    "knowledge": {
+      "description": "Agent knowledge-curator + skill knowledge-maintenance : explications compilées depuis les sources, contrôle knowledge-lint, questions de référence",
+      "portability": "oui (adapter docs/knowledge/sources.json et tests/knowledge/golden-qa.json au dépôt cible)",
+      "requires": ["core"],
+      "paths": [
+        ".claude/agents/knowledge-curator.md",
+        ".claude/hooks/knowledge-curator-guard.mjs",
+        ".claude/hooks/knowledge-curator-guard.test.mjs",
+        ".claude/skills/knowledge-maintenance/",
+        "scripts/knowledge-lint.mjs",
+        "scripts/knowledge-lint.test.mjs",
+        "scripts/knowledge-eval.mjs"
+      ]
+    },
+    "governance": {
+      "description": "Constitution TELA (preuves, hypothèses visibles, effet unique, sécurité) et registre F/H/D/P comme point de départ",
+      "portability": "oui, à adapter via /speckit-constitution",
+      "requires": ["core"],
+      "paths": [
+        ".specify/memory/constitution.md"
+      ],
+      "templates": {
+        "factory/kit/templates/REGISTRE.md.tmpl": "docs/registry/REGISTRE.md"
+      }
+    }
+  }
+}

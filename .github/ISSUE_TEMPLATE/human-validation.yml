@@ -1,0 +1,43 @@
+name: Validation humaine
+description: Une décision, une action ou une information que seul le propriétaire peut fournir (portes G1–G9).
+title: "[HUMAN] "
+labels: [human-action]
+projects: ["m4tth1euNa0p1c/2"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Les portes sont définies dans `factory/human-gates.yaml` et expliquées dans le wiki **Validations-humaines**.
+        Cette issue apparaît sur le tableau *TELA — Validations humaines* et dans `scripts/human-gates.sh`.
+  - type: dropdown
+    id: gate
+    attributes:
+      label: Porte
+      options:
+        - G1 Clarification de spec
+        - G2 Action humaine
+        - G3 Hypothèse → fait
+        - G4 Fusion sur main
+        - G5 Lancement de la factory en CI
+        - G6 Permission locale
+        - G7 Acceptation d'un risque résiduel
+        - G8 Cible réelle (Talan)
+        - G9 Décision d'expérience
+    validations: { required: true }
+  - type: textarea
+    id: ask
+    attributes:
+      label: Ce qui est demandé
+      description: Une action précise, vérifiable. Jamais de secret dans l'issue.
+    validations: { required: true }
+  - type: textarea
+    id: unblocks
+    attributes:
+      label: Débloque
+      description: Issues, specs ou tâches qui avancent une fois la validation faite.
+    validations: { required: true }
+  - type: textarea
+    id: proof
+    attributes:
+      label: Comment la factory vérifie que c'est fait
+      placeholder: "ex. `gh secret list --env factory` liste ANTHROPIC_API_KEY ; check « frontend » présent dans la protection de main"

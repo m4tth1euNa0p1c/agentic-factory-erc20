@@ -1,0 +1,107 @@
+# Registre des portes de validation humaine de la TELA Agentic Factory.
+# Lisible par les humains (wiki « Validations-humaines »), les agents (orchestrator, factory-run),
+# la CI et les outils (`scripts/human-gates.sh --json`, `yq`, `gh`).
+# enforcement : server  = imposé par GitHub (non contournable par un agent)
+#               hook    = imposé localement par .claude/hooks/guard.mjs (défense en profondeur)
+#               harness = demande de permission Claude Code
+#               convention = règle écrite (constitution / agents), non imposée techniquement
+#               planned = prévu, pas encore appliqué
+version: 1
+updated: 2026-11-09
+owner_role: propriétaire du dépôt (OWNER)
+
+gates:
+  - id: G1
+    name: Clarification de spec
+    when: une spec contient « [NEEDS CLARIFICATION] » ou une décision métier manque
+    decided_by: propriétaire
+    signal: { label: needs-clarification, marker: "[NEEDS CLARIFICATION]" }
+    approve: répondre dans l'issue de la spec ; l'orchestrateur encode la réponse (skill speckit-clarify) et ajoute une décision D-xx
+    blocks: planification et implémentation de la spec concernée
+    enforcement: convention
+    evidence: décision D-xx dans docs/registry/REGISTRE.md
+
+  - id: G2
+    name: Action humaine
+    when: secret, réglage GitHub, initialisation, source externe — tout ce qu'un agent ne peut ni ne doit faire
+    decided_by: propriétaire
+    signal: { label: human-action, title_prefix: "[HUMAN]" }
+    approve: réaliser l'action puis fermer l'issue (ou commenter « fait »)
+    blocks: les issues listées dans « Bloquant pour »
+    enforcement: convention
+    evidence: issue fermée + docs/HUMAN-ACTIONS.md
+
+  - id: G3
+    name: Hypothèse → fait
+    when: une hypothèse H-xx du registre doit devenir un fait
+    decided_by: propriétaire (sources TELA ou réponse Talan)
+    signal: { file: docs/registry/REGISTRE.md, section: HYPOTHÈSES }
+    approve: fournir la source ; l'orchestrateur requalifie H-xx en F-xx avec référence
+    blocks: toute conclusion qui dépend de l'hypothèse
+    enforcement: convention
+    evidence: F-xx citant la source
+
+  - id: G4
+    name: Fusion sur main
+    when: toute modification de main
+    decided_by: propriétaire
+    signal: { pull_request: open }
+    approve: relire la PR (preuves, revue security-auditor si zone sensible) puis fusionner
+    blocks: livraison
+    enforcement: server
+    server_rules: [pull request obligatoire, 9 checks requis, admins inclus, force-push interdit, suppression interdite]
+    known_gap: aucune approbation de relecteur requise (plan GitHub, dépôt mono-propriétaire) — un agent autorisé par l'humain peut fusionner une PR verte
+    evidence: PR fusionnée, checks verts
+
+  - id: G5
+    name: Lancement de la factory en CI
+    when: commentaire « /factory-run NNN » sur une issue
+    decided_by: OWNER uniquement
+    signal: { workflow: .github/workflows/factory.yml, environment: factory }
+    approve: commenter « /factory-run NNN » (author_association == OWNER)
+    blocks: exécution autonome en CI
+    enforcement: server
+    server_rules: [environnement factory limité à main, secret ANTHROPIC_API_KEY dans l'environnement (#14)]
+    evidence: run GitHub Actions
+
+  - id: G6
+    name: Permission locale
+    when: commande hors allowlist, ou bloquée par le hook
+    decided_by: utilisateur de la session Claude Code
+    signal: { file: .claude/settings.json }
+    approve: accepter/refuser la demande de permission ; les blocages du hook ne sont pas contournables par l'agent
+    blocks: la commande
+    enforcement: harness+hook
+    known_gap: en mode bypass seules les règles du hook s'appliquent ; couverture du hook insuffisante pour une infra réelle (audit 008 §A1)
+    evidence: tests .claude/hooks/guard.test.mjs
+
+  - id: G7
+    name: Acceptation d'un risque résiduel
+    when: un finding security-auditor n'est pas corrigé dans la PR
+    decided_by: propriétaire
+    signal: { label: security, title_contains: Durcissements }
+    approve: fusionner en connaissance de cause ; le finding est suivi dans une issue
+    blocks: rien immédiatement (risque tracé)
+    enforcement: convention
+    evidence: commentaire de revue sur la PR + issue de suivi
+
+  - id: G8
+    name: Cible réelle (Talan)
+    when: tout endpoint, déploiement, signature ou diffusion hors sandbox
+    decided_by: propriétaire
+    signal: { env: FACTORY_TARGET, profiles: factory/targets/ }
+    approve: choisir explicitement le profil ; actions mutantes refusées par défaut
+    blocks: toute action sur l'infra Talan
+    enforcement: planned
+    tracked_by: "#31 (spec 008 L1)"
+    evidence: tests de contournement guard.test.mjs (SC-001 de la spec 008)
+
+  - id: G9
+    name: Décision d'expérience
+    when: une expérience (spec 007) conclut garder / jeter / prolonger
+    decided_by: propriétaire
+    signal: { pull_request: "#24" }
+    approve: valider la décision bornée proposée
+    enforcement: planned
+    tracked_by: "#24"
+    evidence: fiche d'expérience
