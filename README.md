@@ -328,7 +328,7 @@ Spec 002, tous critères mesurés sur le **même commit `7d4a02d`** (images reco
 ### SC-003 — Latence demande → confirmation (60 opérations, 1 req / 3 s)
 ```mermaid
 xychart-beta
-  title "Latence en secondes (cible p95 < 10 s)"
+  title "Latence en secondes (cible : p95 sous 10 s)"
   x-axis ["p50", "p95", "max", "cible p95"]
   y-axis "secondes" 0 --> 10
   bar [1.23, 2.22, 2.23, 10]
@@ -390,7 +390,7 @@ flowchart LR
     F[".claude/ · .specify/ · factory/"]
   end
   subgraph kit["Kit"]
-    T["dist/factory-kit-&lt;sha&gt;.tar.gz<br/>+ KIT-MANIFEST.json (sha256)"]
+    T["dist/factory-kit-SHA.tar.gz<br/>+ KIT-MANIFEST.json (sha256)"]
   end
   subgraph dst["Dépôt Talan (cible)"]
     C["CLAUDE.md généré"]

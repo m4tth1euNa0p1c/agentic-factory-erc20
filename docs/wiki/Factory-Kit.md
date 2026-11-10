@@ -9,7 +9,7 @@ flowchart LR
     F[".claude/ · .specify/ · factory/"]
   end
   subgraph kit["Kit"]
-    T["dist/factory-kit-&lt;sha&gt;.tar.gz<br/>+ KIT-MANIFEST.json (sha256)"]
+    T["dist/factory-kit-SHA.tar.gz<br/>+ KIT-MANIFEST.json (sha256)"]
   end
   subgraph dst["Dépôt Talan (cible)"]
     C["CLAUDE.md généré"]
