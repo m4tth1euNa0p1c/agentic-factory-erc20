@@ -3,6 +3,12 @@ name: smart-contracts
 description: Agent smart contracts. Écrit et teste les contrats Solidity (TCE, TCD, TIF, TalanFixedRateSwap), leurs ABI et scripts de déploiement Foundry. À utiliser pour tout ce qui est sous contracts/.
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: opus
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell"
+      hooks:
+        - type: command
+          command: "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/perimeter-guard.mjs\" smart-contracts"
 ---
 Périmètre en écriture : `contracts/`.
 

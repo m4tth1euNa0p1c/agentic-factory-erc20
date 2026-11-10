@@ -72,7 +72,7 @@ gates:
     approve: accepter/refuser la demande de permission ; les blocages du hook ne sont pas contournables par l'agent
     blocks: la commande
     enforcement: harness+hook
-    known_gap: en mode bypass seules les règles du hook s'appliquent ; couverture du hook insuffisante pour une infra réelle (audit 008 §A1)
+    known_gap: en mode bypass seules les règles du hook s'appliquent (désactiver le mode bypass est une décision humaine, cf. factory/kit/templates/settings.json)
     evidence: tests .claude/hooks/guard.test.mjs
 
   - id: G7
@@ -92,9 +92,10 @@ gates:
     signal: { env: FACTORY_TARGET, profiles: factory/targets/ }
     approve: choisir explicitement le profil ; actions mutantes refusées par défaut
     blocks: toute action sur l'infra Talan
-    enforcement: planned
-    tracked_by: "#31 (spec 008 L1)"
-    evidence: tests de contournement guard.test.mjs (SC-001 de la spec 008)
+    enforcement: hook
+    hook_rules: "profils factory/targets/*.json ; destructif = refus ; écriture infra / diffusion hors liste = ask ou refus selon le profil ; profil inconnu = tout refusé"
+    known_gap: règles par expressions régulières sur le texte des commandes (défense en profondeur, pas une frontière) ; valeurs réelles des profils Talan à fournir (#37)
+    evidence: .claude/hooks/guard.test.mjs (157 cas dont les 22 contournements de l'audit 008)
 
   - id: G9
     name: Décision d'expérience

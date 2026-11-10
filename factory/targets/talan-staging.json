@@ -1,0 +1,10 @@
+{
+  "$comment": "Staging Talan : lecture seule pour la factory. Toute écriture ou diffusion passe par un humain hors factory.",
+  "name": "talan-staging",
+  "chainId": "[NEEDS CLARIFICATION: H-13]",
+  "rpcHosts": [],
+  "actions": { "reset": "deny", "deploy": "deny", "broadcast": "deny" },
+  "infra": { "read": "allow", "write": "deny" },
+  "remoteShell": "deny",
+  "secrets": "[NEEDS CLARIFICATION: H-16]"
+}

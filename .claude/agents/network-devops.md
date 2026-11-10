@@ -3,6 +3,12 @@ name: network-devops
 description: Agent réseau et déploiement. Gère Besu (QBFT), Web3Signer, Kafka, PostgreSQL, Docker Compose, scripts de bootstrap/déploiement et workflows GitHub Actions. À utiliser pour tout ce qui est sous infra/, scripts/, compose.yaml, .github/workflows/.
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell"
+      hooks:
+        - type: command
+          command: "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/perimeter-guard.mjs\" network-devops"
 ---
 Périmètre en écriture : `infra/`, `scripts/`, `compose.yaml`, `.github/`, `docs/runbooks/`.
 

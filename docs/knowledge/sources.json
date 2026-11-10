@@ -30,7 +30,7 @@
         },
         {
           "path": "docs/registry/REGISTRE.md",
-          "sha256": "229d2d8e99c95d37ca51db79350903125275d58c12b39f3dd6a13ba34094ec7f"
+          "sha256": "ba167696b1f553c81e250da0597f51107ca5d7a6182782c5838dc3eb15264728"
         }
       ]
     },
@@ -42,15 +42,15 @@
         },
         {
           "path": ".claude/hooks/guard.mjs",
-          "sha256": "709ea93350a7c8c50c04b2eca693f69b988ee0e82853add67aa3b6b5c54d19c9"
+          "sha256": "2025ae96a5317ffb037a65f4db0b5648ac4721cc11d1213e0e1cc90697ba3b60"
         },
         {
           "path": ".claude/agents/orchestrator.md",
-          "sha256": "b888889e05ab4fc7f1b36f66d508dede6a74a5cefe55cbf7d7e511c57eb214d1"
+          "sha256": "bafc80e7b4e04fde8f1a3f0917eadb28712da5c3e4415bbaa67359b79594f2ec"
         },
         {
           "path": ".claude/agents/verifier.md",
-          "sha256": "1e353172ce9ed222e8f7f1cf2cf7fb9f8b74e7e15075878460d511de5ce75738"
+          "sha256": "32cf3fe2df3ae3b2fa36cdc56317e9aeaeb1b229f7ce8c39a62d8e0e58e22d5e"
         }
       ]
     },
@@ -58,7 +58,7 @@
       "sources": [
         {
           "path": "factory/human-gates.yaml",
-          "sha256": "b01226a583bcbea7e1ff563dc5e739b9451765b2d17f88931fbf91c67ec04f14"
+          "sha256": "3ebc3d0710c3730c59b9dc236574c66676d7b1c9a7661f99cb0dac4cc516df76"
         },
         {
           "path": ".github/workflows/factory.yml",
@@ -66,7 +66,7 @@
         },
         {
           "path": ".claude/settings.json",
-          "sha256": "9737291938faa365fe1e7e7b3eac4b24904dd6b720a79cd9e8e46efe4bbf9221"
+          "sha256": "c6c9909e86a96bc5e1bf83e305c0747b96305c3d567ecd671f2f5667e2dfe1ef"
         }
       ]
     },
@@ -94,7 +94,7 @@
         },
         {
           "path": "docs/registry/REGISTRE.md",
-          "sha256": "229d2d8e99c95d37ca51db79350903125275d58c12b39f3dd6a13ba34094ec7f"
+          "sha256": "ba167696b1f553c81e250da0597f51107ca5d7a6182782c5838dc3eb15264728"
         }
       ]
     },
@@ -106,11 +106,11 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "0cde87b1f5cc19716fff5df9eaf5fa0b327733a92d6636f42d30ac1aef2ac132"
+          "sha256": "565e02dc55bd175f588f8b0abe5a7dd8a4d51df6db00b783a8bf2d619867b63e"
         },
         {
           "path": "docs/registry/REGISTRE.md",
-          "sha256": "229d2d8e99c95d37ca51db79350903125275d58c12b39f3dd6a13ba34094ec7f"
+          "sha256": "ba167696b1f553c81e250da0597f51107ca5d7a6182782c5838dc3eb15264728"
         }
       ]
     },
@@ -122,7 +122,7 @@
         },
         {
           "path": "specs/008-talan-readiness/tasks.md",
-          "sha256": "0ba2af90ea3336702f3a2f3af5ee5460d54f6d503504bfac0bb6858487d79bb5"
+          "sha256": "4c9e514a89acc79e542c5d173858ccaeb26ddc06de5f8b27a7e386c061b0939f"
         }
       ]
     },
@@ -130,7 +130,7 @@
       "sources": [
         {
           "path": "factory/kit/manifest.json",
-          "sha256": "ba57ff12a8bc233496acb5ad0c12e75a933f257763e524b196a98bddc1838e13"
+          "sha256": "6c40dc189b6fd030370708abbfb0d1dce57cf322c4b1d915f86f4ee15b0fc0ba"
         },
         {
           "path": "factory/kit/kit.mjs",

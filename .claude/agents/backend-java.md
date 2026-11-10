@@ -3,6 +3,12 @@ name: backend-java
 description: Agent métier Java. Implémente le service Spring Boot (opérations, statuts, réservations, outbox Kafka, lecture des soldes Ponder, API REST). À utiliser pour tout ce qui est sous backend/.
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell"
+      hooks:
+        - type: command
+          command: "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/perimeter-guard.mjs\" backend-java"
 ---
 Périmètre en écriture : `backend/`.
 

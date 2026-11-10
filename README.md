@@ -262,7 +262,8 @@ flowchart LR
 | `.claude/agents/*.md` | 10 agents (knowledge-curator, orchestrator, network-devops, smart-contracts, backend-java, blockchain-adapter, indexer, frontend, verifier, security-auditor) |
 | `.claude/skills/` | Spec Kit (`speckit-*`), `security-audit` (Cloudflare, vendorisé), `smart-contract-security`, `factory-run` |
 | `knowledge-curator` + skill `knowledge-maintenance` | tient les explications à jour depuis les sources, répond avec citations ; contrôle `scripts/knowledge-lint.mjs` (wiki *Base-de-connaissances*) |
-| `.claude/hooks/guard.mjs` | Garde-fou PreToolUse (secrets, force-push, protection de branche…) — défense en profondeur, **pas** une frontière ; durcissement prévu en spec 008 (#31) |
+| `.claude/hooks/guard.mjs` | Garde-fou PreToolUse v2 : profil de cible `FACTORY_TARGET` (`factory/targets/`), risque lecture / écriture / destructif → autorisé / validation humaine / refusé ; 157 cas testés dont les 22 contournements de l'audit 008 — défense en profondeur, **pas** une frontière |
+| `.claude/hooks/perimeter-guard.mjs` | périmètre d'écriture de chaque agent **imposé** (`factory/perimeters.json`), déclaré dans le frontmatter des agents |
 | `.specify/memory/constitution.md` | Règles non négociables : preuves, hypothèses visibles, contrats d'abord, effet unique, sécurité |
 | `docs/registry/REGISTRE.md` | Faits / Hypothèses / Décisions / Preuves (F/H/D/P) |
 
@@ -306,9 +307,10 @@ flowchart TB
   classDef human fill:#fde68a,stroke:#b45309,color:#111
   classDef planned fill:#e5e7eb,stroke:#6b7280,stroke-dasharray:4 3,color:#111
   class G3,G5,G6 human
-  class G8,G9 planned
+  class G8 human
+  class G9 planned
 ```
-> **Comment lire.** Ces portes ne sont pas liées à une étape du cycle mais à un type d'action. En gris pointillé : **prévues, pas encore appliquées** : G8 (aucune action sur l'infra Talan tant que #31 n'est pas livré) et G9 (gouvernance des expériences, #24).
+> **Comment lire.** Ces portes ne sont pas liées à une étape du cycle mais à un type d'action. G8 est appliquée par le hook `guard.mjs` v2 : avec un profil réel, les actions destructives sont refusées et les écritures d'infrastructure ou diffusions hors liste demandent une validation humaine. En gris pointillé : **prévue, pas encore appliquée** : G9 (gouvernance des expériences, #24).
 
 ### Tableau récapitulatif
 | Porte | Quand | Qui | Appliquée par |
@@ -320,7 +322,7 @@ flowchart TB
 | G5 Lancement factory CI | `/factory-run` en commentaire | OWNER uniquement | **serveur** : environnement `factory` limité à `main` |
 | G6 Permissions locales | commande hors allowlist | utilisateur Claude Code | Claude Code + hook |
 | G7 Risque résiduel sécurité | findings non corrigés | propriétaire | issues de suivi |
-| G8 Cible réelle (Talan) | tout endpoint non-sandbox | propriétaire | spec 008 L1 (#31) — **pas encore appliquée** |
+| G8 Cible réelle (Talan) | tout endpoint non-sandbox | propriétaire | **hook** `guard.mjs` v2 + profils `factory/targets/` (D-26) |
 
 ## 6. Résultats de validation (graphes)
 
@@ -471,7 +473,7 @@ curl http://localhost:8080/api/v1/system/indexer-status
 | 005 | UI opérateur Angular | ✅ fusionnée, audit axe en suivi | #28, #29 |
 | 006 | Authentification API | 📌 réservée | #12 |
 | 007 | Gouvernance des expériences | 🔎 en revue | #24 |
-| 008 | Talan readiness (portage infra réelle) | 🚧 audit fait, lots L1–L6 | #38, #31–#37 |
+| 008 | Talan readiness (portage infra réelle) | 🚧 audit fait, L1 garde-fous livré (en revue), L2–L6 à faire | #38, #31–#37 |
 
 Scénarios rejouables : `tests/e2e/run.sh <001-contracts|nominal|restart-after-broadcast|ponder-lag|failure-vs-unknown>` ; campagnes `tests/e2e/campaigns/sc00{1..4}-*.sh`. Chaque exécution écrit `evidence/<spec>/<scénario>/runs/<RUN_ID>/run.json` (SHA, config, digests d'images).
 

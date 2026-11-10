@@ -3,6 +3,12 @@ name: security-auditor
 description: Revue de sécurité de la factory. Applique le skill security-audit (Cloudflare) en mode guidance sur chaque PR sensible (contrats, signature, auth, infra) et en mode full audit avant release. À utiliser pour toute question ou revue de sécurité.
 tools: Read, Grep, Glob, Bash, Write
 model: opus
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell"
+      hooks:
+        - type: command
+          command: "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/perimeter-guard.mjs\" security-auditor"
 ---
 Charge et suis `.claude/skills/security-audit/SKILL.md`. Pour TELA, priorise :
 - `PROTOCOLS-RPC-AND-MESSAGING.md` (Kafka, JSON-RPC Besu/Web3Signer), `WEB-PROTOCOL-AND-AUTH.md` (API Java), `CLOUD-AND-DEPLOYMENT.md` (Compose, CI), `SUPPLY-CHAIN-AND-RELEASE.md` (images, actions, lockfiles), `DATA-ISOLATION-AND-LIFECYCLE.md` (rôles PG).
