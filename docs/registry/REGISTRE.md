@@ -64,6 +64,7 @@
 | D-22 | `main` protégée (PR + 9 checks) ; clé API factory = secret de l'environnement `factory` limité à `main` | Revue 2026-11-08 | 2026-11-08 |
 | D-23 | Ponder `reorgWindow: 0` (QBFT = finalité immédiate) + garde Java : un head indexé sous le plus haut jamais vu ⇒ réservations refusées (503 `INDEXER_UNAVAILABLE`) et règlement suspendu | Revue 2026-11-08 / P-15 | 2026-11-08 |
 | D-24 | UI : nginx n'accepte que les `Host` connus (sinon 421, anti DNS rebinding) ; réseau `ui` dédié frontend↔backend | Revue PR #28 | 2026-11-08 |
+| D-25 | Base de connaissances de la factory **compilée depuis les sources** (agent `knowledge-curator`, skill `knowledge-maintenance`, contrôle `knowledge-lint`) en natif Claude Code sur le markdown du dépôt ; WeKnora non déployé | Audit WeKnora 2026-11-10 (hors dépôt) : patterns repris en idées réécrites, aucune copie de code ; déploiement écarté (surface par défaut, clés LLM externes) | 2026-11-10 |
 | D-10 | Client Kafka JS : `@confluentinc/kafka-javascript` | `kafkajs` non maintenu | 2026-11-08 |
 
 ## PREUVES d'exécution

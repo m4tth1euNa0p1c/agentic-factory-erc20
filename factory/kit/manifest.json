@@ -61,6 +61,18 @@
         ".claude/agents/network-devops.md"
       ]
     },
+    "knowledge": {
+      "description": "Agent knowledge-curator + skill knowledge-maintenance : explications compilées depuis les sources, contrôle knowledge-lint, questions de référence",
+      "portability": "oui (adapter docs/knowledge/sources.json et tests/knowledge/golden-qa.json au dépôt cible)",
+      "requires": ["core"],
+      "paths": [
+        ".claude/agents/knowledge-curator.md",
+        ".claude/skills/knowledge-maintenance/",
+        "scripts/knowledge-lint.mjs",
+        "scripts/knowledge-lint.test.mjs",
+        "scripts/knowledge-eval.mjs"
+      ]
+    },
     "governance": {
       "description": "Constitution TELA (preuves, hypothèses visibles, effet unique, sécurité) et registre F/H/D/P comme point de départ",
       "portability": "oui, à adapter via /speckit-constitution",

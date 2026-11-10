@@ -259,8 +259,9 @@ flowchart LR
 ### Composants
 | Élément | Rôle |
 |---|---|
-| `.claude/agents/*.md` | 9 agents (orchestrator, network-devops, smart-contracts, backend-java, blockchain-adapter, indexer, frontend, verifier, security-auditor) |
+| `.claude/agents/*.md` | 10 agents (knowledge-curator, orchestrator, network-devops, smart-contracts, backend-java, blockchain-adapter, indexer, frontend, verifier, security-auditor) |
 | `.claude/skills/` | Spec Kit (`speckit-*`), `security-audit` (Cloudflare, vendorisé), `smart-contract-security`, `factory-run` |
+| `knowledge-curator` + skill `knowledge-maintenance` | tient les explications à jour depuis les sources, répond avec citations ; contrôle `scripts/knowledge-lint.mjs` (wiki *Base-de-connaissances*) |
 | `.claude/hooks/guard.mjs` | Garde-fou PreToolUse (secrets, force-push, protection de branche…) — défense en profondeur, **pas** une frontière ; durcissement prévu en spec 008 (#31) |
 | `.specify/memory/constitution.md` | Règles non négociables : preuves, hypothèses visibles, contrats d'abord, effet unique, sécurité |
 | `docs/registry/REGISTRE.md` | Faits / Hypothèses / Décisions / Preuves (F/H/D/P) |

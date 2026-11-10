@@ -1,0 +1,26 @@
+{
+  "$comment": "Questions de référence : la connaissance doit exister et être trouvable. Chaque question liste des fichiers attendus et des termes qui doivent y figurer. Rejoué par scripts/knowledge-eval.mjs.",
+  "questions": [
+    { "id": "Q01", "q": "Pourquoi une opération UNKNOWN garde-t-elle sa réservation ?",
+      "expect": [ { "file": "docs/wiki/Architecture.md", "terms": ["UNKNOWN", "réservation"] } ] },
+    { "id": "Q02", "q": "Comment éviter un double débit après un crash de l'adaptateur ?",
+      "expect": [ { "file": "docs/wiki/Architecture.md", "terms": ["journal", "AVANT diffusion"] },
+                  { "file": "docs/wiki/Scenarios-et-preuves.md", "terms": ["0 double débit"] } ] },
+    { "id": "Q03", "q": "Comment est calculé le disponible ?",
+      "expect": [ { "file": "docs/registry/REGISTRE.md", "terms": ["D-21"] }, { "file": "docs/wiki/Architecture.md", "terms": ["D-21"] } ] },
+    { "id": "Q04", "q": "Quelle latence p95 a été mesurée pour SC-003 ?",
+      "expect": [ { "file": "docs/wiki/Scenarios-et-preuves.md", "terms": ["SC-003", "2,22"] } ] },
+    { "id": "Q05", "q": "Quelles validations humaines sont imposées par le serveur GitHub ?",
+      "expect": [ { "file": "factory/human-gates.yaml", "terms": ["enforcement: server"] }, { "file": "docs/wiki/Validations-humaines.md", "terms": ["G4", "G5"] } ] },
+    { "id": "Q06", "q": "Pourquoi reorgWindow vaut-il 0 dans Ponder ?",
+      "expect": [ { "file": "docs/registry/REGISTRE.md", "terms": ["D-23", "reorgWindow"] } ] },
+    { "id": "Q07", "q": "Comment installer la factory dans un autre dépôt ?",
+      "expect": [ { "file": "docs/wiki/Factory-Kit.md", "terms": ["factory-kit.sh install", ".factory-kit.lock"] } ] },
+    { "id": "Q08", "q": "Que manque-t-il avant d'agir sur l'infra Talan ?",
+      "expect": [ { "file": "docs/wiki/Talan-Readiness.md", "terms": ["L1", "#31", "H-13"] } ] },
+    { "id": "Q09", "q": "Qui peut être émetteur d'un transfert dans la sandbox ?",
+      "expect": [ { "file": "README.md", "terms": ["Alice", "Bob", "émetteurs"] } ] },
+    { "id": "Q10", "q": "Comment la base de connaissances est-elle maintenue ?",
+      "expect": [ { "file": "docs/wiki/Base-de-connaissances.md", "terms": ["knowledge-curator", "knowledge-lint"] } ] }
+  ]
+}

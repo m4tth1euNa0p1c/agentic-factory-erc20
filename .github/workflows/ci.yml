@@ -18,6 +18,11 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with: { node-version: "24" }
       - run: node .claude/hooks/guard.test.mjs
+      - name: knowledge base (lint self-test + lint + golden Q&A)
+        run: |
+          node scripts/knowledge-lint.test.mjs
+          node scripts/knowledge-lint.mjs
+          node scripts/knowledge-eval.mjs --min 1
       - name: security-audit skill validators
         run: |
           node --test .claude/skills/security-audit/validate-findings.test.cjs .claude/skills/security-audit/validate-coverage-ledger.test.cjs

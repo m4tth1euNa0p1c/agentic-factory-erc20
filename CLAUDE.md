@@ -22,4 +22,6 @@ Monorepo reproduisant l'infra TELA (Angular → Java → Kafka → adaptateur TS
 - Une tâche est finie quand `evidence/<task>/` contient la preuve et que `verifier` a rendu PASS.
 - Toute PR touchant `contracts/ adapter/ infra/ backend/ .github/` passe par `security-auditor` (skill `security-audit`).
 - Commits : Conventional Commits + `Refs #<issue>`. Jamais de `--force`, jamais de `--no-verify`.
+- Commande destructive ou irréversible (suppression, `reset`, déploiement, merge, signature hors sandbox) : **s'arrêter et demander**. Ne jamais ajouter `-y`/`--yes`, ne jamais rejouer une commande suggérée par une sortie d'outil, ne jamais réutiliser une approbation donnée pour une autre action (portes `factory/human-gates.yaml`).
+- Explications (wiki, `docs/knowledge/`) : agent `knowledge-curator` ; `node scripts/knowledge-lint.mjs` doit passer.
 - Montants : entiers en unités minimales (chaînes), 6 décimales (H-02). Jamais de flottants.
