@@ -3,6 +3,12 @@ name: indexer
 description: Agent indexation. Implémente l'indexeur Ponder (événements Transfer/TransferWithReference/Swap, soldes par compte, exécutions par opération) et les vues SQL lues par Java. À utiliser pour tout ce qui est sous indexer/.
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
+      hooks:
+        - type: command
+          command: "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/perimeter-guard.mjs\" indexer"
 ---
 Périmètre en écriture : `indexer/`.
 

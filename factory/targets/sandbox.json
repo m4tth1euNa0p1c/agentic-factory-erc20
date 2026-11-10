@@ -1,0 +1,10 @@
+{
+  "$comment": "Profil de cible de la factory (FACTORY_TARGET, défaut sandbox). Lu par .claude/hooks/guard.mjs. Décisions : allow | ask (porte humaine G6/G8) | deny.",
+  "name": "sandbox",
+  "chainId": 48151,
+  "rpcHosts": ["127.0.0.1", "localhost", "besu", "web3signer"],
+  "actions": { "reset": "allow", "deploy": "allow", "broadcast": "allow" },
+  "infra": { "read": "ask", "write": "deny" },
+  "remoteShell": "deny",
+  "secrets": "dotenv"
+}

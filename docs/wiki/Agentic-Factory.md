@@ -33,7 +33,7 @@ flowchart TB
 | security-auditor | lecture seule | revue skill `security-audit` |
 | knowledge-curator | docs/wiki, docs/knowledge, tests/knowledge (**imposé** par `.claude/hooks/knowledge-curator-guard.mjs`) | `knowledge-lint` sans erreur |
 
-Seul le périmètre de `knowledge-curator` est **imposé** par un hook propre à l'agent (21 cas testés). Pour les autres agents, c'est encore une **convention** (prose) ; la généralisation, sur le même modèle, est prévue dans #31 (spec 008).
+Les périmètres d'écriture sont **imposés** pour tous les agents. `knowledge-curator` a son hook propre, plus strict (`.claude/hooks/knowledge-curator-guard.mjs`, liste exacte de commandes). Les 9 autres agents sont couverts par `.claude/hooks/perimeter-guard.mjs <agent>`, déclaré dans le frontmatter de chaque agent et alimenté par `factory/perimeters.json` (20 cas testés, exécutés en CI : `.github/workflows/ci.yml`) ; c'est la décision D-26 (spec 008, lot L1, `specs/008-talan-readiness/tasks.md` T006). Le lot est livré en PR, pas encore fusionné. Les périmètres du tableau ci-dessus restent ceux de la prose des agents ; la liste imposée fait foi dans `factory/perimeters.json` (ex. `security-auditor` n'écrit que dans `docs/audit/` et le sous-dossier `security` d'`evidence` (pas encore créé), `verifier` dans `evidence/` et `tests/e2e/`).
 
 ## Skills
 - Spec Kit : `speckit-specify / plan / tasks / analyze / implement / converge / clarify / checklist / constitution`
@@ -55,7 +55,12 @@ flowchart LR
 Avant le commit, l'étape 7 de `.claude/skills/factory-run/SKILL.md` fait recompiler par `knowledge-curator` les pages rendues périmées par le changement, pour qu'explications et code soient revus ensemble ([[Base-de-connaissances]]). Les portes humaines sont détaillées dans [[Validations-humaines]].
 
 ## Garde-fous
-- Hook `PreToolUse` (`.claude/hooks/guard.mjs`, 25 cas testés) : bloque lecture de `.env`/clés, introspection de conteneurs, `/proc/*/environ`, force-push simple, push vers `main`, `--no-verify`, contournement de la protection de branche. **Défense en profondeur, pas une frontière** : l'audit 008 a montré 22 contournements possibles sur une infra réelle (push `+main`, `kubectl`, `helm`, `terraform`, `ssh`, `vault`, `glab`…) → durcissement #31 avant toute cible Talan.
+- Hook `PreToolUse` **v2** (`.claude/hooks/guard.mjs`, 71 cas testés dans `.claude/hooks/guard.test.mjs`, dont les 22 contournements de l'audit 008 §A1) :
+  - **Profil de cible** : variable `FACTORY_TARGET` → `factory/targets/<nom>.json` (`sandbox`, `talan-dev`, `talan-staging`) ; défaut `sandbox` ; profil inconnu ou illisible = tout refusé (infra, shell distant, reset, déploiement, diffusion).
+  - **Modèle de risque** : chaque action est lecture, écriture ou destructive ; destructif = toujours refusé ; lecture/écriture suivent le profil ; décisions `allow` / `ask` (porte humaine) / `deny`.
+  - **Familles couvertes** : `.env` lu par tout processus, dump d'environnement, clé privée en ligne de commande, Vault, secrets/variables forge, force-push sous toutes ses formes, approbation de PR interdite, merge = `ask` (G4), protection de branche/rulesets interdits, pipe vers un shell ou `eval`, `kubectl`/`helm`/`terraform`/`aws` destructifs refusés, `ssh`, signature/diffusion selon les hôtes du profil, WebFetch vers hôtes internes refusé, champ `glob` de Grep contrôlé.
+  - `.claude/agents/verifier.md` : réinitialisation de la sandbox seulement quand la cible est `sandbox`. `.claude/settings.json` : deny `.env` élargi, `gh pr`/`gh issue` réduits aux verbes utiles, `deploy-contracts.sh` plus auto-autorisé.
+  - **Défense en profondeur, pas une frontière** : règles par expressions régulières sur le texte des commandes. Les valeurs réelles des profils Talan restent à fournir (#37, `factory/targets/talan-staging.json` contient des `[NEEDS CLARIFICATION]`). Le lot est livré en PR (#31), pas encore fusionné.
 - `main` protégée côté serveur : PR obligatoire, 9 checks requis, admins inclus.
 - Code cible exécuté via `scripts/sandbox-exec.sh` : copie `git archive`, `--network none`, FS lecture seule, limites.
 

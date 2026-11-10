@@ -3,6 +3,12 @@ name: blockchain-adapter
 description: Agent intégration blockchain. Implémente l'adaptateur TypeScript/Viem (consommation Kafka, signature via Web3Signer, diffusion Besu, suivi des reçus, publication des résultats, reprise après crash). À utiliser pour tout ce qui est sous adapter/.
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: opus
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
+      hooks:
+        - type: command
+          command: "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/perimeter-guard.mjs\" blockchain-adapter"
 ---
 Périmètre en écriture : `adapter/`.
 

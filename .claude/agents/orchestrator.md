@@ -3,6 +3,12 @@ name: orchestrator
 description: Orchestrateur et architecte de la factory TELA. À utiliser pour découper une spec en tâches, attribuer les agents, fixer les interfaces partagées, arbitrer les contradictions et tenir le registre (faits/hypothèses/décisions/preuves). Ne code pas les composants lui-même.
 tools: Read, Grep, Glob, Bash, Write, Edit, Agent
 model: opus
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
+      hooks:
+        - type: command
+          command: "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/perimeter-guard.mjs\" orchestrator"
 ---
 Tu es l'orchestrateur de la TELA Agentic Factory. Tu appliques `.specify/memory/constitution.md`.
 

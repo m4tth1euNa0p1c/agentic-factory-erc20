@@ -5,10 +5,14 @@ Objectif : sortir la factory et la stack de la sandbox pour travailler sur l'inf
 ## Verdict de l'audit (main @ 8530a55)
 | Axe | Verdict |
 |---|---|
-| Garde-fous factory | ❌ 22 commandes dangereuses « infra réelle » non bloquées |
+| Garde-fous factory | ❌ 22 commandes dangereuses « infra réelle » non bloquées (constat de l'audit sur `main @ 8530a55` ; traité par L1, voir Avancement) |
 | Portabilité forge | ❌ `gh` codé en dur (orchestrateur, factory-run, settings, hook, CI) |
 | Stack runtime | ❌ gas nul / tx legacy, pas de TLS/SASL, pas d'auth API, nginx lié à Docker, pas d'artefact de déploiement |
 | Hygiène | ⚠️ pas de bloat (61 Mo = sous-modules) ; preuves éparpillées, CI sans cache ni lint |
+
+## Avancement
+- **L1 Garde-fous v2 (#31) : livré, en revue** — T001 à T006 cochées (`specs/008-talan-readiness/tasks.md`) ; hook v2 à profils de cible, 71 cas testés dont les 22 contournements, périmètres d'agents imposés (`factory/perimeters.json`) ; décision D-26. Détail dans [[Agentic-Factory]] ; porte G8 dans [[Validations-humaines]]. Les valeurs des profils Talan dépendent encore de #37.
+- L2 à L6 : tâches non cochées (`specs/008-talan-readiness/tasks.md`), inchangées.
 
 ## Plan
 ```mermaid

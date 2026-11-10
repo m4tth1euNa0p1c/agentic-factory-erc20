@@ -1,0 +1,10 @@
+{
+  "$comment": "Environnement de dev Talan. Valeurs réelles à fournir (#37, H-12..H-17) : tant qu'elles manquent, aucun hôte n'est autorisé à signer/diffuser sans approbation.",
+  "name": "talan-dev",
+  "chainId": "[NEEDS CLARIFICATION: H-13]",
+  "rpcHosts": [],
+  "actions": { "reset": "deny", "deploy": "deny", "broadcast": "ask" },
+  "infra": { "read": "allow", "write": "ask" },
+  "remoteShell": "ask",
+  "secrets": "[NEEDS CLARIFICATION: H-16 ci-variables | vault]"
+}

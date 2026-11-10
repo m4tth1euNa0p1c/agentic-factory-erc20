@@ -7,9 +7,9 @@
 - **Contrats** : AccessControl (admin / minter / pauser distincts), Pausable, références par émetteur, Slither 0 finding, fuzz + invariants.
 - **Messages** : schémas JSON stricts (zod), `to` en liste blanche, `chainId` explicite.
 - **Frontend** : nginx avec allowlist Host (421 sinon), utilisateur non-root.
-- **CI** : gitleaks, Trivy, Slither, tests des hooks (dont le périmètre du curateur), contrôle de la base de connaissances (`scripts/knowledge-lint.mjs`, refus des chemins sensibles), actions épinglées par SHA, Dependabot.
+- **CI** : gitleaks, Trivy, Slither, tests des hooks (garde global, périmètres des agents `perimeter-guard`, périmètre du curateur : `.github/workflows/ci.yml`), contrôle de la base de connaissances (`scripts/knowledge-lint.mjs`, refus des chemins sensibles), actions épinglées par SHA, Dependabot.
 - **Wiki** : `scripts/publish-wiki.sh` publie seulement depuis `main` (sauf dérogation explicite), refuse un `docs/wiki/` non commité et passe gitleaks avant de pousser (revue K-3, PR #40).
-- **Factory** : hook PreToolUse, allowlist, sandbox d'exécution sans réseau, `main` protégée, environnement `factory` limité à `main`. Voir [[Validations-humaines]].
+- **Factory** : hook PreToolUse v2 à profils de cible (D-26), périmètres d'écriture imposés par agent, allowlist, sandbox d'exécution sans réseau, `main` protégée, environnement `factory` limité à `main`. Voir [[Validations-humaines]].
 
 ## Revues `security-auditor`
 | PR | Suivi |
@@ -22,5 +22,5 @@
 
 ## Ouvert
 - #12 Authentification/autorisation de l'API — **avant tout environnement partagé**.
-- #31 Garde-fous v2 — **avant toute cible Talan** (22 contournements identifiés, audit 008).
+- #31 Garde-fous v2 : **livré en PR, en revue** (22 contournements de l'audit 008 couverts par `.claude/hooks/guard.test.mjs`, 71 cas ; `specs/008-talan-readiness/tasks.md` T001–T006). Reste à fusionner (G4) avant toute cible Talan, dont les profils attendent #37. Voir [[Agentic-Factory]].
 - #17/#20/#27/#29 : SASL/ACL Kafka, secrets Compose, digests d'images, durcissements UI.

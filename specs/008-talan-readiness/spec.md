@@ -42,7 +42,7 @@ Images construites, signées et poussées par digest ; manifestes de déploiemen
 - Valeurs Talan inconnues (H-12…H-17) → les profils réels contiennent des `[NEEDS CLARIFICATION]` ; aucun défaut silencieux.
 
 ## Requirements *(mandatory)*
-- **FR-001**: Profils de cible `factory/targets/{sandbox,talan-dev,talan-staging}.yaml` : endpoints autorisés, chainId, actions permises (`deploy`, `reset`, `broadcast`), commandes infra autorisées (lecture seule par défaut), source des secrets.
+- **FR-001**: Profils de cible `factory/targets/{sandbox,talan-dev,talan-staging}.json` : endpoints autorisés, chainId, actions permises (`deploy`, `reset`, `broadcast`), commandes infra autorisées (lecture seule par défaut), source des secrets.
 - **FR-002**: Hook v2 en refus par défaut pour les familles : push forcé (toutes formes), merge/approve/protection/variables forge, lecture de `.env*` par tout processus, dump d'environnement, kubectl/helm/terraform/ssh/vault mutants, `--private-key`, `eth_send*`/`eth_sign*` hors allowlist ; matcher étendu à WebFetch et MCP ; champ `glob` contrôlé.
 - **FR-003**: `settings.json` : `disableBypassPermissionsMode`, deny `.env*`, plus d'auto-autorisation de `gh pr:*` ni de déploiement.
 - **FR-004**: Périmètres d'agents dans `factory/perimeters.json`, appliqués par le hook quand le type d'agent est disponible (sinon journalisé).

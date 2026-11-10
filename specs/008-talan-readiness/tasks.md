@@ -3,12 +3,12 @@
 Ordre = chemin critique. `[P]` = parallélisable. Chaque tâche : preuve sous `evidence/008/<tâche>/`, PASS du `verifier`, revue `security-auditor` pour L1/L2/L4/L6.
 
 ## L1 — Garde-fous v2 (P0, US1) — prérequis à toute cible réelle
-- [ ] T001 Ajouter à `guard.test.mjs` les 22 contournements de l'audit A1 (doivent échouer avant correctif)
-- [ ] T002 `factory/targets/{sandbox,talan-dev,talan-staging}.yaml` + lecteur de profil (`FACTORY_TARGET`, défaut `sandbox`)
-- [ ] T003 `guard.mjs` v2 : familles de règles FR-002, refus par défaut des commandes non analysables visant l'infra, contrôle de `glob`, matcher WebFetch/MCP
-- [ ] T004 `settings.json` durci (FR-003)
-- [ ] T005 `verifier.md` : reset uniquement en `sandbox`, contrôles en lecture sinon
-- [ ] T006 [P] `factory/perimeters.json` + application par le hook (FR-004), journalisation si type d'agent absent
+- [x] T001 Ajouter à `guard.test.mjs` les 22 contournements de l'audit A1 (doivent échouer avant correctif)
+- [x] T002 `factory/targets/{sandbox,talan-dev,talan-staging}.json` (JSON : lisible sans dépendance par le hook) + lecteur de profil (`FACTORY_TARGET`, défaut `sandbox`)
+- [x] T003 `guard.mjs` v2 : familles de règles FR-002, refus par défaut des commandes non analysables visant l'infra, contrôle de `glob`, matcher WebFetch/MCP
+- [x] T004 `settings.json` durci (FR-003)
+- [x] T005 `verifier.md` : reset uniquement en `sandbox`, contrôles en lecture sinon
+- [x] T006 [P] `factory/perimeters.json` + application par le hook (FR-004), journalisation si type d'agent absent
 
 ## L2 — Abstraction forge et source unique (P0, US2)
 - [ ] T010 `factory/forge/forge.sh` + `github.sh` + `gitlab.sh`, tests à blanc

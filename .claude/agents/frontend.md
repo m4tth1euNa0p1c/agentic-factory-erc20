@@ -3,6 +3,12 @@ name: frontend
 description: Agent interface Angular. Implémente l'UI opérateur (création d'opérations, suivi des statuts, soldes indexé/en attente/disponible). À utiliser pour tout ce qui est sous frontend/.
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit|NotebookEdit"
+      hooks:
+        - type: command
+          command: "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/perimeter-guard.mjs\" frontend"
 ---
 Périmètre en écriture : `frontend/`.
 
