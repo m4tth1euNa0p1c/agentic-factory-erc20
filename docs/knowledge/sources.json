@@ -38,7 +38,7 @@
       "sources": [
         {
           "path": ".claude/skills/factory-run/SKILL.md",
-          "sha256": "c48e90a5d5b87a912a77bdc51f5818d9b5f8a01f8ba2ca40bf6b78bd82679b4b"
+          "sha256": "5e77f995774815f75f06edeeb0ee00af3eb08efed1ac6d9a0ed395bd3da60f96"
         },
         {
           "path": ".claude/hooks/guard.mjs",
@@ -106,7 +106,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "763dc345599349642c012c0addc7f598c8eed3b2e29688e749c764ce5fa3ee87"
+          "sha256": "0cde87b1f5cc19716fff5df9eaf5fa0b327733a92d6636f42d30ac1aef2ac132"
         },
         {
           "path": "docs/registry/REGISTRE.md",
@@ -130,7 +130,7 @@
       "sources": [
         {
           "path": "factory/kit/manifest.json",
-          "sha256": "ae956054ecbcd70dc654ea2bd8af7e19f8ef2ebdbc482639467c3f869f6c5ed9"
+          "sha256": "ba57ff12a8bc233496acb5ad0c12e75a933f257763e524b196a98bddc1838e13"
         },
         {
           "path": "factory/kit/kit.mjs",
@@ -142,15 +142,15 @@
       "sources": [
         {
           "path": ".claude/agents/knowledge-curator.md",
-          "sha256": "690eba531d0ad2d8548b46f0d18806e2001190692cba189f5717ad5d8c4dadcd"
+          "sha256": "4c834ee9881dfd190646d46a529547c83c35fabd2e474f9aaf2f09a8cc3cc17d"
         },
         {
           "path": ".claude/skills/knowledge-maintenance/SKILL.md",
-          "sha256": "05ed211b6b60526f528e2aecb827ad915159ad552a1895cdba99b4c8169e24c7"
+          "sha256": "365a64eba100f6eb19a07a42e69b2b970e6e44195aee98ecb893168fa427846b"
         },
         {
           "path": "scripts/knowledge-lint.mjs",
-          "sha256": "cda38afa21989c272a119c6e0245877146bda1dbdb7eeb64ecc455c97bfc733a"
+          "sha256": "b47083e35ae2d6e687e23dcb89392d4add1b88b0b1c19263828f51c41ac5807d"
         }
       ]
     }

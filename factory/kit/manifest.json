@@ -67,6 +67,8 @@
       "requires": ["core"],
       "paths": [
         ".claude/agents/knowledge-curator.md",
+        ".claude/hooks/knowledge-curator-guard.mjs",
+        ".claude/hooks/knowledge-curator-guard.test.mjs",
         ".claude/skills/knowledge-maintenance/",
         "scripts/knowledge-lint.mjs",
         "scripts/knowledge-lint.test.mjs",

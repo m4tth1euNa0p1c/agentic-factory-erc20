@@ -411,6 +411,7 @@ flowchart LR
 | `core` | Spec Kit (`.specify/`, skills `speckit-*`), orchestrator, verifier, security-auditor, skill `security-audit` (Cloudflare), hook `guard.mjs` + tests, portes humaines, `factory-run` | ✅ oui en local ; ⚠️ pas pour agir sur une infra réelle avant #31 (G8), `gh` codé en dur avant #32 |
 | `blockchain` | agents smart-contracts, blockchain-adapter, indexer ; skill `smart-contract-security` | ✅ oui (contenu orienté EVM/Besu/Web3Signer) |
 | `stack-tela` | agents backend-java, frontend, network-devops | ⚠️ contiennent les chemins de ce monorepo : à relire |
+| `knowledge` | agent knowledge-curator + son hook de périmètre, skill knowledge-maintenance, scripts `knowledge-lint` / `knowledge-eval` | ✅ oui (déclarer ses pages dans `docs/knowledge/sources.json`) |
 | `governance` | constitution TELA, modèle de registre F/H/D/P | ✅ comme point de départ |
 
 ```bash

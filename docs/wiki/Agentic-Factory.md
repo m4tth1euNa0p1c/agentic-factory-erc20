@@ -31,8 +31,9 @@ flowchart TB
 | frontend | frontend/ | tests unitaires + Playwright |
 | verifier | evidence/, tests/e2e | rapport PASS/FAIL ré-exécuté |
 | security-auditor | lecture seule | revue skill `security-audit` |
+| knowledge-curator | docs/wiki, docs/knowledge, tests/knowledge (**imposé** par `.claude/hooks/knowledge-curator-guard.mjs`) | `knowledge-lint` sans erreur |
 
-Les périmètres sont aujourd'hui une **convention** (prose des agents) ; leur application par le hook est prévue (spec 008, #31).
+Seul le périmètre de `knowledge-curator` est **imposé** par un hook propre à l'agent (21 cas testés). Pour les autres agents, c'est encore une **convention** (prose) ; la généralisation, sur le même modèle, est prévue dans #31 (spec 008).
 
 ## Skills
 - Spec Kit : `speckit-specify / plan / tasks / analyze / implement / converge / clarify / checklist / constitution`
@@ -46,11 +47,12 @@ flowchart LR
   C -- oui --> D["spécialiste"] --> E["verifier"]
   E -- FAIL --> D
   E -- PASS --> F{"zone sensible ?"}
-  F -- oui --> G["security-auditor"] --> I
-  F -- non --> I["preuve + registre + commit"]
+  F -- oui --> G["security-auditor"] --> KC
+  F -- non --> KC["knowledge-curator<br/>pages stale + lint"]
+  KC --> I["preuve + registre + commit"]
   I --> J["PR + 9 checks"] --> K(["G4 fusion 👤"])
 ```
-Les portes humaines sont détaillées dans [[Validations-humaines]].
+Avant le commit, l'étape 7 de `.claude/skills/factory-run/SKILL.md` fait recompiler par `knowledge-curator` les pages rendues périmées par le changement, pour qu'explications et code soient revus ensemble ([[Base-de-connaissances]]). Les portes humaines sont détaillées dans [[Validations-humaines]].
 
 ## Garde-fous
 - Hook `PreToolUse` (`.claude/hooks/guard.mjs`, 25 cas testés) : bloque lecture de `.env`/clés, introspection de conteneurs, `/proc/*/environ`, force-push simple, push vers `main`, `--no-verify`, contournement de la protection de branche. **Défense en profondeur, pas une frontière** : l'audit 008 a montré 22 contournements possibles sur une infra réelle (push `+main`, `kubectl`, `helm`, `terraform`, `ssh`, `vault`, `glab`…) → durcissement #31 avant toute cible Talan.

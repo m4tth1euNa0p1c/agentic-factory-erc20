@@ -20,6 +20,7 @@ jobs:
       - run: node .claude/hooks/guard.test.mjs
       - name: knowledge base (lint self-test + lint + golden Q&A)
         run: |
+          node .claude/hooks/knowledge-curator-guard.test.mjs
           node scripts/knowledge-lint.test.mjs
           node scripts/knowledge-lint.mjs
           node scripts/knowledge-eval.mjs --min 1

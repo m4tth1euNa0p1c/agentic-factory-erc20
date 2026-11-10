@@ -7,7 +7,8 @@
 - **Contrats** : AccessControl (admin / minter / pauser distincts), Pausable, références par émetteur, Slither 0 finding, fuzz + invariants.
 - **Messages** : schémas JSON stricts (zod), `to` en liste blanche, `chainId` explicite.
 - **Frontend** : nginx avec allowlist Host (421 sinon), utilisateur non-root.
-- **CI** : gitleaks, Trivy, Slither, tests des hooks, actions épinglées par SHA, Dependabot.
+- **CI** : gitleaks, Trivy, Slither, tests des hooks (dont le périmètre du curateur), contrôle de la base de connaissances (`scripts/knowledge-lint.mjs`, refus des chemins sensibles), actions épinglées par SHA, Dependabot.
+- **Wiki** : `scripts/publish-wiki.sh` publie seulement depuis `main` (sauf dérogation explicite), refuse un `docs/wiki/` non commité et passe gitleaks avant de pousser (revue K-3, PR #40).
 - **Factory** : hook PreToolUse, allowlist, sandbox d'exécution sans réseau, `main` protégée, environnement `factory` limité à `main`. Voir [[Validations-humaines]].
 
 ## Revues `security-auditor`

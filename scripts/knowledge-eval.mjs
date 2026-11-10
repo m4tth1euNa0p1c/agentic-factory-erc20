@@ -4,6 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { safePath } from "./knowledge-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -14,7 +15,8 @@ const norm = (s) => s.normalize("NFC").toLowerCase();
 const results = qa.questions.map(({ id, q, expect }) => {
   const missing = [];
   for (const { file, terms } of expect) {
-    const p = path.join(ROOT, file);
+    const p = safePath(ROOT, file); // never read secrets or files outside the repo (review K-1)
+    if (p === null) { missing.push(`${file} (chemin refusé)`); continue; }
     if (!fs.existsSync(p)) { missing.push(`${file} (absent)`); continue; }
     const text = norm(fs.readFileSync(p, "utf8"));
     for (const t of terms) if (!text.includes(norm(t))) missing.push(`${file} ∌ « ${t} »`);

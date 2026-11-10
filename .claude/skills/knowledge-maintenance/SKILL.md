@@ -32,7 +32,7 @@ flowchart LR
 1. Trouver les pages concernées : `node scripts/knowledge-lint.mjs` → avertissements `stale-page` (source modifiée) ; ou `git diff --name-only <base>...HEAD` croisé avec `docs/knowledge/sources.json`.
 2. Pour chaque page : relire **les sources déclarées** (pas la page seule), puis appliquer `references/page-rules.md`.
 3. Nouvelle page : l'ajouter à `docs/knowledge/sources.json`, la lier depuis `Home.md` et `_Sidebar.md` (sinon `orphan-page`).
-4. `node scripts/knowledge-lint.mjs --update-sources` puis `node scripts/knowledge-lint.mjs` → **0 erreur** exigé.
+4. `node scripts/knowledge-lint.mjs --update-sources <pages curées>` (uniquement celles relues ; `--all` est réservé à l'humain) puis `node scripts/knowledge-lint.mjs` → **0 erreur** exigé.
 5. Résumer dans la PR : pages touchées, sources lues, contradictions trouvées, propositions de registre (non appliquées).
 
 ## Mode `lint` — santé
@@ -42,7 +42,7 @@ flowchart LR
 Protocole `references/ask-protocol.md` : recherche d'abord (`Grep`/`Glob` sur `specs/`, `docs/`, `evidence/`, `.claude/`, `factory/`), réponse **uniquement** à partir de ce qui a été lu, chaque affirmation suivie de sa citation ; si rien n'est trouvé : « pas de source dans le dépôt ». Distinguer **fait** (F, preuve P, code), **hypothèse** (H) et **décision** (D).
 
 ## Mode `flag` — signaler
-Page fausse ou contradiction non résoluble : ouvrir une issue avec le label `documentation`, titre `[knowledge] <page> : <problème>`, corps = extrait de la page + source contradictoire (citations). Ne pas corriger une page dont la vérité dépend d'une décision humaine (porte G1/G3).
+Page fausse ou contradiction non résoluble : ajouter une entrée datée dans `docs/knowledge/FLAGS.md` (page, problème, extrait, source contradictoire avec citations). L'orchestrateur la transforme en issue `[knowledge] <page> : <problème>` (label `documentation`). Ne pas corriger une page dont la vérité dépend d'une décision humaine (porte G1/G3).
 
 ## Mesure
 `node scripts/knowledge-eval.mjs` rejoue `tests/knowledge/golden-qa.json` : pour chaque question, vérifie que les fichiers attendus contiennent bien les termes attendus (la connaissance existe et est trouvable). Score = proportion de questions couvertes. À relancer après chaque `ingest`.
