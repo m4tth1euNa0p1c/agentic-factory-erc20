@@ -20,11 +20,14 @@ Reproduction de l'infrastructure **TELA** (Talan) par une *agentic factory* Clau
 3. [Garanties d'effet unique](#3-garanties-deffet-unique)
 4. [La factory agentique](#4-la-factory-agentique)
 5. [Validations humaines](#5-validations-humaines)
-6. [Démarrage rapide](#6-démarrage-rapide)
-7. [Tester à la main](#7-tester-à-la-main)
-8. [Specs, preuves et état](#8-specs-preuves-et-état)
-9. [Arborescence](#9-arborescence)
-10. [Documents clés](#10-documents-clés)
+6. [Résultats de validation (graphes)](#6-résultats-de-validation-graphes)
+7. [Feuille de route Talan](#7-feuille-de-route--passer-sur-linfra-talan-spec-008)
+8. [Réutiliser la factory (kit)](#8-réutiliser-la-factory-sur-un-dépôt-talan-factory-kit)
+9. [Démarrage rapide](#9-démarrage-rapide)
+10. [Tester à la main](#10-tester-à-la-main)
+11. [Specs, preuves et état](#11-specs-preuves-et-état)
+12. [Arborescence](#12-arborescence)
+13. [Documents clés](#13-documents-clés)
 
 ---
 
@@ -65,6 +68,8 @@ flowchart LR
   BE -- "opérations, réservations, outbox" --> PG
 ```
 
+> **Comment lire.** Chaque cadre est un réseau Docker isolé ; un service n'atteint que les réseaux dont il est membre. Le **chemin d'écriture** va de gauche à droite (UI → Java → Kafka → adaptateur → Web3Signer → Besu) ; le **chemin de lecture** revient par Ponder et PostgreSQL. Deux points clés : seul l'adaptateur parle à Web3Signer (réseau `signing` interne, aucune clé ne sort du signeur), et Java ne lit jamais la chaîne directement : il lit les vues `tela_read` alimentées par l'indexeur.
+
 ### Diagramme de déploiement (sandbox Docker Compose)
 ```mermaid
 flowchart TB
@@ -77,6 +82,8 @@ flowchart TB
   W3[web3signer]:::hidden
   classDef hidden stroke-dasharray: 5 5
 ```
+
+> **Comment lire.** Les flèches pleines sont les seuls ports publiés, et uniquement sur `127.0.0.1` : rien n'est exposé sur le réseau local. Les cadres pointillés (Kafka, Web3Signer) n'ont **aucun** port publié ; `scripts/sandbox.sh check` vérifie ces propriétés à chaque démarrage.
 Kafka et Web3Signer ne sont **pas publiés** sur l'hôte. Web3Signer n'est joignable que par le réseau interne `signing`.
 
 ### Modèle de domaine (classes)
@@ -124,6 +131,8 @@ classDiagram
   Availability ..> Reservation : soustrait
 ```
 
+> **Comment lire.** Une `Operation` porte une `reference` déterministe (`keccak256(operationId)`) qui sert de clé d'idempotence **sur la chaîne**. Elle crée une `Reservation` (montant bloqué dès l'acceptation), un `OutboxMessage` (écrit dans la même transaction SQL, donc jamais perdu) et, côté adaptateur, un `TxAttempt` journalisé **avant** diffusion. `Availability` est ce que renvoie l'API : `raw = indexé − réservations pas encore indexées`.
+
 ## 2. Cycle de vie d'une opération
 
 ### Séquence d'un transfert
@@ -161,6 +170,10 @@ sequenceDiagram
   FE->>BE: GET /operations/{id} (polling)
 ```
 
+> **Comment lire.** Étapes 1–5 : synchrones, la réponse `202` arrive avant toute interaction blockchain. Étapes 6–14 : asynchrones via Kafka. L'étape critique est la **10** : la transaction signée est journalisée *avant* d'être envoyée ; après un crash, l'adaptateur rediffuse exactement la même transaction (même hash) au lieu d'en signer une nouvelle. Étapes 15–17 : le règlement `SETTLED` ne dépend pas des messages Kafka mais de la **preuve indexée** (D-14).
+>
+> Mesure en direct (sandbox, 2026-11-09, transfert de 2,5 TCE, non archivée comme preuve) : `PUBLISHED` +23 ms · `BROADCAST` +193 ms · `CONFIRMED` +1,7 s · `SETTLED` +2,2 s.
+
 ### Diagramme d'états
 ```mermaid
 stateDiagram-v2
@@ -183,6 +196,8 @@ stateDiagram-v2
   REJECTED --> [*] : réservation libérée
   note right of UNKNOWN : conserve la réservation
 ```
+
+> **Comment lire.** Chemin nominal : de `RECEIVED` à `SETTLED`. Les deux terminaux d'échec **libèrent** la réservation car l'issue est certaine : `REJECTED` (simulation échouée, rien diffusé) et `FAILED` (minée avec statut 0). `UNKNOWN` est différent : la transaction a peut-être été exécutée (RPC coupé, timeout), donc la réservation est **conservée** jusqu'à ce que la réconciliation trouve le log de la référence. Les flèches directes vers `SETTLED` traduisent D-14 : si l'indexeur voit l'exécution avant que Kafka n'apporte les résultats, l'opération est réglée sans attendre.
 
 ## 3. Garanties d'effet unique
 
@@ -220,6 +235,8 @@ flowchart TB
   O -- "PR + checks" --> H
 ```
 
+> **Comment lire.** L'humain entre et sort par l'orchestrateur : il donne une issue/spec, il reçoit une PR. L'orchestrateur ne code pas ; il découpe et attribue. Chaque spécialiste n'écrit que dans son dossier et doit produire une preuve dans `evidence/`. Le `verifier` est **indépendant** : il rejoue la preuve et peut renvoyer FAIL. Le `security-auditor` intervient sur les zones sensibles (contrats, signature, auth, infra).
+
 ### Cycle `/factory-run NNN` (activité)
 ```mermaid
 flowchart LR
@@ -237,6 +254,8 @@ flowchart LR
   J --> K((merge humain))
 ```
 
+> **Comment lire.** La boucle `verifier → FAIL → spécialiste` est la seule boucle automatique ; tout le reste avance vers une **porte humaine** (cercle). Si aucune tâche n'est débloquée, la factory ne devine pas : elle ouvre une issue `human-action` ou `needs-clarification` (voir §5).
+
 ### Composants
 | Élément | Rôle |
 |---|---|
@@ -250,6 +269,47 @@ flowchart LR
 
 La factory avance seule **jusqu'aux portes** ci-dessous. Détail, preuves et commandes : [docs/wiki/Validations-humaines.md](docs/wiki/Validations-humaines.md). Registre lisible par les outils : [`factory/human-gates.yaml`](factory/human-gates.yaml). État courant : `scripts/human-gates.sh` (ou `--json`).
 
+### Où l'humain intervient dans le cycle
+```mermaid
+flowchart LR
+  S1["/speckit-specify"] --> Q{"[NEEDS CLARIFICATION] ?"}
+  Q -- oui --> G1(["G1 · Clarification 👤"])
+  G1 --> S2
+  Q -- non --> S2["/speckit-plan + tasks"]
+  S2 --> T{"bloquée par secret,<br/>réglage ou source ?"}
+  T -- oui --> G2(["G2 · Action humaine 👤"])
+  G2 --> I
+  T -- non --> I["agent spécialiste"]
+  I --> V["verifier"]
+  V --> SEC{"zone sensible ?"}
+  SEC -- oui --> A["security-auditor"]
+  A --> R{"findings restants ?"}
+  R -- oui --> G7(["G7 · Risque résiduel 👤"])
+  R -- non --> PR
+  G7 --> PR
+  SEC -- non --> PR["PR + 9 checks requis"]
+  PR --> G4(["G4 · Fusion sur main 👤<br/>imposé par GitHub"])
+  classDef human fill:#fde68a,stroke:#b45309,color:#111
+  class G1,G2,G4,G7 human
+```
+> **Comment lire.** Les pastilles jaunes sont les moments où la factory **s'arrête** et attend le propriétaire. Une seule (G4) est imposée par le serveur GitHub : sans PR et sans les 9 checks verts, rien n'entre dans `main`. G1, G2 et G7 sont des conventions tracées par labels et issues ; elles apparaissent sur le tableau GitHub et dans `scripts/human-gates.sh`.
+
+### Portes transverses
+```mermaid
+flowchart TB
+  G3(["G3 · Hypothèse → fait<br/>sources TELA"]) -.-> REG[("Registre F/H/D/P")]
+  G5(["G5 · /factory-run en CI<br/>OWNER seulement"]) -.-> CI["factory.yml · env factory"]
+  G6(["G6 · Permission locale<br/>prompt + hook"]) -.-> LOCAL["session Claude Code"]
+  G8(["G8 · Cible réelle Talan<br/>refus par défaut"]) -.-> TALAN["infra Talan"]
+  G9(["G9 · Décision d'expérience"]) -.-> EXP["spec 007"]
+  classDef human fill:#fde68a,stroke:#b45309,color:#111
+  classDef planned fill:#e5e7eb,stroke:#6b7280,stroke-dasharray:4 3,color:#111
+  class G3,G5,G6 human
+  class G8,G9 planned
+```
+> **Comment lire.** Ces portes ne sont pas liées à une étape du cycle mais à un type d'action. En gris pointillé : **prévues, pas encore appliquées** : G8 (aucune action sur l'infra Talan tant que #31 n'est pas livré) et G9 (gouvernance des expériences, #24).
+
+### Tableau récapitulatif
 | Porte | Quand | Qui | Appliquée par |
 |---|---|---|---|
 | G1 Clarification | spec avec `[NEEDS CLARIFICATION]` | propriétaire | convention + label `needs-clarification` |
@@ -261,7 +321,107 @@ La factory avance seule **jusqu'aux portes** ci-dessous. Détail, preuves et com
 | G7 Risque résiduel sécurité | findings non corrigés | propriétaire | issues de suivi |
 | G8 Cible réelle (Talan) | tout endpoint non-sandbox | propriétaire | spec 008 L1 (#31) — **pas encore appliquée** |
 
-## 6. Démarrage rapide
+## 6. Résultats de validation (graphes)
+
+Spec 002, tous critères mesurés sur le **même commit `7d4a02d`** (images reconstruites depuis ce SHA). Preuves : `evidence/002/campaign-sc00*/runs/<RUN_ID>/evidence.json` · matrice : [`validation-matrix.md`](specs/002-tce-transfer-e2e/validation-matrix.md).
+
+### SC-003 — Latence demande → confirmation (60 opérations, 1 req / 3 s)
+```mermaid
+xychart-beta
+  title "Latence en secondes (cible p95 < 10 s)"
+  x-axis ["p50", "p95", "max", "cible p95"]
+  y-axis "secondes" 0 --> 10
+  bar [1.23, 2.22, 2.23, 10]
+```
+> **Lecture.** Avec des blocs de 2 s, une opération est confirmée en ~1 bloc : p95 = 2,22 s, soit 4,5× sous la cible. La charge est volontairement espacée (1 requête / 3 s) : c'est une mesure de **latence**, pas de débit. Le débit de l'adaptateur (≈ 1 tx par bloc, traitement sériel) est un sujet séparé (#26).
+
+### SC-002 — Crashs réels aléatoires de l'adaptateur
+```mermaid
+pie showData
+  title 119 crashs par point d'interruption (0 double débit)
+  "après signature" : 30
+  "après publication du résultat" : 27
+  "après diffusion + publication" : 22
+  "après journalisation" : 20
+  "après diffusion" : 20
+```
+> **Lecture.** Le processus est tué **réellement** à 5 points différents entre la signature et la publication du résultat, là où un double débit serait possible. Sur 120 opérations : 120 réglées, 120 événements on-chain, débit on-chain = débit attendu (120 TCE). Le journal écrit avant diffusion et la référence on-chain rendent chaque reprise idempotente.
+
+### SC-004 — 1 000 demandes simultanées pour 100 places
+```mermaid
+pie showData
+  title Réponses de l'API
+  "202 acceptées" : 100
+  "409 refusées (disponible insuffisant)" : 900
+```
+| Mesure (103 instantanés pendant l'exécution) | Minimum observé |
+|---|---|
+| Disponible **brut** de l'API (`indexé − réservations non indexées`, snapshot SQL unique, D-21) | **0** ✅ jamais négatif |
+| Formule naïve `indexé − total réservé` (pour comparaison) | **−1 000 000** ❌ |
+
+> **Lecture.** Le compte avait exactement 100 × le montant : l'API en accepte exactement 100, refuse les 900 autres, et le disponible ne passe jamais sous zéro. La ligne « naïve » montre pourquoi la décision D-21 était nécessaire : une opération déjà indexée **et** encore réservée serait comptée deux fois.
+
+### SC-001 — Répétabilité
+40/40 : les 4 scénarios exigés (nominal, redémarrage après émission, retard de Ponder, échec certain vs inconnu) rejoués 10 fois de suite sans échec.
+
+## 7. Feuille de route : passer sur l'infra Talan (spec 008)
+```mermaid
+flowchart LR
+  L1["L1 Garde-fous v2<br/>#31"] --> L2["L2 Forge GitHub/GitLab<br/>#32"] --> L6["L6 GitLab CI<br/>#36"]
+  L3["L3 Hygiène<br/>#33"]
+  H(["👤 Infos Talan #37<br/>H-12…H-17"]) --> L4["L4 Config par environnement<br/>#34"] --> L5["L5 Déploiement<br/>#35"]
+  L1 -. prérequis .-> TALAN(("infra Talan"))
+  L4 -.-> TALAN
+  L5 -.-> TALAN
+  L6 -.-> TALAN
+  classDef human fill:#fde68a,stroke:#b45309,color:#111
+  class H human
+```
+> **Lecture.** L1 (garde-fous) est le prérequis absolu : l'audit a montré 22 commandes dangereuses sur une infra réelle que le hook actuel laisse passer. L3 est indépendant et peut avancer en parallèle. L4 et L5 attendent les réponses Talan (#37) : chaîne, finalité, gas, key store, cible de déploiement. Détail : wiki *Talan-Readiness*.
+
+## 8. Réutiliser la factory sur un dépôt Talan (factory kit)
+
+La factory est séparée en **modules** décrits dans [`factory/kit/manifest.json`](factory/kit/manifest.json). La commande `scripts/factory-kit.sh` les extrait de ce dépôt et les installe dans n'importe quel autre dépôt (GitLab Talan, autre projet), avec un fichier de verrou pour suivre les mises à jour.
+
+```mermaid
+flowchart LR
+  subgraph src["Ce dépôt (source)"]
+    M["factory/kit/manifest.json<br/>modules + fichiers"]
+    F[".claude/ · .specify/ · factory/"]
+  end
+  subgraph kit["Kit"]
+    T["dist/factory-kit-&lt;sha&gt;.tar.gz<br/>+ KIT-MANIFEST.json (sha256)"]
+  end
+  subgraph dst["Dépôt Talan (cible)"]
+    C["CLAUDE.md généré"]
+    A[".claude/ · .specify/ · factory/"]
+    LCK[".factory-kit.lock"]
+  end
+  M --> X{{"factory-kit.sh export"}} --> T
+  F --> X
+  T --> I{{"factory-kit.sh install"}} --> A
+  I --> C
+  I --> LCK
+  LCK --> D{{"factory-kit.sh status"}}
+```
+
+| Module | Contenu | Portable aujourd'hui ? |
+|---|---|---|
+| `core` | Spec Kit (`.specify/`, skills `speckit-*`), orchestrator, verifier, security-auditor, skill `security-audit` (Cloudflare), hook `guard.mjs` + tests, portes humaines, `factory-run` | ✅ oui en local ; ⚠️ pas pour agir sur une infra réelle avant #31 (G8), `gh` codé en dur avant #32 |
+| `blockchain` | agents smart-contracts, blockchain-adapter, indexer ; skill `smart-contract-security` | ✅ oui (contenu orienté EVM/Besu/Web3Signer) |
+| `stack-tela` | agents backend-java, frontend, network-devops | ⚠️ contiennent les chemins de ce monorepo : à relire |
+| `governance` | constitution TELA, modèle de registre F/H/D/P | ✅ comme point de départ |
+
+```bash
+scripts/factory-kit.sh list                                    # modules et fichiers
+scripts/factory-kit.sh export --modules core,blockchain        # → dist/factory-kit-<sha>.tar.gz
+scripts/factory-kit.sh install ../talan-repo --modules core,blockchain --project "TELA Talan" --dry-run
+scripts/factory-kit.sh install ../talan-repo --modules core,blockchain --project "TELA Talan"
+scripts/factory-kit.sh status ../talan-repo                    # fichiers modifiés localement / en retard sur la source
+```
+Règles du kit : **jamais** de fichier existant écrasé sans `--force` ; aucun secret, `.env`, preuve ou code applicatif n'est copié ; chaque fichier est listé avec son sha256 dans `.factory-kit.lock`. Une fois installé dans le dépôt cible, lancer Claude Code dans ce dépôt et commencer par `/speckit-constitution` puis `/speckit-specify`.
+
+## 9. Démarrage rapide
 Prérequis : Docker, bash (Git Bash sous Windows), openssl, node, python. Aucun outil blockchain local requis (Foundry/Maven en conteneurs), aucun secret à saisir.
 
 ```bash
@@ -277,7 +437,7 @@ scripts/sandbox.sh check                           # vérifie tout
 | API | http://localhost:8080/api/v1 |
 | RPC Besu (lecture) | http://localhost:8545 — chainId `48151` |
 
-## 7. Tester à la main
+## 10. Tester à la main
 Seuls **Alice** et **Bob** peuvent être émetteurs (l'adaptateur ne signe que pour eux). Montants en unités minimales, 6 décimales (`1000000` = 1 TCE).
 
 | Compte | Adresse |
@@ -297,7 +457,7 @@ curl http://localhost:8080/api/v1/accounts/<adresse>/balances
 curl http://localhost:8080/api/v1/system/indexer-status
 ```
 
-## 8. Specs, preuves et état
+## 11. Specs, preuves et état
 
 | Spec | Sujet | Statut | Liens |
 |---|---|---|---|
@@ -313,7 +473,7 @@ curl http://localhost:8080/api/v1/system/indexer-status
 
 Scénarios rejouables : `tests/e2e/run.sh <001-contracts|nominal|restart-after-broadcast|ponder-lag|failure-vs-unknown>` ; campagnes `tests/e2e/campaigns/sc00{1..4}-*.sh`. Chaque exécution écrit `evidence/<spec>/<scénario>/runs/<RUN_ID>/run.json` (SHA, config, digests d'images).
 
-## 9. Arborescence
+## 12. Arborescence
 | Dossier | Contenu | Agent |
 |---|---|---|
 | `.claude/` | agents, skills, hooks, settings | orchestrator |
@@ -330,7 +490,7 @@ Scénarios rejouables : `tests/e2e/run.sh <001-contracts|nominal|restart-after-b
 | `tests/e2e/`, `evidence/` | scénarios, campagnes, preuves | verifier |
 | `docs/` | veille, registre, audit, wiki, actions humaines | orchestrator |
 
-## 10. Documents clés
+## 13. Documents clés
 - [Constitution](.specify/memory/constitution.md) · [Registre F/H/D/P](docs/registry/REGISTRE.md) · [Veille & versions](docs/research/veille-2026-11.md)
 - [Balayage des specs](specs/ANALYSIS.md) · [Audit Talan readiness](docs/audit/2026-11-09-talan-readiness.md) (branche `008-talan-readiness`)
 - [Validations humaines](docs/wiki/Validations-humaines.md) · [Actions humaines](docs/HUMAN-ACTIONS.md) · [Wiki](docs/wiki/Home.md)

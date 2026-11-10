@@ -19,6 +19,7 @@ flowchart LR
 | [[Runbook-Sandbox]] | démarrer, tester à la main, rejouer, diagnostiquer |
 | [[Scenarios-et-preuves]] | les 4 tests exigés, campagnes SC-001…SC-004, preuves |
 | [[Securite]] | contrôles, revues, suivis |
+| [[Factory-Kit]] | extraire la factory et l'installer sur un autre dépôt (`scripts/factory-kit.sh`) |
 | [[Talan-Readiness]] | audit et plan pour passer sur l'infra Talan (spec 008) |
 
 ## État (2026-11-09)
